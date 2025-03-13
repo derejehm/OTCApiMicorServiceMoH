@@ -155,18 +155,18 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c4e74350-4c86-4c63-8d7a-791682d608fe",
+                            Id = "9208bb76-acac-4c69-9988-8ed0905dec93",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a7661723-8728-4f71-9d25-14cebe7af41a",
+                            ConcurrencyStamp = "99c2a348-b1ae-42e4-afa1-8117cf0e264b",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAELGu4ebOdgxLbecMzv+4YdADlkqnHleuUAyYplIy6GVIqzz1lBUc2ykBpt7K8x7sJQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGzi708kZUajtdnaqpNahdR06Oey0WCcL9tNCY9cHQGcsBVhHzf1MEjPxgEjEoJlVQ==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "06b64b03-185e-43fb-a8d5-b433776744c1",
+                            SecurityStamp = "f8d8da7b-7b18-4074-b597-017cc8710621",
                             TwoFactorEnabled = false,
                             UserName = "DerejeH"
                         });
@@ -236,7 +236,7 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "c4e74350-4c86-4c63-8d7a-791682d608fe",
+                            UserId = "9208bb76-acac-4c69-9988-8ed0905dec93",
                             RoleId = "1"
                         });
                 });

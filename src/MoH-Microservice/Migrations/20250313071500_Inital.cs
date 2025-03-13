@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -170,12 +170,12 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "c4e74350-4c86-4c63-8d7a-791682d608fe", 0, "a7661723-8728-4f71-9d25-14cebe7af41a", "dereje.hmariam@tsedeybank.com.et", true, false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAELGu4ebOdgxLbecMzv+4YdADlkqnHleuUAyYplIy6GVIqzz1lBUc2ykBpt7K8x7sJQ==", "+251912657147", true, "06b64b03-185e-43fb-a8d5-b433776744c1", false, "DerejeH" });
+                values: new object[] { "9208bb76-acac-4c69-9988-8ed0905dec93", 0, "99c2a348-b1ae-42e4-afa1-8117cf0e264b", "dereje.hmariam@tsedeybank.com.et", true, false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEGzi708kZUajtdnaqpNahdR06Oey0WCcL9tNCY9cHQGcsBVhHzf1MEjPxgEjEoJlVQ==", "+251912657147", true, "f8d8da7b-7b18-4074-b597-017cc8710621", false, "DerejeH" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "c4e74350-4c86-4c63-8d7a-791682d608fe" });
+                values: new object[] { "1", "9208bb76-acac-4c69-9988-8ed0905dec93" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
