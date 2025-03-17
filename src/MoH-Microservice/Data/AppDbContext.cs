@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MoH_Microservice.Models;
 
 namespace MoH_Microservice.Data
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser>
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -21,8 +22,8 @@ namespace MoH_Microservice.Data
                 );
 
             //Seed Admin Data
-            var hasher = new PasswordHasher<IdentityUser>();
-            var adminUser = new IdentityUser
+            var hasher = new PasswordHasher<AppUser>();
+            var adminUser = new AppUser
             {
                 UserName = "DerejeH",
                 NormalizedUserName = "DEREJEH",
@@ -30,13 +31,15 @@ namespace MoH_Microservice.Data
                 NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                 PhoneNumber = "+251912657147",
                 EmailConfirmed = true,
+                UserType="Admin",
+                Departement="Tsedey Bank",
                 PhoneNumberConfirmed = true,
                 LockoutEnabled = false,
             };
 
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "Dereje@Tsedeybank");
 
-            builder.Entity<IdentityUser>().HasData(adminUser);
+            builder.Entity<AppUser>().HasData(adminUser);
 
             //Assign Role To Admin
             builder.Entity<IdentityUserRole<string>>().HasData(

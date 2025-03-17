@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class Inital : Migration
+    public partial class addinitialwithcustomfileds : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,8 @@ namespace MoH_Microservice.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Departement = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -169,13 +171,13 @@ namespace MoH_Microservice.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "9208bb76-acac-4c69-9988-8ed0905dec93", 0, "99c2a348-b1ae-42e4-afa1-8117cf0e264b", "dereje.hmariam@tsedeybank.com.et", true, false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEGzi708kZUajtdnaqpNahdR06Oey0WCcL9tNCY9cHQGcsBVhHzf1MEjPxgEjEoJlVQ==", "+251912657147", true, "f8d8da7b-7b18-4074-b597-017cc8710621", false, "DerejeH" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
+                values: new object[] { "d4def35a-cc57-4984-b90e-d15670d0a012", 0, "92f20be3-8da8-4582-9d70-ea7a578666bc", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEJ7sfVSctu5isbacYN4LMeJTCrKcQcU6y0IB9WjMg3S6QZ3FU+GjNUvwfjpoNLhWRQ==", "+251912657147", true, "17260c7a-e82d-440b-b419-37e28ee47a9e", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "9208bb76-acac-4c69-9988-8ed0905dec93" });
+                values: new object[] { "1", "d4def35a-cc57-4984-b90e-d15670d0a012" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

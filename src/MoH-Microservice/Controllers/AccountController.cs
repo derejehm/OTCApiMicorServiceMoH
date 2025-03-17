@@ -14,11 +14,11 @@ namespace MoH_Microservice.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -28,7 +28,7 @@ namespace MoH_Microservice.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] Register model)
         {
-            var user=new IdentityUser { UserName = model.Username ,Email=model.Email,PhoneNumber=model.PhoneNumber};
+            var user=new AppUser { UserName = model.Username ,Email=model.Email,PhoneNumber=model.PhoneNumber , UserType = model.UserType, Departement = model.Departement }; 
             var result=await _userManager.CreateAsync(user,model.Password);
 
             if (result.Succeeded)
@@ -53,6 +53,8 @@ namespace MoH_Microservice.Controllers
                     new Claim(JwtRegisteredClaimNames.Name, user.UserName!),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     //new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+                    new Claim("UserType", user.UserType!),
+                    new Claim("Departement", user.Departement!),
                     new Claim("userId", user.Id!),
 
                 };
@@ -65,6 +67,8 @@ namespace MoH_Microservice.Controllers
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
                     SecurityAlgorithms.HmacSha256));
+
+                await _userManager.SetAuthenticationTokenAsync(user, "Default",model.Username, new JwtSecurityTokenHandler().WriteToken(token));
 
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
             }
@@ -106,6 +110,40 @@ namespace MoH_Microservice.Controllers
 
             return Ok(result.Errors);   
 
+        }
+
+        [HttpGet("get-token")]
+        public async Task<IActionResult> GetToken(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            var token = await _userManager.GetAuthenticationTokenAsync(user, "Default", username);
+            if (token == null)
+            {
+                return NotFound(new { message = "Token not found ,please login in agin." });
+            }
+            return Ok(token);
+        }
+
+        [HttpPost("reset-password-default")]
+        public async Task<IActionResult> ResetPasswordToDefault([FromBody] ResetToDefaultDto model)
+        {
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user == null)
+                return BadRequest("User not found.");
+
+            // Remove the current password (if applicable)
+            var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+            if (!removePasswordResult.Succeeded)
+                return BadRequest(removePasswordResult.Errors);
+
+            // Set a new default password
+            var defaultPassword = "TsedeyBank@2025"; // Change this to your desired default password
+            var addPasswordResult = await _userManager.AddPasswordAsync(user, defaultPassword);
+
+            if (!addPasswordResult.Succeeded)
+                return BadRequest(addPasswordResult.Errors);
+
+            return Ok(new { Message = "Password reset to default successfully!" });
         }
     }
 }

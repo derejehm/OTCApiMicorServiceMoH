@@ -9,13 +9,13 @@ namespace MoH_Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "RoleAdmin")]
+    [Authorize(Policy = "AdminPolicy")]
     public class AdminController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<AppUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
-        public AdminController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -37,6 +37,8 @@ namespace MoH_Microservice.Controllers
                     Username=user.UserName,
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
+                    Departement=user.Departement,
+                    UserType=user.UserType,
                     Roles = roles
                 });
             }
@@ -50,7 +52,7 @@ namespace MoH_Microservice.Controllers
         {
          
 
-            var user = new IdentityUser { UserName = model.Username, Email = model.Email, PhoneNumber = model.PhoneNumber };
+            var user = new AppUser { UserName = model.Username, Email = model.Email, PhoneNumber = model.PhoneNumber,Departement=model.Departement,UserType=model.UserType};
             var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -70,10 +72,10 @@ namespace MoH_Microservice.Controllers
             return BadRequest(result.Errors);
         }
 
-        [HttpDelete("users")]
-        public async Task<IActionResult> DeleteUser([FromBody] string id)
+        [HttpDelete("users/{Id}")]
+        public async Task<IActionResult> DeleteUser(string Id)  
         {
-            var user = await userManager.FindByIdAsync(id);
+            var user = await userManager.FindByIdAsync(Id);
             if (user == null)
             {
                 return NotFound(new { message = "User not found." });
@@ -202,6 +204,8 @@ namespace MoH_Microservice.Controllers
             //admin.Email = model.Email;
             admin.UserName = model.Username;
             admin.PhoneNumber = model.PhoneNumber;
+            admin.UserType = model.UserType;
+            admin.Departement=model.Departement;
 
             var result = await userManager.UpdateAsync(admin);
 

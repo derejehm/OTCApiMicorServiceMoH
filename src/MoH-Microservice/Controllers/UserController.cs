@@ -8,12 +8,12 @@ namespace MoH_Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "RoleUser")]
+    [Authorize(Policy = "UserPolicy")]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<AppUser> userManager;
 
-        public UserController(UserManager<IdentityUser> userManager)
+        public UserController(UserManager<AppUser> userManager)
         {
             this.userManager = userManager;
         }
@@ -44,6 +44,8 @@ namespace MoH_Microservice.Controllers
            // user.Email = model.Email;
             user.UserName = model.Username;
             user.PhoneNumber = model.PhoneNumber;
+            user.UserType = model.UserType;
+            user.Departement = model.Departement;
 
             var result = await userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -90,5 +92,10 @@ namespace MoH_Microservice.Controllers
 
             return BadRequest(result.Errors);
         }
+
+
+       
+
+
     }
 }
