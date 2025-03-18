@@ -28,6 +28,13 @@ namespace MoH_Microservice.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody ] Register model)
         {
+            var userExists = await _userManager.FindByNameAsync(model.Username);
+
+            if(userExists!=null)
+            {
+                return BadRequest(new { message = "User already exists" });
+            }
+
             var user=new AppUser { UserName = model.Username ,Email=model.Email,PhoneNumber=model.PhoneNumber , UserType = model.UserType, Departement = model.Departement }; 
             var result=await _userManager.CreateAsync(user,model.Password);
 

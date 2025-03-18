@@ -50,7 +50,13 @@ namespace MoH_Microservice.Controllers
         [HttpPost("users")]
         public async Task<IActionResult> AddUser([FromBody] Register model)
         {
-         
+
+            var userExists = await userManager.FindByNameAsync(model.Username);
+
+            if (userExists != null)
+            {
+                return BadRequest(new { message = "User already exists" });
+            }
 
             var user = new AppUser { UserName = model.Username, Email = model.Email, PhoneNumber = model.PhoneNumber,Departement=model.Departement,UserType=model.UserType};
             var result = await userManager.CreateAsync(user, model.Password);
@@ -224,18 +230,31 @@ namespace MoH_Microservice.Controllers
 
             if (admin == null)
             {
-                return NotFound(new { message = "Admin not found." });
+                return NotFound(new { message = "User not found." });
             }
 
             var result = await userManager.ChangePasswordAsync(admin, model.CurrentPassword, model.NewPassword);
 
             if (result.Succeeded)
             {
-                return Ok(new { message = "Admin password updated successfully" });
+                return Ok(new { message = "User password updated successfully" });
             }
             return BadRequest(result.Errors);
         }
 
-      
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> AdminResetPassword([FromBody] ResetToDefaultDto model)
+        {
+            var user = await userManager.FindByNameAsync(model.Username);
+            if (user == null)
+                return BadRequest("User not found.");
+
+            await userManager.RemovePasswordAsync(user);
+            await userManager.AddPasswordAsync(user,model.NewPassword);
+
+            return Ok(new { Message = "Admin reset password to new password." });
+        }
+
+
     }
 }
