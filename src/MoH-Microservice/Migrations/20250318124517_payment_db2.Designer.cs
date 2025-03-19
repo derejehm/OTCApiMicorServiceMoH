@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoH_Microservice.Data;
 
@@ -11,9 +12,11 @@ using MoH_Microservice.Data;
 namespace MoH_Microservice.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250318124517_payment_db2")]
+    partial class payment_db2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,7 +155,7 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "e0fcc3da-737c-49ac-a8cd-ba18b049c696",
+                            UserId = "b8a9ea6d-ce3a-4a3f-9ce7-c8ca0763aa3f",
                             RoleId = "1"
                         });
                 });
@@ -251,19 +254,19 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e0fcc3da-737c-49ac-a8cd-ba18b049c696",
+                            Id = "b8a9ea6d-ce3a-4a3f-9ce7-c8ca0763aa3f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6c6311d8-decd-45f6-9efd-37349e6dd304",
+                            ConcurrencyStamp = "47ff66a7-1362-463d-8d39-0a85725b300a",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA/YuJ/BODk4CbTZvCbPuj8GVkw4pr4vt6YBvqnJV1XkulhQMzEsgayr35ANO1xKUQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJkgxAYXYcnjotpME8izVFRj/zBP5SK/4MdVultbuTBDZUhWk8byDdS/ZAlsF/4n6g==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "ec6429eb-b215-4ba2-9c9c-fd0cd967a831",
+                            SecurityStamp = "4498dacc-d2a5-46b3-9367-1171d4a7cbcc",
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
@@ -312,9 +315,6 @@ namespace MoH_Microservice.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("IsCollected")
-                        .HasColumnType("int");
 
                     b.Property<string>("PatientLoaction")
                         .IsRequired()
@@ -375,9 +375,9 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<string>("CreatedOn")
                         .IsRequired()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -389,28 +389,28 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             Channel = "In Person",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(504)
+                            CreatedOn = "3/18/2025 9:45:16 AM"
                         },
                         new
                         {
                             Id = 2,
                             Channel = "TeleBirr",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(506)
+                            CreatedOn = "3/18/2025 9:45:16 AM"
                         },
                         new
                         {
                             Id = 3,
                             Channel = "Mobile Banking",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(507)
+                            CreatedOn = "3/18/2025 9:45:16 AM"
                         },
                         new
                         {
                             Id = 4,
                             Channel = "Other",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(509)
+                            CreatedOn = "3/18/2025 9:45:16 AM"
                         });
                 });
 
@@ -427,9 +427,9 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<string>("CreatedOn")
                         .IsRequired()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
@@ -445,28 +445,28 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(480),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             Purpose = "Card"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(482),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             Purpose = "Medicine / Drug"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(484),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             Purpose = "Labratory"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(485),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             Purpose = "X-RAY"
                         });
                 });
@@ -484,9 +484,9 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("CreatedOn")
+                    b.Property<string>("CreatedOn")
                         .IsRequired()
-                        .HasColumnType("datetime2");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("type")
                         .IsRequired()
@@ -502,35 +502,35 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(442),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             type = "CASH"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(443),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             type = "Community-Based Health Insurance (CBHI)"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(445),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             type = "Credit"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(446),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(447),
+                            CreatedOn = "3/18/2025 9:45:16 AM",
                             type = "Digital"
                         });
                 });

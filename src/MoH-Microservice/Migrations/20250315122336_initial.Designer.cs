@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoH_Microservice.Data;
 
@@ -11,13 +12,15 @@ using MoH_Microservice.Data;
 namespace MoH_Microservice.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250315122336_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.14")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -88,6 +91,90 @@ namespace MoH_Microservice.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "96bc6316-458f-4b25-96bc-ed2afff44676",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "13ea7c2b-ed76-4fad-ba54-19ab20f6b00a",
+                            Email = "dereje.hmariam@tsedeybank.com.et",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
+                            NormalizedUserName = "DEREJEH",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB/t1CL9BRgBwmx6HhSsCfKVoT8m+mUv9yXN0j36Z8Obm2LYUGz2kuej0rasCTWeRw==",
+                            PhoneNumber = "+251912657147",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "b2c7fb91-fe9f-4cf9-a429-c39dd2db7c11",
+                            TwoFactorEnabled = false,
+                            UserName = "DerejeH"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -152,7 +239,7 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "e0fcc3da-737c-49ac-a8cd-ba18b049c696",
+                            UserId = "96bc6316-458f-4b25-96bc-ed2afff44676",
                             RoleId = "1"
                         });
                 });
@@ -176,110 +263,17 @@ namespace MoH_Microservice.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MoH_Microservice.Models.AppUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Departement")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "e0fcc3da-737c-49ac-a8cd-ba18b049c696",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "6c6311d8-decd-45f6-9efd-37349e6dd304",
-                            Departement = "Tsedey Bank",
-                            Email = "dereje.hmariam@tsedeybank.com.et",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
-                            NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA/YuJ/BODk4CbTZvCbPuj8GVkw4pr4vt6YBvqnJV1XkulhQMzEsgayr35ANO1xKUQ==",
-                            PhoneNumber = "+251912657147",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "ec6429eb-b215-4ba2-9c9c-fd0cd967a831",
-                            TwoFactorEnabled = false,
-                            UserName = "DerejeH",
-                            UserType = "Admin"
-                        });
-                });
-
             modelBuilder.Entity("MoH_Microservice.Models.Payment", b =>
                 {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<string>("RefNo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    b.Property<string>("Createdby")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal?>("Amount")
-                        .IsRequired()
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CardNumber")
@@ -292,29 +286,19 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Createdby")
+                    b.Property<string>("CreatedOn")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("HospitalName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("IsCollected")
-                        .HasColumnType("int");
 
                     b.Property<string>("PatientLoaction")
                         .IsRequired()
@@ -336,23 +320,16 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("RefNo")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("id");
+                    b.HasKey("RefNo", "Createdby");
 
                     b.HasIndex("Createdby");
 
                     b.HasIndex("RefNo");
-
-                    b.HasIndex("RefNo", "Createdby");
 
                     b.ToTable("Payments");
                 });
@@ -370,15 +347,6 @@ namespace MoH_Microservice.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.ToTable("PaymentChannels");
@@ -387,30 +355,22 @@ namespace MoH_Microservice.Migrations
                         new
                         {
                             Id = 1,
-                            Channel = "In Person",
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(504)
+                            Channel = "In Person"
                         },
                         new
                         {
                             Id = 2,
-                            Channel = "TeleBirr",
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(506)
+                            Channel = "TeleBirr"
                         },
                         new
                         {
                             Id = 3,
-                            Channel = "Mobile Banking",
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(507)
+                            Channel = "Mobile Banking"
                         },
                         new
                         {
                             Id = 4,
-                            Channel = "Other",
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(509)
+                            Channel = "Other"
                         });
                 });
 
@@ -421,15 +381,6 @@ namespace MoH_Microservice.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
@@ -444,29 +395,21 @@ namespace MoH_Microservice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(480),
                             Purpose = "Card"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(482),
                             Purpose = "Medicine / Drug"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(484),
                             Purpose = "Labratory"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(485),
                             Purpose = "X-RAY"
                         });
                 });
@@ -478,15 +421,6 @@ namespace MoH_Microservice.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("type")
                         .IsRequired()
@@ -501,36 +435,26 @@ namespace MoH_Microservice.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(442),
                             type = "CASH"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(443),
                             type = "Community-Based Health Insurance (CBHI)"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(445),
                             type = "Credit"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(446),
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 18, 9, 54, 26, 599, DateTimeKind.Local).AddTicks(447),
                             type = "Digital"
                         });
                 });
@@ -546,7 +470,7 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("MoH_Microservice.Models.AppUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -555,7 +479,7 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("MoH_Microservice.Models.AppUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -570,7 +494,7 @@ namespace MoH_Microservice.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MoH_Microservice.Models.AppUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -579,7 +503,7 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("MoH_Microservice.Models.AppUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
