@@ -35,7 +35,7 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { message = "User already exists" });
             }
 
-            var user=new AppUser { UserName = model.Username ,Email=model.Email,PhoneNumber=model.PhoneNumber , UserType = model.UserType, Departement = model.Departement }; 
+            var user=new AppUser { UserName = model.Username ,Email=model.Email,PhoneNumber=model.PhoneNumber , UserType = model.UserType, Departement = model.Departement,Hospital=model.Hospital }; 
             var result=await _userManager.CreateAsync(user,model.Password);
 
             if (result.Succeeded)
@@ -62,6 +62,7 @@ namespace MoH_Microservice.Controllers
                     //new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                     new Claim("UserType", user.UserType!),
                     new Claim("Departement", user.Departement!),
+                    new Claim("Hospital", user.Hospital!),
                     new Claim("userId", user.Id!),
 
                 };
