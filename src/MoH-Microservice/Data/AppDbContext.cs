@@ -11,9 +11,11 @@ namespace MoH_Microservice.Data
         {
         }
         public DbSet<Payment> Payments { get; set; }
+        //public DbSet<Payment> PaymentsHistory { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<PaymentChannel> PaymentChannels { get; set; }
         public DbSet<PaymentPurpose> PaymentPurposes { get; set; }
+        public DbSet<PCollections> PaymentCollections { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -42,9 +44,39 @@ namespace MoH_Microservice.Data
                 LockoutEnabled = false,
             };
 
+            var TestUser1 = new AppUser
+            {
+                UserName = "test1",
+                NormalizedUserName = "TEST1",
+                Email = "dereje.hmariam@tsedeybank.com.et",
+                NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
+                PhoneNumber = "+251912657147",
+                EmailConfirmed = true,
+                UserType = "Casher",
+                Departement = "Tsedey Bank",
+                PhoneNumberConfirmed = true,
+                LockoutEnabled = false,
+            };
+            var TestUser2 = new AppUser
+            {
+                UserName = "test2",
+                NormalizedUserName = "TEST2",
+                Email = "dereje.hmariam@tsedeybank.com.et",
+                NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
+                PhoneNumber = "+251912657147",
+                EmailConfirmed = true,
+                UserType = "Cashier",
+                Departement = "Tsedey Bank",
+                PhoneNumberConfirmed = true,
+                LockoutEnabled = false,
+            };
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "Dereje@Tsedeybank");
+            TestUser1.PasswordHash = hasher.HashPassword(TestUser1, "1525@Bfb");
+            TestUser2.PasswordHash = hasher.HashPassword(TestUser2, "1525@Bfb");
 
             builder.Entity<AppUser>().HasData(adminUser);
+            builder.Entity<AppUser>().HasData(TestUser1);
+            builder.Entity<AppUser>().HasData(TestUser2);
 
             //Assign Role To Admin
             builder.Entity<IdentityUserRole<string>>().HasData(
@@ -54,10 +86,25 @@ namespace MoH_Microservice.Data
                     UserId = adminUser.Id
                 }
                 );
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "2",
+                    UserId = TestUser1.Id
+                }
+                );
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "2",
+                    UserId = TestUser2.Id
+                }
+                );
 
             builder.Entity<Payment>().HasIndex("RefNo", "Createdby").IsUnique(false);
             builder.Entity<Payment>().HasIndex("RefNo").IsUnique(false);
             builder.Entity<Payment>().HasIndex("Createdby").IsUnique(false);
+            builder.Entity<PCollections>().HasKey("CollectionId");
 
             builder.Entity<PaymentType>().HasData(
                 new PaymentType { Id = 1, type = "CASH", CreatedBy = "Admin", CreatedOn = DateTime.Now}

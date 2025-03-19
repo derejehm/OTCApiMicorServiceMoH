@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
-using MoH_Microservice.Migrations;
+//using MoH_Microservice.Migrations;
 using MoH_Microservice.Models;
 using NuGet.Protocol;
 using NuGet.Versioning;

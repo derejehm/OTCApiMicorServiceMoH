@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
-using MoH_Microservice.Migrations;
+//using MoH_Microservice.Migrations;
 using MoH_Microservice.Models;
 using NuGet.Protocol;
 using NuGet.Versioning;
 using System.Linq;
+using System.Security.Claims;
 
 namespace MoH_Microservice.Controllers
 {
@@ -105,7 +106,7 @@ namespace MoH_Microservice.Controllers
        // [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
         {
-            if (payment.UserType.ToLower() != "casher")
+            if (payment.UserType.ToLower() != "cashier")
                 return Unauthorized("You are unautorized to perform payment registration!");
 
             var user = await this._userManager.FindByNameAsync(payment.Createdby);
@@ -139,12 +140,16 @@ namespace MoH_Microservice.Controllers
                     await this._payment.AddAsync<Payment>(data);
                     await this._payment.SaveChangesAsync();
                 }
-                return Created("/", new { Recored = $"{payment.Amount.Count()} records added!"});
+                return Created("/",new
+                {
+                    RefNo=RefNo,
+                    PaymentInfo=payment
+                });
             }
             catch (Exception ex)
             {
                 // Error [Pay0000] = "Insert Failed"
-                return NotFound($"Error [Pay0000] Insert Failed");
+                return BadRequest($"Error [Pay0000] Insert Failed ");
             }
                        
            
