@@ -61,7 +61,7 @@ namespace MoH_Microservice.Models
 
         [MaxLength(200)]
         [Required(ErrorMessage = "UserName Is required / ሂሳብ ያዥ ስም !")]
-        public string? Createdby { get; set; }
+        public required string Createdby { get; set; }
 
         [DefaultValue(0)]
         public int? IsCollected { get; set; } = 0;

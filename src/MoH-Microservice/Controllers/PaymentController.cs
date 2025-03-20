@@ -31,6 +31,22 @@ namespace MoH_Microservice.Controllers
             this._payment = payment;
         }
 
+        [HttpPut("Get-all-Payment")]
+        public async Task<IActionResult> GetPaymentByDate([FromBody] PaymentbyDate payment)
+        {
+            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
+            //var usersHttp = HttpContext.GetTokenAsync
+            if (user == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date && x.Createdby == user.UserName).ToArrayAsync();
+
+            if (PymentInfo.Length <= 0)
+                return NoContent();
+
+            return Ok(new JsonResult(PymentInfo).Value);
+        }
+
         [HttpPut("payment-by-refno")]
         public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment)
         {
