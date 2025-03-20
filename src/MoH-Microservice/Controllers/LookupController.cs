@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
-using NuGet.Protocol;
-using NuGet.Versioning;
-using System.Linq;
 
 namespace MoH_Microservice.Controllers
 {

@@ -101,15 +101,37 @@ namespace MoH_Microservice.Models
         public string? type { get; set; }
         public string? CreatedBy { get; set; }
     }
+
+    public class PaymentTypeUpdate
+    {
+        public int id { get; set; }
+        public string? type { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime UpdatedOn { get; set; } = DateTime.Now;
+    }
     public class PaymentChannelReg
     {
         public string? Channel { get; set; }
         public string? CreatedBy { get; set; }
     }
+    public class PaymentChannelUpdate
+    {
+        public int id { get; set; }
+        public string? Channel { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime UpdatedOn { get; set; }=DateTime.Now;
+    }
     public class PaymentPurposeReg
     {
         public string? Purpose { get; set; }
         public string? CreatedBy { get; set; }
+    }
+    public class PaymentPurposeUpdate
+    {
+        public int id { get; set; }
+        public string? Purpose { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
 
     public class PaymentCollection
