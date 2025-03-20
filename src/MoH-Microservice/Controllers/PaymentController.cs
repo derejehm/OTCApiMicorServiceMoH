@@ -39,7 +39,20 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-            var PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date && x.Createdby == user.UserName).ToArrayAsync();
+
+            Payment[] PymentInfo = [] ;
+            if (user.UserType != "Supervisor")
+            {
+                PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date && x.Createdby == user.UserName).ToArrayAsync();
+
+            }
+            else
+            {
+                PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date).ToArrayAsync();
+
+            }
+
+
 
             if (PymentInfo.Length <= 0)
                 return NoContent();
