@@ -11,6 +11,19 @@ namespace MoH_Microservice.Models
         public string? user { get; set; }
     }
 
+    public class PaymentbyDate
+    {
+        [Required(ErrorMessage = "StartDate is required!")]
+        public DateTime? startDate { get; set; }
+
+        [Required(ErrorMessage = "EndDate is required!")]
+        public DateTime? endDate { get; set; }
+        [Required(ErrorMessage = "User Filed is required!")]
+        public string? user { get; set; }
+    }
+
+
+
     public class PaymentDetailByCardNo
     {
         [Required(ErrorMessage ="Patient Card Number is Required")]
