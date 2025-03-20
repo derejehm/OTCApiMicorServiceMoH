@@ -139,7 +139,7 @@ namespace MoH_Microservice.Controllers
                     await this._payment.AddAsync<Payment>(data);
                     await this._payment.SaveChangesAsync();
                 }
-                return Created("/", new { Recored = $"{payment.Amount.Count()} records added!"});
+                return Created("/", new { RefNo = RefNo, data = payment });
             }
             catch (Exception ex)
             {
@@ -159,7 +159,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             try
             {
-                var Patient = new Patient
+                Patient Patient = new Patient
                 {
                     PatientCardNumber = patient.PatientCardNumber,
                     PatientAge = patient.PatientAge,
@@ -167,7 +167,7 @@ namespace MoH_Microservice.Controllers
                     PatientGender = patient.PatientGender,
                     PatientName = patient.PatientName
                 };
-                await this._payment.AddAsync(Patient);
+                await this._payment.AddAsync<Patient>(Patient);
                 await this._payment.SaveChangesAsync();
                 
                 return Created("/",patient);
