@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MoH_Microservice.Models
@@ -35,7 +36,7 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [AllowNull]
-        public string PaymentVerifingID { get; set; } = string.Empty; // If the payment is done using Other that cash method eg. telebirr to bank account
+        public string PaymentVerifingID { get; set; } = string.Empty; // If the payment is done using Other than cash method eg. telebirr to bank account
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
@@ -45,11 +46,11 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
-        public string PatientWorkingPlace { get; set; } = string.Empty; // Address such as woreda
+        public string PatientWorkingPlace { get; set; } = string.Empty; // WorkPlace such as MOH
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
-        public string Purpose { get; set; } = string.Empty; // CARD, CBHI, MEDICEN, LAB
+        public string Purpose { get; set; } = string.Empty; // CARD, CBHI, MEDICEN, LAB [ Could be as services provided by the hospital] 
         
         [Required(ErrorMessage = "Payment Amount is required / የክፍያ መጠን ያስፈልጋል !")]
         [DataType(DataType.Currency)]
@@ -64,6 +65,7 @@ namespace MoH_Microservice.Models
 
         [DefaultValue(0)]
         public int? IsCollected { get; set; } = 0;
+        public int CollectionID { get; set; } // forign key from collection
 
         [DataType(DataType.Date)]
         public DateTime? CreatedOn { get; set;}= DateTime.Now;
@@ -80,10 +82,12 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
-
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
+        
     }
 
     public class PaymentPurpose
@@ -97,7 +101,8 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
-
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
@@ -113,6 +118,8 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]

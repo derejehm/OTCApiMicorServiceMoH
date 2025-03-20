@@ -9,6 +9,7 @@ using MoH_Microservice.Models;
 using NuGet.Protocol;
 using NuGet.Versioning;
 using System.Linq;
+using System.Security.Claims;
 
 namespace MoH_Microservice.Controllers
 {
@@ -104,7 +105,7 @@ namespace MoH_Microservice.Controllers
        // [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
         {
-            if (payment.UserType.ToLower() != "casher")
+            if (payment.UserType.ToLower() != "cashier")
                 return Unauthorized("You are unautorized to perform payment registration!");
 
             var user = await this._userManager.FindByNameAsync(payment.Createdby);
@@ -143,10 +144,38 @@ namespace MoH_Microservice.Controllers
             catch (Exception ex)
             {
                 // Error [Pay0000] = "Insert Failed"
-                return NotFound($"Error [Pay0000] Insert Failed");
+                return BadRequest($"Error [Pay0000] Insert Failed Reason: {ex}");
             }
                        
            
+        }
+
+        [HttpPost("add-patient-info")]
+
+        public async Task<IActionResult> addGetPatientInfo([FromBody] PatientReg patient)
+        {
+            var user = await this._userManager.FindByNameAsync(patient.CreatedBy);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                var Patient = new Patient
+                {
+                    PatientCardNumber = patient.PatientCardNumber,
+                    PatientAge = patient.PatientAge,
+                    PatientAddress = patient.PatientAddress,
+                    PatientGender = patient.PatientGender,
+                    PatientName = patient.PatientName
+                };
+                await this._payment.AddAsync(Patient);
+                await this._payment.SaveChangesAsync();
+                
+                return Created("/",patient);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
+            }
         }
 
       private class BankLinkList
