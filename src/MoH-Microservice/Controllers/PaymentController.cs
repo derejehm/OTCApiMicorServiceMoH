@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
-//using MoH_Microservice.Migrations;
 using MoH_Microservice.Models;
 using NuGet.Protocol;
 using NuGet.Versioning;
@@ -140,19 +139,43 @@ namespace MoH_Microservice.Controllers
                     await this._payment.AddAsync<Payment>(data);
                     await this._payment.SaveChangesAsync();
                 }
-                return Created("/",new
-                {
-                    RefNo=RefNo,
-                    PaymentInfo=payment
-                });
+                return Created("/", new { Recored = $"{payment.Amount.Count()} records added!"});
             }
             catch (Exception ex)
             {
                 // Error [Pay0000] = "Insert Failed"
-                return BadRequest($"Error [Pay0000] Insert Failed ");
+                return BadRequest($"Error [Pay0000] Insert Failed Reason: {ex}");
             }
                        
            
+        }
+
+        [HttpPost("add-patient-info")]
+
+        public async Task<IActionResult> addGetPatientInfo([FromBody] PatientReg patient)
+        {
+            var user = await this._userManager.FindByNameAsync(patient.CreatedBy);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                var Patient = new Patient
+                {
+                    PatientCardNumber = patient.PatientCardNumber,
+                    PatientAge = patient.PatientAge,
+                    PatientAddress = patient.PatientAddress,
+                    PatientGender = patient.PatientGender,
+                    PatientName = patient.PatientName
+                };
+                await this._payment.AddAsync(Patient);
+                await this._payment.SaveChangesAsync();
+                
+                return Created("/",patient);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
+            }
         }
 
       private class BankLinkList

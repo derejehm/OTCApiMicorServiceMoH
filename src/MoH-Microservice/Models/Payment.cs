@@ -7,7 +7,7 @@ namespace MoH_Microservice.Models
 {
     public class Payment
     {
-        public long id {  get; set; }
+        public int id {  get; set; }
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment RefNo Is required / የክፍያ መለዮ ቁጥር ያስፈልጋል !")]
@@ -65,7 +65,6 @@ namespace MoH_Microservice.Models
 
         [DefaultValue(0)]
         public int? IsCollected { get; set; } = 0;
-
         public int CollectionID { get; set; } // forign key from collection
 
         [DataType(DataType.Date)]
@@ -83,10 +82,12 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
-
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
+        
     }
 
     public class PaymentPurpose
@@ -100,7 +101,8 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
-
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
@@ -116,6 +118,8 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedOn { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]

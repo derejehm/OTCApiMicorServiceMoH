@@ -152,17 +152,17 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "31751234-da8b-440e-8941-f110e81eeffd",
+                            UserId = "a54ec55a-0344-4847-9908-77da31238568",
                             RoleId = "1"
                         },
                         new
                         {
-                            UserId = "27f7b241-7398-4963-a6e9-bd54c1c3b96d",
+                            UserId = "8936219a-14e4-42c8-82bd-4d0293bc3e8c",
                             RoleId = "2"
                         },
                         new
                         {
-                            UserId = "44aa3b76-4157-4126-a047-44bc3a23d0ab",
+                            UserId = "d8555f57-f981-42de-ac49-fe09fb9b9995",
                             RoleId = "2"
                         });
                 });
@@ -208,6 +208,10 @@ namespace MoH_Microservice.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Hospital")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -261,57 +265,60 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "31751234-da8b-440e-8941-f110e81eeffd",
+                            Id = "a54ec55a-0344-4847-9908-77da31238568",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5303e8e0-7f8c-4204-8543-8acd9304c12b",
+                            ConcurrencyStamp = "93f6d0b3-3804-45b8-9190-82aa8f88bd3c",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
+                            Hospital = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIy8CibDFKIA3oHr+quzuUKfUwvy37whgC17Ynxc2GbGzR1BsC5y4Of3K4TYCuWGUg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELvwjAMKZ4dQRtAuNj0wezMvVlmnBpJR8lEiwqoR9Uzb+ZzF5tkoeEI7ulsayy932g==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "371a1895-5d4e-47fa-9d3c-132301f14061",
+                            SecurityStamp = "6cb70cc3-7b08-40fe-ae7a-7fb0862fb5de",
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
                         },
                         new
                         {
-                            Id = "27f7b241-7398-4963-a6e9-bd54c1c3b96d",
+                            Id = "8936219a-14e4-42c8-82bd-4d0293bc3e8c",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "261ae41b-5c93-470d-8937-37be83933961",
+                            ConcurrencyStamp = "04a83112-281f-45d8-8474-3af7e72c1745",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
+                            Hospital = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "TEST1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOLpX3Ly/2gkzAObAsJ5I538mXRv+YpRluGE3UwTI5UWWg5HMW6nOoIZPUvmSkArrg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMoJKmdV/ddHF252dIwB6WxcQ0ybLpGpO7eGmmkbwNU+PaOIulWRjqYg9KgndcsItw==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "87084d6a-db97-48b3-af55-f07141f8df05",
+                            SecurityStamp = "acf3c861-5852-43d7-9763-2d1b153c6177",
                             TwoFactorEnabled = false,
                             UserName = "test1",
                             UserType = "Casher"
                         },
                         new
                         {
-                            Id = "44aa3b76-4157-4126-a047-44bc3a23d0ab",
+                            Id = "d8555f57-f981-42de-ac49-fe09fb9b9995",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1296d6a7-66ab-428b-85e0-3e686de4dc0b",
+                            ConcurrencyStamp = "2d074966-dd11-427a-ae97-d91f0a12c375",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
+                            Hospital = "",
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "TEST2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIqf8N3Li54paKFUdsJZ/iGd0cQKdxDRNpVSHesMac5AQGf5M5ai45m5R/jLX2mIsw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECoa0O4V2yR7fDo7oHkme0YKGb59Ug5F/muj+PDOG/KnBubJI8JZOvr6orCFEUeMJQ==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "7e2ebfb9-42a1-4770-aa97-7786aa801ce1",
+                            SecurityStamp = "72d4352b-ab3a-487f-9107-dc100cec5818",
                             TwoFactorEnabled = false,
                             UserName = "test2",
                             UserType = "Cashier"
@@ -466,28 +473,28 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             Channel = "In Person",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7867)
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9747)
                         },
                         new
                         {
                             Id = 2,
                             Channel = "TeleBirr",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7869)
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9749)
                         },
                         new
                         {
                             Id = 3,
                             Channel = "Mobile Banking",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7870)
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9751)
                         },
                         new
                         {
                             Id = 4,
                             Channel = "Other",
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7871)
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9752)
                         });
                 });
 
@@ -522,28 +529,28 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7844),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9721),
                             Purpose = "Card"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7845),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9723),
                             Purpose = "Medicine / Drug"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7847),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9724),
                             Purpose = "Labratory"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7848),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9725),
                             Purpose = "X-RAY"
                         });
                 });
@@ -579,35 +586,35 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7807),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9677),
                             type = "CASH"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7809),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9679),
                             type = "Community-Based Health Insurance (CBHI)"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7810),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9681),
                             type = "Credit"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7811),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9682),
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "Admin",
-                            CreatedOn = new DateTime(2025, 3, 19, 8, 55, 43, 445, DateTimeKind.Local).AddTicks(7813),
+                            CreatedOn = new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9683),
                             type = "Digital"
                         });
                 });

@@ -39,6 +39,7 @@ namespace MoH_Microservice.Controllers
                     PhoneNumber = user.PhoneNumber,
                     Departement=user.Departement,
                     UserType=user.UserType,
+                    Hospital=user.Hospital,
                     Roles = roles
                 });
             }
@@ -58,7 +59,7 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { message = "User already exists" });
             }
 
-            var user = new AppUser { UserName = model.Username, Email = model.Email, PhoneNumber = model.PhoneNumber,Departement=model.Departement,UserType=model.UserType};
+            var user = new AppUser { UserName = model.Username, Email = model.Email, PhoneNumber = model.PhoneNumber,Departement=model.Departement,UserType=model.UserType,Hospital=model.Hospital};
             var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

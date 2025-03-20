@@ -8,5 +8,6 @@ namespace MoH_Microservice.Models
 
         public  string UserType { get; set; } = string.Empty;
         public string Departement { get; set; } = string.Empty;
+        public string Hospital { get; set; } = string.Empty;
     }
 }
