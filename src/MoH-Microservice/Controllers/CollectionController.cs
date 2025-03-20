@@ -31,6 +31,7 @@ namespace MoH_Microservice.Controllers
             var user = await this._userManager.FindByNameAsync(collectionReg.Casher);
             if (user == null)
                 return NotFound("User not found");
+
             var Query = this._collection.Set<Payment>()
                             .Where(e =>
                                    e.Createdby == collectionReg.Casher &&
@@ -70,9 +71,34 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
             var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).ToArrayAsync();
-            
-            if (collectionList.Count() <=0) return NoContent();   
-            
+
+            if (collectionList.Count() <= 0) return NoContent();
+
+            return Ok(collectionList);
+        }
+
+        [HttpGet("uncollected/{username}")]
+
+        public async Task<IActionResult> ListOfUncollected([FromRoute] string username)
+        {
+            var user = await this._userManager.FindByNameAsync(username);
+            if (user == null)
+                return NotFound("User not found");
+            var collectionList = await this._collection.Set<Payment>()
+                                 .Where(col => col.Createdby == username && 
+                                               col.IsCollected!=1 && 
+                                               col.Type.ToLower()=="cash")
+                                 .GroupBy(e=>new { e.Createdby, e.IsCollected})
+                                 .Select(e => new {
+                                     
+                                     Cashier=e.Key.Createdby,
+                                     IsCollected=e.Key.IsCollected,
+                                     UncollectedCashAmount =""
+                                 })
+                                 .ToArrayAsync();
+
+            if (collectionList.Count() <= 0) return NoContent();
+
             return Ok(collectionList);
         }
 
