@@ -90,10 +90,11 @@ namespace MoH_Microservice.Controllers
                                                col.Type.ToLower()=="cash")
                                  .GroupBy(e=>new { e.Createdby, e.IsCollected})
                                  .Select(e => new {
-                                     
                                      Cashier=e.Key.Createdby,
                                      IsCollected=e.Key.IsCollected,
-                                     UncollectedCashAmount =""
+                                     UncollectedCashAmount =e.Sum(e=>e.Amount),
+                                     FromDate= e.Min(e=>e.CreatedOn),
+                                     ToDate= e.Max(e=>e.CreatedOn)
                                  })
                                  .ToArrayAsync();
 

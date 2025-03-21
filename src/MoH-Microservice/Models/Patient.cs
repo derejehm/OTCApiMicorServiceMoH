@@ -44,4 +44,13 @@ namespace MoH_Microservice.Models
         public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
+
+    public class PatientView
+    {
+
+        public string? PatientCardNumber { get; set; }
+        public string? Hospital {  get; set; }
+        public string? Cashier { get; set; }
+ 
+    }
 }

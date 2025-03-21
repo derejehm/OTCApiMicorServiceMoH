@@ -134,12 +134,12 @@ namespace MoH_Microservice.Controllers
        // [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
         {
-            if (payment.UserType.ToLower() != "cashier")
-                return Unauthorized("You are unautorized to perform payment registration!");
-
             var user = await this._userManager.FindByNameAsync(payment.Createdby);
             if (user == null)
                 return NotFound("User not found");
+
+            if (user.UserType.ToLower() != "cashier")
+                return Unauthorized("You are unautorized to perform payment registration!");
 
             var RefNo = $"TS_{payment.Hospital.Trim().Substring(0, 2).ToUpper()}-{payment.PaymentType}{DateTime.Now.Microsecond + new Random().Next()}";
             
@@ -210,8 +210,23 @@ namespace MoH_Microservice.Controllers
                 return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
             }
         }
+        [HttpPut("patient-info")]
 
-      private class BankLinkList
+        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient)
+        {
+            var user = await this._userManager.FindByNameAsync(patient.Cashier);
+            if (user == null)
+                return NotFound("User not found");
+
+            var patientInfo = await this._payment.Set<Patient>().Where(e => e.PatientCardNumber == patient.PatientCardNumber)
+                             .ToArrayAsync(); // add Hospital name later
+            if (patientInfo == null)
+                return NotFound("There is not patient with this card no.");
+
+            return Ok(patientInfo);
+        }
+           
+        private class BankLinkList
         {
             
             public string? Institution { get; set; }
