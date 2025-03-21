@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class addinitialwithcustomfileds : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,6 +56,27 @@ namespace MoH_Microservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Patients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PatientCardNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PatientName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PatientGender = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PatientAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PatientAge = table.Column<int>(type: "int", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Patients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PaymentChannels",
                 columns: table => new
                 {
@@ -63,6 +84,8 @@ namespace MoH_Microservice.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Channel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -79,7 +102,9 @@ namespace MoH_Microservice.Migrations
                     CollectedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CollectedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CollectedAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Casher = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    FromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Casher = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -94,6 +119,8 @@ namespace MoH_Microservice.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Purpose = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -105,7 +132,7 @@ namespace MoH_Microservice.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RefNo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -137,6 +164,8 @@ namespace MoH_Microservice.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -262,56 +291,46 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "Hospital", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[,]
-                {
-                    { "8936219a-14e4-42c8-82bd-4d0293bc3e8c", 0, "04a83112-281f-45d8-8474-3af7e72c1745", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "TEST1", "AQAAAAIAAYagAAAAEMoJKmdV/ddHF252dIwB6WxcQ0ybLpGpO7eGmmkbwNU+PaOIulWRjqYg9KgndcsItw==", "+251912657147", true, "acf3c861-5852-43d7-9763-2d1b153c6177", false, "test1", "Casher" },
-                    { "a54ec55a-0344-4847-9908-77da31238568", 0, "93f6d0b3-3804-45b8-9190-82aa8f88bd3c", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAELvwjAMKZ4dQRtAuNj0wezMvVlmnBpJR8lEiwqoR9Uzb+ZzF5tkoeEI7ulsayy932g==", "+251912657147", true, "6cb70cc3-7b08-40fe-ae7a-7fb0862fb5de", false, "DerejeH", "Admin" },
-                    { "d8555f57-f981-42de-ac49-fe09fb9b9995", 0, "2d074966-dd11-427a-ae97-d91f0a12c375", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "TEST2", "AQAAAAIAAYagAAAAECoa0O4V2yR7fDo7oHkme0YKGb59Ug5F/muj+PDOG/KnBubJI8JZOvr6orCFEUeMJQ==", "+251912657147", true, "72d4352b-ab3a-487f-9107-dc100cec5818", false, "test2", "Cashier" }
-                });
+                values: new object[] { "e8b7816a-c44a-497f-8da0-9d1228424146", 0, "3f85c3d1-d55e-4266-b5ca-f14d84bd444f", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEMeLXG7QGg+t4P16zFVxpubjtg9IuefGbp3mUwUiN4Lo1p90Kp3qpFF9Egq9V3NNBA==", "+251912657147", true, "5d097fa1-603c-47d5-a244-d99c2050a282", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "PaymentChannels",
-                columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn" },
+                columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "In Person", "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9747) },
-                    { 2, "TeleBirr", "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9749) },
-                    { 3, "Mobile Banking", "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9751) },
-                    { 4, "Other", "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9752) }
+                    { 1, "In Person", "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(2004), null, null },
+                    { 2, "TeleBirr", "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(2008), null, null },
+                    { 3, "Mobile Banking", "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(2010), null, null },
+                    { 4, "Other", "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(2012), null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "PaymentPurposes",
-                columns: new[] { "Id", "CreatedBy", "CreatedOn", "Purpose" },
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9721), "Card" },
-                    { 2, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9723), "Medicine / Drug" },
-                    { 3, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9724), "Labratory" },
-                    { 4, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9725), "X-RAY" }
+                    { 1, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1958), "Card", null, null },
+                    { 2, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1962), "Medicine/Drug", null, null },
+                    { 3, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1964), "Labratory", null, null },
+                    { 4, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1966), "X-RAY", null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "PaymentTypes",
-                columns: new[] { "Id", "CreatedBy", "CreatedOn", "type" },
+                columns: new[] { "Id", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn", "type" },
                 values: new object[,]
                 {
-                    { 1, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9677), "CASH" },
-                    { 2, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9679), "Community-Based Health Insurance (CBHI)" },
-                    { 3, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9681), "Credit" },
-                    { 4, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9682), "Free of Charge" },
-                    { 5, "Admin", new DateTime(2025, 3, 19, 9, 43, 19, 168, DateTimeKind.Local).AddTicks(9683), "Digital" }
+                    { 1, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1890), null, null, "CASH" },
+                    { 2, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1893), null, null, "(CBHI)" },
+                    { 3, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1895), null, null, "Credit" },
+                    { 4, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1898), null, null, "Free of Charge" },
+                    { 5, "SYS", new DateTime(2025, 3, 20, 16, 21, 39, 48, DateTimeKind.Local).AddTicks(1899), null, null, "Digital" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[,]
-                {
-                    { "2", "8936219a-14e4-42c8-82bd-4d0293bc3e8c" },
-                    { "1", "a54ec55a-0344-4847-9908-77da31238568" },
-                    { "2", "d8555f57-f981-42de-ac49-fe09fb9b9995" }
-                });
+                values: new object[] { "1", "e8b7816a-c44a-497f-8da0-9d1228424146" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -385,6 +404,9 @@ namespace MoH_Microservice.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "PaymentChannels");
