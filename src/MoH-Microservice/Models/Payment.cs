@@ -120,10 +120,10 @@ namespace MoH_Microservice.Models
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
-
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
     }
+
 
 }

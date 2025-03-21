@@ -140,6 +140,21 @@ namespace MoH_Microservice.Models
         public decimal? Amount { get; set; }
         
     }
+    public class PaymentTypeDelete
+    {
+        public int id { get; set; }
+        public string? deletedBy { get; set; }
+    }
+    public class PaymentChannelDelete
+    {
+        public int id { get; set; }
+        public string? deletedBy { get; set; }
+    }
+    public class PaymentPurposeDelete
+    {
+        public int id { get; set; }
+        public string? deletedBy { get; set; }
+    }
     public class PurposeAmountMap
     {
         //public string? refno { get; set; }

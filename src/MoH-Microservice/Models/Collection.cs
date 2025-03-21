@@ -4,6 +4,7 @@
     {
         public int CollectionId { get; set; }
         public string? CollectedBy { get; set; }
+        public string? CollecterID { get; set; }
         public DateTime CollectedOn { get; set; }
         public decimal CollectedAmount { get; set; }
         public DateTime FromDate { get; set; }
@@ -21,6 +22,7 @@
     public class CollectionReg
     {
         public string? CollectedBy { get; set; }
+        public string? CollecterID { get; set; }
         public DateTime CollectedOn { get; set; }=DateTime.Now.Date;
         public decimal CollectedAmount { get; set; }
         public DateTime FromDate { get; set; } = DateTime.Now.Date;

@@ -38,7 +38,7 @@ namespace MoH_Microservice.Controllers
                                    e.IsCollected != 1 &&
                                    e.Type.ToLower() == "cash" &&
                                    e.CreatedOn >= collectionReg.FromDate.Date &&
-                                   e.CreatedOn <= collectionReg.ToDate.Date)
+                                   e.CreatedOn <= collectionReg.ToDate.Date.AddDays(1))
                             .ExecuteUpdateAsync(update => update.SetProperty(item => item.IsCollected, 1)).Result;
 
             if (Query <= 0)
@@ -52,6 +52,7 @@ namespace MoH_Microservice.Controllers
                     ToDate = collectionReg.ToDate.Date,
                     Casher = collectionReg.Casher,
                     CollectedBy = collectionReg.CollectedBy,
+                    CollecterID = collectionReg.CollecterID,
                     CollectedOn = collectionReg.CollectedOn,
                     CollectedAmount = collectionReg.CollectedAmount
                 };
