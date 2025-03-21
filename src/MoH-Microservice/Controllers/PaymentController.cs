@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
-using NuGet.Protocol;
-using NuGet.Versioning;
-using System.Linq;
-using System.Security.Claims;
+
 
 namespace MoH_Microservice.Controllers
 {
@@ -198,7 +194,7 @@ namespace MoH_Microservice.Controllers
                     CreatedOn = DateTime.Now,
                     CreatedBy = patient.CreatedBy,
                     UpdatedBy="",
-                    UpdatedOn= null // change today
+                    UpdatedOn=null // change today
                 };
                 await this._payment.AddAsync<Patient>(Patient);
                 await this._payment.SaveChangesAsync();
