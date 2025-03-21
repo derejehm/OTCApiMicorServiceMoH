@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MoH_Microservice.Models
@@ -11,27 +12,29 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         public string PatientName { get; set; }
         [MaxLength(100)]
-        public string PatientGender { get; set; }
-        public string PatientAddress { get; set; }
+        public string? PatientGender { get; set; }
+        public string? PatientAddress { get; set; }
+        public string? PatientPhoneNumber{ get; set; }
         public int PatientAge { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         [AllowNull]
         public string? UpdatedBy { get; set; }
         [AllowNull]
+        [DefaultValue(null)]
         public DateTime? UpdatedOn { get; set; }
     }
 
     public class PatientReg
     {
-
         public string? PatientCardNumber { get; set; }
         public string? PatientName { get; set; }
         public string? PatientGender { get; set; }
+        public string? PatientPhoneNumber { get; set; }
         public string? PatientAddress { get; set; }
         public int PatientAge { get; set; }
         public string? CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+
     }
 
     public class PatientUpdate
@@ -51,6 +54,6 @@ namespace MoH_Microservice.Models
         public string? PatientCardNumber { get; set; }
         public string? Hospital {  get; set; }
         public string? Cashier { get; set; }
- 
+
     }
 }

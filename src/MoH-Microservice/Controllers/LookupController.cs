@@ -94,7 +94,7 @@ namespace MoH_Microservice.Controllers
             return Ok(new JsonResult(PymentInfo).Value);
         }
 
-        [HttpPost("add-paymentType")]
+        [HttpPost("payment-type")]
         // admin / supervisors
         public async Task<IActionResult> SetPaymentType([FromBody] PaymentTypeReg paymentType)
         {
@@ -121,7 +121,7 @@ namespace MoH_Microservice.Controllers
             return Created("/", new JsonResult(type).Value);
         }
 
-        [HttpPost("add-paymentChannel")]
+        [HttpPost("payment-channel")]
         // admin / supervisors
         public async Task<IActionResult> SetPaymentChannels([FromBody] PaymentChannelReg paymentChannel)
         {
@@ -149,7 +149,7 @@ namespace MoH_Microservice.Controllers
             return Created("/", new JsonResult(Channel).Value);
         }
 
-        [HttpPost("add-paymentPurpose")]
+        [HttpPost("payment-purpose")]
         // admin / supervisors
         public async Task<IActionResult> SetPaymentPurpose([FromBody] PaymentPurposeReg paymentPurpose)
         {
@@ -168,13 +168,116 @@ namespace MoH_Microservice.Controllers
                 CreatedBy = paymentPurpose.CreatedBy,
                 CreatedOn = DateTime.Now,
                 UpdatedOn = DateTime.Now,
-                UpdatedBy= "",
+                UpdatedBy = "",
             };
 
             await this._payment.AddAsync<PaymentPurpose>(purpose);
             await this._payment.SaveChangesAsync();
 
             return Created("/", new JsonResult(purpose).Value);
+        }
+        //Update
+
+        [HttpPut("payment-type")]
+        // admin / supervisors
+        public async Task<IActionResult> updatePaymentType([FromBody] PaymentTypeUpdate paymentType)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentType.UpdatedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentType>()
+                                  .Where<PaymentType>((type) => type.type == paymentType.type)
+                                  .ExecuteUpdateAsync(e => e.SetProperty(e => e.type, paymentType.type));
+
+            await this._payment.SaveChangesAsync();
+            return Created("/", new JsonResult(paymentType).Value);
+        }
+
+        [HttpPut("payment-channel")]
+        // admin / supervisors
+        public async Task<IActionResult> updatePaymentChannels([FromBody] PaymentChannelUpdate paymentChannel)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentChannel.UpdatedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentChannel>()
+                .Where<PaymentChannel>((type) => type.Channel == paymentChannel.Channel)
+                .ExecuteUpdateAsync(e => e.SetProperty(e => e.Channel, paymentChannel.Channel));
+
+            await this._payment.SaveChangesAsync();
+
+            return Created("/", new JsonResult(paymentChannel).Value);
+        }
+
+        [HttpPut("payment-purpose")]
+        // admin / supervisors
+        public async Task<IActionResult> updatePaymentPurpose([FromBody] PaymentPurposeUpdate paymentPurpose)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentPurpose.UpdatedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentPurpose>()
+                .Where<PaymentPurpose>((e) => e.Id == paymentPurpose.id)
+                .ExecuteUpdateAsync(e => e.SetProperty(e => e.Purpose, paymentPurpose.Purpose));
+
+            await this._payment.SaveChangesAsync();
+
+            return Ok($"Updated - payment purpose to {paymentPurpose.Purpose}");
+        }
+
+        // delete
+
+        [HttpDelete("payment-type")]
+        // admin / supervisors
+        public async Task<IActionResult> deletePaymentType([FromBody] PaymentTypeDelete paymentType)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentType.deletedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentType>()
+                                  .Where<PaymentType>((type) => type.Id == paymentType.id)
+                                  .ExecuteDeleteAsync();
+
+            await this._payment.SaveChangesAsync();
+            return Ok($"Deleted - payment type");
+        }
+
+        [HttpDelete("payment-channel")]
+        // admin / supervisors
+        public async Task<IActionResult> deletePaymentChannels([FromBody] PaymentChannelDelete paymentChannel)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentChannel.deletedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentChannel>()
+                .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
+                .ExecuteDeleteAsync();
+
+            await this._payment.SaveChangesAsync();
+
+            return Ok($"Deleted - payment Channel");
+        }
+
+        [HttpDelete("payment-purpose")]
+        // admin / supervisors
+        public async Task<IActionResult> deletePaymentPurpose([FromBody] PaymentPurposeDelete paymentPurpose)
+        {
+            var username = await this._userManager.FindByNameAsync(paymentPurpose.deletedBy); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this._payment.Set<PaymentPurpose>()
+                .Where<PaymentPurpose>((e) => e.Id == paymentPurpose.id)
+                .ExecuteDeleteAsync();
+
+            await this._payment.SaveChangesAsync();
+
+            return Ok($"Deleted - payment Purpose");
         }
 
         private class BankLinkList

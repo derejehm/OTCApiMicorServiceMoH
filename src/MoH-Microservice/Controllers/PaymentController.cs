@@ -191,10 +191,11 @@ namespace MoH_Microservice.Controllers
                     PatientAddress = patient.PatientAddress,
                     PatientGender = patient.PatientGender,
                     PatientName = patient.PatientName,
+                    PatientPhoneNumber=patient.PatientPhoneNumber,
                     CreatedOn = DateTime.Now,
                     CreatedBy = patient.CreatedBy,
                     UpdatedBy="",
-                    UpdatedOn=null // change today
+                    UpdatedOn= null // change today
                 };
                 await this._payment.AddAsync<Patient>(Patient);
                 await this._payment.SaveChangesAsync();
@@ -214,14 +215,16 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-            var patientInfo = await this._payment.Set<Patient>().Where(e => e.PatientCardNumber == patient.PatientCardNumber)
+            var patientInfo = await this._payment.Set<Patient>()
+                               .Where(e => e.PatientCardNumber == patient.PatientCardNumber)
                              .ToArrayAsync(); // add Hospital name later
             if (patientInfo == null)
-                return NotFound("There is not patient with this card no.");
+                return Ok("No patient with this card number!");
 
             return Ok(patientInfo);
         }
-           
+
+
         private class BankLinkList
         {
             
