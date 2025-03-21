@@ -110,7 +110,9 @@ namespace MoH_Microservice.Controllers
             {
                 type = paymentType.type,
                 CreatedBy = paymentType.CreatedBy,
-                CreatedOn = DateTime.Now
+                CreatedOn = DateTime.Now,
+                UpdatedOn = DateTime.Now,
+                UpdatedBy = "",
             };
 
             await this._payment.AddAsync<PaymentType>(type);
@@ -136,7 +138,9 @@ namespace MoH_Microservice.Controllers
             {
                 Channel = paymentChannel.Channel,
                 CreatedBy = paymentChannel.CreatedBy,
-                CreatedOn = DateTime.Now
+                CreatedOn = DateTime.Now,
+                UpdatedOn = DateTime.Now,
+                UpdatedBy = "",
             };
 
             await this._payment.AddAsync<PaymentChannel>(Channel);
@@ -162,7 +166,9 @@ namespace MoH_Microservice.Controllers
             {
                 Purpose = paymentPurpose.Purpose,
                 CreatedBy = paymentPurpose.CreatedBy,
-                CreatedOn = DateTime.Now
+                CreatedOn = DateTime.Now,
+                UpdatedOn = DateTime.Now,
+                UpdatedBy= "",
             };
 
             await this._payment.AddAsync<PaymentPurpose>(purpose);

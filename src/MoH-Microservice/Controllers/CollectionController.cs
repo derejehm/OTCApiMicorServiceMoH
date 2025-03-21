@@ -72,7 +72,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).ToArrayAsync();
 
-            if (collectionList.Count() <= 0) return NoContent();
+            if (collectionList.Count() <= 0) return NoContent(); // there is no collected cash
 
             return Ok(collectionList);
         }
@@ -90,10 +90,11 @@ namespace MoH_Microservice.Controllers
                                                col.Type.ToLower()=="cash")
                                  .GroupBy(e=>new { e.Createdby, e.IsCollected})
                                  .Select(e => new {
-                                     
                                      Cashier=e.Key.Createdby,
                                      IsCollected=e.Key.IsCollected,
-                                     UncollectedCashAmount =""
+                                     UncollectedCashAmount =e.Sum(e=>e.Amount),
+                                     FromDate= e.Min(e=>e.CreatedOn),
+                                     ToDate= e.Max(e=>e.CreatedOn)
                                  })
                                  .ToArrayAsync();
 

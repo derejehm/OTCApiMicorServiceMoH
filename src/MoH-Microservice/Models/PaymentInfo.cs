@@ -90,9 +90,6 @@ namespace MoH_Microservice.Models
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Channel is required !")]
         public string? PatientWorkingPlace { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
         public string? UserType { get; set; }
     }
 

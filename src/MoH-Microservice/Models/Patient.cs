@@ -14,25 +14,23 @@ namespace MoH_Microservice.Models
         public string PatientGender { get; set; }
         public string PatientAddress { get; set; }
         public int PatientAge { get; set; }
-        [AllowNull]
-        public string CreatedBy { get; set; }
-        [AllowNull]
+        public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         [AllowNull]
-        public string UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
         [AllowNull]
-        public DateTime UpdatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
     }
 
     public class PatientReg
     {
 
-        public string PatientCardNumber { get; set; }
-        public string PatientName { get; set; }
-        public string PatientGender { get; set; }
-        public string PatientAddress { get; set; }
+        public string? PatientCardNumber { get; set; }
+        public string? PatientName { get; set; }
+        public string? PatientGender { get; set; }
+        public string? PatientAddress { get; set; }
         public int PatientAge { get; set; }
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;
     }
 
@@ -45,5 +43,14 @@ namespace MoH_Microservice.Models
         public int PatientAge { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
+    }
+
+    public class PatientView
+    {
+
+        public string? PatientCardNumber { get; set; }
+        public string? Hospital {  get; set; }
+        public string? Cashier { get; set; }
+ 
     }
 }
