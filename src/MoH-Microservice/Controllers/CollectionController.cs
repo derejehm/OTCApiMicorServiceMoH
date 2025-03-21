@@ -72,7 +72,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).ToArrayAsync();
 
-            if (collectionList.Count() <= 0) return NoContent();
+            if (collectionList.Count() <= 0) return NoContent(); // there is no collected cash
 
             return Ok(collectionList);
         }

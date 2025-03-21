@@ -181,7 +181,11 @@ namespace MoH_Microservice.Controllers
                     PatientAge = patient.PatientAge,
                     PatientAddress = patient.PatientAddress,
                     PatientGender = patient.PatientGender,
-                    PatientName = patient.PatientName
+                    PatientName = patient.PatientName,
+                    CreatedOn = DateTime.Now,
+                    CreatedBy = patient.CreatedBy,
+                    UpdatedBy="",
+                    UpdatedOn= null // change today
                 };
                 await this._payment.AddAsync<Patient>(Patient);
                 await this._payment.SaveChangesAsync();
