@@ -243,6 +243,7 @@ namespace MoH_Microservice.Controllers
                     service = providers.service,
                     Createdby = providers.Cashier,
                     CreatedOn = DateTime.Now,
+                    ReferalNo = providers.ReferalNo,
                 };
                 await this._payment.AddAsync<ProvidersMapUsers>(provider);
                 await this._payment.SaveChangesAsync();
@@ -263,7 +264,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var patientInfo = await this._payment.Set<ProvidersMapUsers>()
-                              .Where(e => e.CardNumber == providers.cardnumber && e.provider==providers.provider)
+                              .Where(e => e.CardNumber == providers.cardnumber) // changed on 2025-22-03 req: breket
                             .ToArrayAsync();
 
             return Ok(patientInfo);
