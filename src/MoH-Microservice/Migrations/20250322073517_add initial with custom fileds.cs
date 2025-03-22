@@ -194,6 +194,28 @@ namespace MoH_Microservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProvidersMapPatient",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    provider = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    service = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CardNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Kebele = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Goth = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IDNo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    letterNo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Examination = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Createdby = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProvidersMapPatient", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -311,17 +333,17 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "Hospital", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { "55198d76-e532-4cfc-adff-43d10389c08d", 0, "6bea6b9a-8dde-49ab-b561-6d8364f4ecc0", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEAbjPLmictpXfaMszGfbJWJCYQj1/ICoSagb3sTktXXRbNWMoee2/A3WI6cwSG0/MQ==", "+251912657147", true, "5ddf632e-1cd1-45ae-9d85-c51f000066cf", false, "DerejeH", "Admin" });
+                values: new object[] { "d6f727f7-ae62-4afe-8f35-0982f8ed47e4", 0, "c7a9fd55-d972-4493-a1de-65ab95b64912", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEPJ77XlvL4atb3lJRw43ODjmGr5j1ncjYV3wGZbu5ikgR1ueKP8x+e+pXlNN179J3Q==", "+251912657147", true, "d731bbc5-1d31-42a5-a489-e6eb97a53713", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "PaymentChannels",
                 columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "In Person", "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4726), null, null },
-                    { 2, "TeleBirr", "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4729), null, null },
-                    { 3, "Mobile Banking", "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4732), null, null },
-                    { 4, "Other", "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4735), null, null }
+                    { 1, "In Person", "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3812), null, null },
+                    { 2, "TeleBirr", "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3815), null, null },
+                    { 3, "Mobile Banking", "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3817), null, null },
+                    { 4, "Other", "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3819), null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -329,10 +351,10 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4661), "Card", null, null },
-                    { 2, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4666), "Medicine/Drug", null, null },
-                    { 3, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4668), "Labratory", null, null },
-                    { 4, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4671), "X-RAY", null, null }
+                    { 1, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3756), "Card", null, null },
+                    { 2, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3759), "Medicine/Drug", null, null },
+                    { 3, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3761), "Labratory", null, null },
+                    { 4, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3763), "X-RAY", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -340,17 +362,17 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn", "type" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4561), null, null, "CASH" },
-                    { 2, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4565), null, null, "(CBHI)" },
-                    { 3, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4570), null, null, "Credit" },
-                    { 4, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4572), null, null, "Free of Charge" },
-                    { 5, "SYS", new DateTime(2025, 3, 21, 16, 17, 18, 119, DateTimeKind.Local).AddTicks(4574), null, null, "Digital" }
+                    { 1, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3627), null, null, "CASH" },
+                    { 2, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3630), null, null, "(CBHI)" },
+                    { 3, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3632), null, null, "Credit" },
+                    { 4, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3634), null, null, "Free of Charge" },
+                    { 5, "SYS", new DateTime(2025, 3, 22, 10, 35, 16, 506, DateTimeKind.Local).AddTicks(3636), null, null, "Digital" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "55198d76-e532-4cfc-adff-43d10389c08d" });
+                values: new object[] { "1", "d6f727f7-ae62-4afe-8f35-0982f8ed47e4" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -445,6 +467,9 @@ namespace MoH_Microservice.Migrations
 
             migrationBuilder.DropTable(
                 name: "Providers");
+
+            migrationBuilder.DropTable(
+                name: "ProvidersMapPatient");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
