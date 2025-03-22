@@ -31,7 +31,7 @@ namespace MoH_Microservice.Controllers
 
             var organiztion = await this._organiztion.Set<Organiztion>().ToArrayAsync();
 
-            return Ok(organiztion);
+            return Created("/",organiztion);
         }
         [HttpPost("Organization")]
         public async Task<IActionResult> AddOrganiztions([FromBody] OrganiztionReg organiztion)
