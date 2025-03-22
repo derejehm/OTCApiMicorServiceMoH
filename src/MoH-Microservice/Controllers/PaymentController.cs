@@ -263,7 +263,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var patientInfo = await this._payment.Set<ProvidersMapUsers>()
-                              .Where(e => e.CardNumber == providers.cardnumber && e.provider==providers.provider)
+                              .Where(e => e.CardNumber == providers.cardnumber) // changed on 2025-22-03 req: breket
                             .ToArrayAsync();
 
             return Ok(patientInfo);
