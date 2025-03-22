@@ -191,18 +191,18 @@ namespace MoH_Microservice.Controllers
                     PatientAddress = patient.PatientAddress,
                     PatientGender = patient.PatientGender,
                     PatientName = patient.PatientName,
-                    PatientPhoneNumber=patient.PatientPhoneNumber,
+                    PatientPhoneNumber = patient.PatientPhoneNumber,
                     CreatedOn = DateTime.Now,
                     CreatedBy = patient.CreatedBy,
-                    UpdatedBy="",
-                    UpdatedOn= null // change today
+                    UpdatedBy = "",
+                    UpdatedOn = null // change today
                 };
                 await this._payment.AddAsync<Patient>(Patient);
                 await this._payment.SaveChangesAsync();
-                
-                return Created("/",patient);
+
+                return Created("/", patient);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
             }
@@ -223,7 +223,51 @@ namespace MoH_Microservice.Controllers
 
             return Ok(patientInfo);
         }
+        [HttpPost("add-service-provider")]
+        public async Task<IActionResult> addGetProviderInfo([FromBody] ProvidersMapReg providers)
+        {
+            var user = await this._userManager.FindByNameAsync(providers.Cashier);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                ProvidersMapUsers provider = new ProvidersMapUsers
+                {
+                    CardNumber = providers.CardNumber,
+                    provider = providers.provider,
+                    Kebele = providers.Kebele,
+                    Goth = providers.Goth,
+                    IDNo = providers.IDNo,
+                    letterNo = providers.letterNo,
+                    Examination = providers.Examination,
+                    service = providers.service,
+                    Createdby = providers.Cashier,
+                    CreatedOn = DateTime.Now,
+                };
+                await this._payment.AddAsync<ProvidersMapUsers>(provider);
+                await this._payment.SaveChangesAsync();
 
+                return Created("/", provider);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: Insert Provider [ {providers.provider} ] to Patient [{providers.CardNumber}] Mapping failed! Reason: {ex.StackTrace}");
+            }
+        }
+
+        [HttpPut("get-service-provider")]
+        public async Task<IActionResult> GetProviderInfo([FromBody] ProvidersParam providers)
+        {
+            var user = await this._userManager.FindByNameAsync(providers.user);
+            if (user == null)
+                return NotFound("User not found");
+
+            var patientInfo = await this._payment.Set<ProvidersMapUsers>()
+                              .Where(e => e.CardNumber == providers.cardnumber && e.provider==providers.provider)
+                            .ToArrayAsync();
+
+            return Ok(patientInfo);
+        }
 
         private class BankLinkList
         {

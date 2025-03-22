@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
 
@@ -76,7 +77,7 @@ namespace MoH_Microservice.Controllers
             }
             
         }
-        [HttpDelete("add-provider")]
+        [HttpDelete("delete-provider")]
 
         public async Task<IActionResult> DeleteProviders([FromBody] ProvidersDelete providers)
         {
@@ -96,6 +97,20 @@ namespace MoH_Microservice.Controllers
             {
                 return BadRequest($"Provider Delete failed! Reason{ex}");
             }
+        }
+
+        [HttpGet("list-providers/{username}")]
+
+        public async Task<IActionResult> GetAllProviders([FromRoute] string username)
+        {
+            var user = await this._userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            var providers = await this._provider.Set<Providers>().ToArrayAsync();
+
+            return Ok(providers);
         }
     }
 }
