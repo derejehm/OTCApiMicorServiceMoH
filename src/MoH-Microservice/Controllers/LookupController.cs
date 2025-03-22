@@ -111,7 +111,7 @@ namespace MoH_Microservice.Controllers
                 type = paymentType.type,
                 CreatedBy = paymentType.CreatedBy,
                 CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now,
+                UpdatedOn = null,
                 UpdatedBy = "",
             };
 
@@ -139,7 +139,7 @@ namespace MoH_Microservice.Controllers
                 Channel = paymentChannel.Channel,
                 CreatedBy = paymentChannel.CreatedBy,
                 CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now,
+                UpdatedOn = null,
                 UpdatedBy = "",
             };
 
@@ -167,7 +167,7 @@ namespace MoH_Microservice.Controllers
                 Purpose = paymentPurpose.Purpose,
                 CreatedBy = paymentPurpose.CreatedBy,
                 CreatedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now,
+                UpdatedOn = null,
                 UpdatedBy = "",
             };
 
@@ -187,11 +187,11 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var PymentInfo = await this._payment.Set<PaymentType>()
-                                  .Where<PaymentType>((type) => type.type == paymentType.type)
+                                  .Where<PaymentType>((type) => type.Id == paymentType.id)
                                   .ExecuteUpdateAsync(e => e.SetProperty(e => e.type, paymentType.type));
 
             await this._payment.SaveChangesAsync();
-            return Created("/", new JsonResult(paymentType).Value);
+            return Ok($"Updated - payment channel to {paymentType.type}");
         }
 
         [HttpPut("payment-channel")]
@@ -203,12 +203,12 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var PymentInfo = await this._payment.Set<PaymentChannel>()
-                .Where<PaymentChannel>((type) => type.Channel == paymentChannel.Channel)
+                .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
                 .ExecuteUpdateAsync(e => e.SetProperty(e => e.Channel, paymentChannel.Channel));
 
             await this._payment.SaveChangesAsync();
 
-            return Created("/", new JsonResult(paymentChannel).Value);
+            return Ok($"Updated - payment channel to {paymentChannel.Channel}");
         }
 
         [HttpPut("payment-purpose")]
