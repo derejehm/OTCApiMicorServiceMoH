@@ -29,7 +29,6 @@ namespace MoH_Microservice.Models
         public DateTime UpdatedOn { get; set; }
     }
     public class OrganiztionDelete
-    public class OrganiztionDelete
     {
         public int Id { get; set; }
         public string deletedBy { get; set; }

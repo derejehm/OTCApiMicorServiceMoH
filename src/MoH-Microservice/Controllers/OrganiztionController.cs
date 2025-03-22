@@ -29,7 +29,7 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-            var organiztion = await this._organiztion.Set<PaymentType>().ToArrayAsync();
+            var organiztion = await this._organiztion.Set<Organiztion>().ToArrayAsync();
 
             return Ok(organiztion);
         }
