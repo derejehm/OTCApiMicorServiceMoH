@@ -26,6 +26,10 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [AllowNull]
         public string? IDNo { get; set; }
+
+        [MaxLength(100)]
+        [AllowNull]
+        public string? ReferalNo { get; set; }
         [MaxLength(100)]
         [AllowNull]
         public string? letterNo { get; set; }
@@ -69,7 +73,8 @@ namespace MoH_Microservice.Models
   
         [AllowNull]
         public string? IDNo { get; set; }
-
+        [AllowNull]
+        public string? ReferalNo { get; set; }
         [AllowNull]
         public string? letterNo { get; set; }
         [AllowNull]

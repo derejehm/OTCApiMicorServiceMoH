@@ -243,6 +243,7 @@ namespace MoH_Microservice.Controllers
                     service = providers.service,
                     Createdby = providers.Cashier,
                     CreatedOn = DateTime.Now,
+                    ReferalNo = providers.ReferalNo,
                 };
                 await this._payment.AddAsync<ProvidersMapUsers>(provider);
                 await this._payment.SaveChangesAsync();
