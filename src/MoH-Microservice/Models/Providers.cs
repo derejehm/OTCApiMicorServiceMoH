@@ -119,8 +119,8 @@ namespace MoH_Microservice.Models
     {
         [Required]
         public string cardnumber {get; set; }
-        [Required]
-        public string provider { get; set; }
+        //[Required]
+        //public string provider { get; set; }
         [Required]
         public string user { get; set; }
     }
