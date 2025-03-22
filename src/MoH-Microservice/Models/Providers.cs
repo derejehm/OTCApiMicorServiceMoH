@@ -22,9 +22,6 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [AllowNull]
         public string? Goth { get; set; }
-        [Required]
-        [MaxLength(100)]
-        public string? worda { get; set; }
 
         [MaxLength(100)]
         [AllowNull]
@@ -60,36 +57,27 @@ namespace MoH_Microservice.Models
     public class ProvidersMapReg
     {
         [Required]
-        [MaxLength(100)]
         public string? provider { get; set; }
         [Required]
-        [MaxLength(100)]
         public string service { get; set; } // link to payment puposes
 
-        [MaxLength(100)]
         [AllowNull]
-        public string Kebele { get; set; }
+        public string? Kebele { get; set; }
 
-        [MaxLength(100)]
         [AllowNull]
-        public string Goth { get; set; }
-        [Required]
-        [MaxLength(100)]
-        public string worda { get; set; }
+        public string? Goth { get; set; }
+  
+        [AllowNull]
+        public string? IDNo { get; set; }
 
-        [MaxLength(100)]
         [AllowNull]
-        public string IDNo { get; set; }
-        [MaxLength(100)]
-        [AllowNull]
-        public string letterNo { get; set; }
+        public string? letterNo { get; set; }
         [AllowNull]
         [DataType(DataType.MultilineText)]
-        public string Examination { get; set; }
+        public string? Examination { get; set; }
         [Required]
         public string Cashier { get; set; }
         [Required]
-        [MaxLength(100)]
         public string CardNumber { get; set; }
     }
     public class ProvidersReg
@@ -121,5 +109,15 @@ namespace MoH_Microservice.Models
         public string DeletedBy { get; set; }
     }
 
+
+    public class ProvidersParam
+    {
+        [Required]
+        public string cardnumber {get; set; }
+        [Required]
+        public string provider { get; set; }
+        [Required]
+        public string user { get; set; }
+    }
 
 }
