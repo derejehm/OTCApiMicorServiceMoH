@@ -66,11 +66,12 @@ namespace MoH_Microservice.Data
             builder.Entity<PCollections>().HasKey("CollectionId");
 
             builder.Entity<PaymentType>().HasData(
-                new PaymentType { Id = 1, type = "CASH", CreatedBy = "SYS", CreatedOn = DateTime.Now}
-                , new PaymentType { Id = 2, type = "(CBHI)", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentType { Id = 3, type = "Credit", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentType { Id = 4, type = "Free of Charge", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentType { Id = 5, type = "Digital", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                 new PaymentType { Id = 1, type = "ALL", CreatedBy = "SYS", CreatedOn = DateTime.Now },
+                 new PaymentType { Id = 2, type = "CASH", CreatedBy = "SYS", CreatedOn = DateTime.Now}
+                , new PaymentType { Id = 3, type = "CBHI", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentType { Id = 4, type = "Credit", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentType { Id = 5, type = "Free of Charge", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentType { Id = 6, type = "Digital", CreatedBy = "SYS", CreatedOn = DateTime.Now }
 
                 );
 
