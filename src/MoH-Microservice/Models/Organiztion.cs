@@ -15,11 +15,9 @@ namespace MoH_Microservice.Models
         public DateTime? UpdatedOn { get; set; }
     }
     public class OrganiztionReg
-    {
-        public int Id { get; set; }
+    { 
         public string Organization { get; set; }
         public string CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; }
     }
     public class OrganiztionUpdate
     {
