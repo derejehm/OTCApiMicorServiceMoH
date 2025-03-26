@@ -34,6 +34,7 @@ namespace MoH_Microservice.Controllers
             var BankQrLinkList = new List<BankLinkList>();
             BankQrLinkList.Add(new BankLinkList { Institution = "telebirr", QRLink = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}" });
             BankQrLinkList.Add(new BankLinkList { Institution = "cbe", QRLink = $"https://apps.cbe.com.et:100/?id={receptId}" });
+            
             // Browse and Return a HTML Page
 
             return Created($"/{receptId}", new JsonResult(BankQrLinkList).Value);
