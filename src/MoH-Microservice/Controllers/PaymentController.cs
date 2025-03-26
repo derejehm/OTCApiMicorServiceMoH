@@ -36,7 +36,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
 
-            Payment[] PymentInfo = [] ;
+            Payment[] PymentInfo = [];
             if (user.UserType != "Supervisor")
             {
                 PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date && x.Createdby == user.UserName).ToArrayAsync();
@@ -55,6 +55,8 @@ namespace MoH_Microservice.Controllers
 
             return Ok(new JsonResult(PymentInfo).Value);
         }
+
+        
 
         [HttpPut("payment-by-refno")]
         public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment)

@@ -104,5 +104,31 @@ namespace MoH_Microservice.Controllers
             return Ok(collectionList);
         }
 
+        [HttpPut("Get-all-Collection")]
+        public async Task<IActionResult> GetPaymentByDate([FromBody] CollectionByDate collection)
+        {
+            var user = await this._userManager.FindByNameAsync(collection.user); // Check if the user exists
+            //var usersHttp = HttpContext.GetTokenAsync
+            if (user == null)
+                return NotFound("User not found");
+
+
+            Payment[] PymentInfo = [];
+            if (user.UserType != "Supervisor")
+            {
+                PymentInfo = await this._collection.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= collection.startDate.Value.Date && x.CreatedOn.Value.Date <= collection.endDate.Value.Date && x.Createdby == user.UserName && x.IsCollected == collection.isCollected).ToArrayAsync();
+
+            }
+            else
+            {
+                PymentInfo = await this._collection.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= collection.startDate.Value.Date && x.CreatedOn.Value.Date <= collection.endDate.Value.Date && x.IsCollected==collection.isCollected).ToArrayAsync();
+
+            }
+
+            if (PymentInfo.Length <= 0)
+                return NoContent();
+            return Ok(new JsonResult(PymentInfo).Value);
+        }
+
     }
 }
