@@ -71,7 +71,7 @@ namespace MoH_Microservice.Controllers
             var user = await this._userManager.FindByNameAsync(username);
             if (user == null)
                 return NotFound("User not found");
-            var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).ToArrayAsync();
+            var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).Take(100).ToArrayAsync();
 
             if (collectionList.Count() <= 0) return NoContent(); // there is no collected cash
 
@@ -113,15 +113,15 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
 
-            Payment[] PymentInfo = [];
+            PCollections[] PymentInfo = [];
             if (user.UserType != "Supervisor")
             {
-                PymentInfo = await this._collection.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= collection.startDate.Value.Date && x.CreatedOn.Value.Date <= collection.endDate.Value.Date && x.Createdby == user.UserName && x.IsCollected == collection.isCollected).ToArrayAsync();
+                PymentInfo = await this._collection.Set<PCollections>().Where(x => x.CollectedOn.Date >= collection.startDate.Value.Date && x.CollectedOn.Date <= collection.endDate.Value.Date && x.Casher == user.UserName).ToArrayAsync();
 
             }
             else
             {
-                PymentInfo = await this._collection.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= collection.startDate.Value.Date && x.CreatedOn.Value.Date <= collection.endDate.Value.Date && x.IsCollected==collection.isCollected).ToArrayAsync();
+                PymentInfo = await this._collection.Set<PCollections>().Where(x => x.CollectedOn.Date >= collection.startDate.Value.Date && x.CollectedOn.Date <= collection.endDate.Value.Date).ToArrayAsync();
 
             }
 
