@@ -46,6 +46,13 @@ namespace MoH_Microservice.Controllers
                 return NotFound("Could't find any uncollected cash!");
             }
             else {
+                // check if the collector is assigned to collect from the hospital
+                var result = await this._collection.Set<PaymentCollectors>().Where(e => e.EmployeeID == collectionReg.CollecterID && e.EmployeeName == collectionReg.CollectedBy && e.AssignedLocation == user.Hospital).ToArrayAsync();
+                if (result.Length <= 0)
+                {
+                    return NotFound("Collector not found!");
+                }
+
                 var Collection = new PCollections
                 {
                     FromDate = collectionReg.FromDate.Date,
@@ -60,9 +67,96 @@ namespace MoH_Microservice.Controllers
                 await this._collection.AddAsync(Collection);
                 await this._collection.SaveChangesAsync();
 
-                return Created("/", new { msg="Cash is collected!",data=Collection});
+                /**
+                 * Confirm For :- 
+                  1. Collector [Banker] (optional)
+                  2. Employee [Cashier] (optional)
+                  3. District [Bankers Supervisor] (Mandatory)
+                  4. Hospiatal Manager [Cashiers supervisor] (Mandatory)
+                 */
+
+                bool confim = await Confirmation(user.Hospital,collectionReg);
+
+                return Created("/", new { msg="Cash is collected!",data=Collection,confimationSent = confim });
             }  
         }
+
+        [HttpPost("register_collector")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task <IActionResult> register_collector(PaymentCollectorsReg collector)
+        {
+            var user = await this._userManager.FindByNameAsync(collector.User);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {   // before the 
+                PaymentCollectors banker = new PaymentCollectors
+                {
+                    EmployeeID = collector.EmployeeID,
+                    EmployeeName = collector.EmployeeName,
+                    EmployeePhone = collector.EmployeePhone,
+                    EmployeeEmail = collector.EmployeeEmail,
+                    AssignedLocation = collector.AssignedLocation,
+                    AssignedAs = collector.AssignedAs,
+                    AssignedOn = DateTime.Now,
+                    AssignedBy = collector.AssignedBy
+                };
+
+                this._collection.AddAsync<PaymentCollectors>(banker);
+                this._collection.SaveChangesAsync();
+
+                // send email
+                
+                return Created("/",collector);
+            }catch(Exception ex)
+            {
+                return BadRequest($"Registration failed ! message/ reason : {ex}");
+            }
+        }
+
+        [HttpPut("collector-check")]
+        public async Task<IActionResult> GetCollector(PaymentCollectorsGetReq collector)
+        {
+            var user = await this._userManager.FindByNameAsync(collector.User);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                var result = await this._collection.Set<PaymentCollectors>().Where(e => e.EmployeeID == collector.EmployeeID && e.EmployeeName == e.EmployeeName && e.AssignedLocation == user.Hospital).ToArrayAsync();
+                if (result.Length <= 0)
+                {
+                    return NotFound("Employee Not Found!");
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Feacting failed ! message/ reason : {ex}");
+            }
+        }
+
+        [HttpGet("collector/{username}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetListOfCollector([FromRoute] string username)
+        {
+            var user = await this._userManager.FindByNameAsync(username);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                var result = await this._collection.Set<PaymentCollectors>().ToArrayAsync();
+                if (result.Length <= 0)
+                {
+                    return NoContent();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Feacting data failed! message/ reason : {ex}");
+            }
+        }
+
 
         [HttpGet("collection/{username}")]
 
@@ -130,5 +224,59 @@ namespace MoH_Microservice.Controllers
             return Ok(new JsonResult(PymentInfo).Value);
         }
 
+        private async void SendConfirmationEmail(string email, string content)
+        {
+
+            // email sending function
+            Console.WriteLine($"Email been sent to {email} {content}");
+
+        }
+        private async void SendConfirmationSMS(string phone, string content)
+        {
+
+            // email sending function
+            Console.WriteLine($"SMS been sent to {phone} {content}");
+
+        }
+
+        private async Task<Boolean> Confirmation(string hospital, CollectionReg collection)
+        {
+            var result = await this._collection
+                .Set<PaymentCollectors>()
+                .Where(e =>e.AssignedAs.ToLower()=="supervisor" && e.AssignedLocation.ToLower()==hospital.ToLower())
+                .Select(e=> new
+                {
+                    EmployeeEmail = e.EmployeeEmail
+                   ,EmployeeName = e.EmployeeName
+                   ,ContactMethod = e.ContactMethod
+                })
+                .ToArrayAsync();
+
+            if (result == null || result.Length<=0)
+            {
+                return false;
+            }
+
+            foreach( var item in result)
+            {
+                var text = $"Dear {item.EmployeeName}\r\n" +
+                    $"{collection.CollectedAmount} Birr has been " +
+                    $"Collected by [ {collection.CollectedBy} ]" +
+                    $"On [ {collection.CollectedOn} ]" +
+                    $"from [ {collection.Casher} ]\r\n" +
+                    $"Tsedey Bank OTC-MOHSystem [{DateTime.Now}] ";
+                if (item != null && item.ContactMethod.ToLower() == "email")
+                {
+                    SendConfirmationEmail(item.EmployeeEmail, text);
+                }
+                if (item != null && item.ContactMethod.ToLower() == "sms")
+                {
+                    SendConfirmationSMS(item.EmployeeEmail, text);
+                }
+
+            }
+
+            return true;
+        }
     }
 }
