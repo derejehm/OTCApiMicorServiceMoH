@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using System.Text.Json;
 
 namespace MoH_Microservice.Controllers
 {
@@ -27,16 +28,46 @@ namespace MoH_Microservice.Controllers
             this._payment = payment;
         }
 
-        [HttpGet("payment-verify/{receptId}")]
-        public async Task<IActionResult> PaymentVerify([FromRoute] string receptId)
-        {
+        private static readonly HttpClient client;
 
-            var BankQrLinkList = new List<BankLinkList>();
-            BankQrLinkList.Add(new BankLinkList { Institution = "telebirr", QRLink = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}" });
-            BankQrLinkList.Add(new BankLinkList { Institution = "cbe", QRLink = $"https://apps.cbe.com.et:100/?id={receptId}" });
+        [HttpGet("payment-verify/{receptId}")]
+        public async Task<IActionResult> PaymentVerify([FromRoute] string receptId,string channel)
+        {
+            var url = "";
+            if (channel == "TELEBIRR")
+            {
+                url = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}";
+            }
+            
+            if(channel == "CBE")
+            {
+                url = $"https://apps.cbe.com.et:100/?id={receptId}";
+            }
+
+
+            var response = await client.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var stringResponse = await response.Content.ReadAsStringAsync();
+
+                return Ok(stringResponse);
+                   
+            }
+            else
+            {
+                throw new HttpRequestException(response.ReasonPhrase);
+            }
+
+           // return BadRequest();
+
+            //var BankQrLinkList = new List<BankLinkList>();
+            //BankQrLinkList.Add(new BankLinkList { Institution = "telebirr", QRLink = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}" });
+            //BankQrLinkList.Add(new BankLinkList { Institution = "cbe", QRLink = $"https://apps.cbe.com.et:100/?id={receptId}" });
+
             // Browse and Return a HTML Page
 
-            return Created($"/{receptId}", new JsonResult(BankQrLinkList).Value);
+            //return Created($"/{receptId}", new JsonResult(BankQrLinkList).Value);
         }
         [HttpGet("payment-info")]
         [Authorize(Policy = "AdminPolicy")] // 

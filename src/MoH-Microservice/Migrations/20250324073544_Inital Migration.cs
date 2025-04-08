@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class addinitialwithcustomfileds : Migration
+    public partial class InitalMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -351,17 +351,17 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "Hospital", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { "0473effe-225b-4e5b-afe4-0c58139036b3", 0, "dafc0bc5-4405-4706-bb0f-dc33d6c4b73b", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEBRMD9C25OfZx8AeaDYJBV5mYsLo2pl2QbN6hkZ+jmgYyjjAM3F17PxAx+uTlBFMtw==", "+251912657147", true, "9f5467a9-9307-48f5-a750-0a4f9fe1f52d", false, "DerejeH", "Admin" });
+                values: new object[] { "33f860ed-4a67-459f-a0d5-d4e047c0bea4", 0, "264b31e0-ab19-4a97-b346-001d04daec36", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEPZBfNSoULvf5XsXI1izqkYMhrwakpM5ALOHQZRT3Sb44BuZLOJd2qCwe+0ceFIl8w==", "+251912657147", true, "259da2c3-da3d-43a1-9b15-ebfe77b64b64", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "PaymentChannels",
                 columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "In Person", "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9466), null, null },
-                    { 2, "TeleBirr", "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9469), null, null },
-                    { 3, "Mobile Banking", "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9471), null, null },
-                    { 4, "Other", "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9473), null, null }
+                    { 1, "In Person", "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4130), null, null },
+                    { 2, "TeleBirr", "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4134), null, null },
+                    { 3, "Mobile Banking", "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4138), null, null },
+                    { 4, "Other", "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4140), null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -369,10 +369,10 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9416), "Card", null, null },
-                    { 2, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9418), "Medicine/Drug", null, null },
-                    { 3, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9420), "Labratory", null, null },
-                    { 4, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9422), "X-RAY", null, null }
+                    { 1, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4070), "Card", null, null },
+                    { 2, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4074), "Medicine/Drug", null, null },
+                    { 3, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4077), "Labratory", null, null },
+                    { 4, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(4081), "X-RAY", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -380,17 +380,18 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn", "type" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9334), null, null, "CASH" },
-                    { 2, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9337), null, null, "(CBHI)" },
-                    { 3, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9339), null, null, "Credit" },
-                    { 4, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9341), null, null, "Free of Charge" },
-                    { 5, "SYS", new DateTime(2025, 3, 22, 12, 18, 10, 739, DateTimeKind.Local).AddTicks(9343), null, null, "Digital" }
+                    { 1, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3982), null, null, "ALL" },
+                    { 2, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3986), null, null, "CASH" },
+                    { 3, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3988), null, null, "CBHI" },
+                    { 4, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3990), null, null, "Credit" },
+                    { 5, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3992), null, null, "Free of Charge" },
+                    { 6, "SYS", new DateTime(2025, 3, 24, 10, 35, 43, 607, DateTimeKind.Local).AddTicks(3994), null, null, "Digital" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "0473effe-225b-4e5b-afe4-0c58139036b3" });
+                values: new object[] { "1", "33f860ed-4a67-459f-a0d5-d4e047c0bea4" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
