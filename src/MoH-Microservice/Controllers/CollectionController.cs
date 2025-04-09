@@ -32,6 +32,13 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
 
+            var result = await this._collection.Set<PaymentCollectors>()
+                .Where(e => e.EmployeeID == collectionReg.CollecterID && e.EmployeeName == collectionReg.CollectedBy && e.AssignedLocation == user.Hospital).ToArrayAsync();
+            if (result.Length <= 0)
+            {
+                return NotFound("Collector not found!");
+            }
+
             var Query = this._collection.Set<Payment>()
                             .Where(e =>
                                    e.Createdby == collectionReg.Casher &&
@@ -47,11 +54,7 @@ namespace MoH_Microservice.Controllers
             }
             else {
                 // check if the collector is assigned to collect from the hospital
-                var result = await this._collection.Set<PaymentCollectors>().Where(e => e.EmployeeID == collectionReg.CollecterID && e.EmployeeName == collectionReg.CollectedBy && e.AssignedLocation == user.Hospital).ToArrayAsync();
-                if (result.Length <= 0)
-                {
-                    return NotFound("Collector not found!");
-                }
+                
 
                 var Collection = new PCollections
                 {
@@ -70,8 +73,8 @@ namespace MoH_Microservice.Controllers
                 /**
                  * Confirm For :- 
                   1. Collector [Banker] (optional)
-                  2. Employee [Cashier] (optional)
-                  3. District [Bankers Supervisor] (Mandatory)
+                  2. Employee  [Cashier] (optional)
+                  3. District  [Bankers Supervisor] (Mandatory)
                   4. Hospiatal Manager [Cashiers supervisor] (Mandatory)
                  */
 
@@ -83,29 +86,44 @@ namespace MoH_Microservice.Controllers
 
         [HttpPost("register_collector")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task <IActionResult> register_collector(PaymentCollectorsReg collector)
+        public async Task <IActionResult> register_collector([FromBody] PaymentCollectorsRegArray collector)
         {
             var user = await this._userManager.FindByNameAsync(collector.User);
             if (user == null)
                 return NotFound("User not found");
             try
-            {   // before the 
-                PaymentCollectors banker = new PaymentCollectors
-                {
-                    EmployeeID = collector.EmployeeID,
-                    EmployeeName = collector.EmployeeName,
-                    EmployeePhone = collector.EmployeePhone,
-                    EmployeeEmail = collector.EmployeeEmail,
-                    AssignedLocation = collector.AssignedLocation,
-                    AssignedAs = collector.AssignedAs,
-                    AssignedOn = DateTime.Now,
-                    AssignedBy = collector.AssignedBy
-                };
+            {   // before the
+                var reuslt  = await this._collection.Set< PaymentCollectors >().ExecuteDeleteAsync();
+                // delete 
+                for (var i=0;i<collector.EmployeeID.Count();i++){
 
-                this._collection.AddAsync<PaymentCollectors>(banker);
-                this._collection.SaveChangesAsync();
+                    PaymentCollectors banker = new PaymentCollectors
+                    {
+                        EmployeeID = collector.EmployeeID[i],
+                        EmployeeName = collector.EmployeeName[i],
+                        EmployeePhone = collector.EmployeePhone[i],
+                        EmployeeEmail = collector.EmployeeEmail[i],
+                        AssignedLocation = collector.AssignedLocation[i],
+                        AssignedAs = collector.AssignedAs[i],
+                        ContactMethod = collector.ContactMethod[i],
+                        AssignedOn = DateTime.Now,
+                        AssignedBy = collector.AssignedBy[i]
+                    };
+                    var text = $"\r\nDear {collector.EmployeeName[i]} " +
+                        $"\nYou have been assigned to collect cash from {collector.AssignedLocation[i]} Hospital " +
+                        $"by {collector.AssignedBy[i]}";
+                    if (collector.ContactMethod[i].ToLower() == "email")
+                    {
+                        SendConfirmationEmail(collector.EmployeeEmail[i], text);
+                    }
+                    if (collector.ContactMethod[i].ToLower() == "sms")
+                    {
+                        SendConfirmationSMS(collector.EmployeePhone[i], text);
+                    }
 
-                // send email
+                    await this._collection.AddAsync<PaymentCollectors>(banker);
+                    await this._collection.SaveChangesAsync();
+                }
                 
                 return Created("/",collector);
             }catch(Exception ex)
@@ -259,12 +277,12 @@ namespace MoH_Microservice.Controllers
 
             foreach( var item in result)
             {
-                var text = $"Dear {item.EmployeeName}\r\n" +
-                    $"{collection.CollectedAmount} Birr has been " +
-                    $"Collected by [ {collection.CollectedBy} ]" +
-                    $"On [ {collection.CollectedOn} ]" +
+                var text = $"\r\nDear {item.EmployeeName}\r\n" +
+                    $"[ {collection.CollectedAmount} ] Birr has been " +
+                    $"Collected by [ {collection.CollectedBy} ] " +
+                    $"On [ {collection.CollectedOn} ] " +
                     $"from [ {collection.Casher} ]\r\n" +
-                    $"Tsedey Bank OTC-MOHSystem [{DateTime.Now}] ";
+                    $" - Tsedey Bank OTC-MOHSystem [{DateTime.Now}] ";
                 if (item != null && item.ContactMethod.ToLower() == "email")
                 {
                     SendConfirmationEmail(item.EmployeeEmail, text);

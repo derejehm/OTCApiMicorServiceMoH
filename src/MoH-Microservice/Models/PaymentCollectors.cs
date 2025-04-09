@@ -34,6 +34,7 @@ namespace MoH_Microservice.Models
         public string AssignedLocation { get; set; }
         public string AssignedAs { get; set; } // collectors or supervisor
         public string AssignedBy { get; set; }
+        public string ContactMethod { get; set; }
         public string User { get;set; }
     }
     public class PaymentCollectorsGetReq
@@ -50,5 +51,18 @@ namespace MoH_Microservice.Models
         public string EmployeePhone { get; set; }
         public string EmployeeEmail { get; set; }
         public string AssignedLocation { get; set; }
+    }
+
+    public class PaymentCollectorsRegArray
+    {
+        public List<string> EmployeeID { get; set; }
+        public List<string> EmployeeName { get; set; }
+        public List<string> EmployeePhone { get; set; }
+        public List<string> EmployeeEmail { get; set; }
+        public List<string> AssignedLocation { get; set; }
+        public List<string> AssignedAs { get; set; } // collectors or supervisor
+        public List<string> AssignedBy { get; set; }
+        public List<string> ContactMethod { get; set; }
+        public string User { get; set; }
     }
 }
