@@ -311,6 +311,18 @@ namespace MoH_Microservice.Controllers
             return Ok($"Deleted - payment Purpose");
         }
 
+        // register hospitals
+        [HttpGet("hospitals")]
+
+        public async Task<IActionResult> GetHospitals()
+        {
+            var PymentInfo = await this._payment.Set<PaymentPurpose>().ToArrayAsync();
+            if(PymentInfo.Length <= 0 )
+            {
+                return NoContent();
+            }
+            return Ok(new JsonResult(PymentInfo).Value);
+        }
         private class BankLinkList
         {
 

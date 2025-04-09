@@ -19,6 +19,8 @@ namespace MoH_Microservice.Data
         public DbSet<Providers> Providers { get; set; }
         public DbSet<ProvidersMapUsers> ProvidersMapPatient { get; set; }
         public DbSet<Organiztion> Organiztions { get; set; }
+        public DbSet<Hospital> Hospitals { get; set; }
+        public DbSet<PaymentCollectors> PaymentCollectors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
