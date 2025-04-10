@@ -163,7 +163,7 @@ namespace MoH_Microservice.Controllers
                         PaymentVerifingID = payment.PaymentVerifingID,
                         Department = payment.Department,
                         Channel = payment.Channel,
-                        Description = payment.Description
+                        Description = payment.Description,
                     };
 
                     await this._payment.AddAsync<Payment>(data);
