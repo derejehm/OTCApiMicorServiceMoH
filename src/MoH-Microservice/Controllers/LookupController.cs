@@ -397,7 +397,7 @@ namespace MoH_Microservice.Controllers
 
         public async Task<IActionResult> GetHospitals()
         {
-            var PymentInfo = await this._payment.Set<PaymentPurpose>().ToArrayAsync();
+            var PymentInfo = await this._payment.Set<Hospital>().ToArrayAsync();
             if(PymentInfo.Length <= 0 )
             {
                 return NoContent();
