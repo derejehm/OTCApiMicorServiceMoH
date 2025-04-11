@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
 using System.Text.Json;
@@ -313,15 +314,71 @@ namespace MoH_Microservice.Controllers
 
         // register hospitals
         [HttpGet("hospitals")]
-
         public async Task<IActionResult> GetHospitals()
         {
             var PymentInfo = await this._payment.Set<Hospital>().ToArrayAsync();
-            if(PymentInfo.Length <= 0 )
+            if (PymentInfo.Length <= 0)
             {
                 return NoContent();
             }
             return Ok(new JsonResult(PymentInfo).Value);
+        }
+        [HttpPost("hospital")]
+        public async Task<IActionResult> InsertHospitals([FromBody] HospitalReg hospital)
+        {
+            var username = await this._userManager.FindByNameAsync(hospital.RegisteredBy);
+            if (username == null)
+                return NotFound("User not found");
+
+            try
+            {
+                Hospital hospital_reg = new Hospital
+                {
+                    HospitalName = hospital.HospitalName,
+                    HospitalManager = hospital.HospitalManager,
+                    Email = hospital.Email,
+                    Phone = hospital.Phone,
+                    Location = hospital.Location,
+                    ContactMethod = hospital.ContactMethod,
+                    RegisteredOn = DateTime.UtcNow,
+                    RegisteredBy = hospital.RegisteredBy
+                };
+                await this._payment.AddAsync(hospital_reg);
+                await this._payment.SaveChangesAsync();
+                return Created($"/{hospital.HospitalName}", new JsonResult(hospital_reg).Value);
+            }catch(Exception ex)
+            {
+                return BadRequest($"Registration Failed! : {ex.Message}");
+            }
+        }
+        [HttpDelete("hospital")]
+        public async Task<IActionResult> DeleteHospitals([FromBody] HospitalDelete hospitalDelete)
+        {
+            var username = await this._userManager.FindByNameAsync(hospitalDelete.user);
+            if (username == null)
+                return NotFound("User not found");
+            var delete = await this._payment.Set<Hospital>().Where(e=> e.Id==hospitalDelete.id).ExecuteDeleteAsync();
+            return Ok("Hospital information deleted Deleted!");
+        }
+
+        [HttpPut("hospital")]
+        public async Task<IActionResult> UpdateHospitals([FromBody] HospitalUpdate hospitalUpdate)
+        {
+            var username = await this._userManager.FindByNameAsync(hospitalUpdate.user);
+            if (username == null)
+                return NotFound("User not found");
+            var hospital = await this._payment.Set<Hospital>()
+                .Where((e) => e.Id == hospitalUpdate.id)
+                .ExecuteUpdateAsync(e => 
+                        e.SetProperty(e => e.HospitalManager, hospitalUpdate.HospitalManager)
+                        .SetProperty(e => e.ContactMethod, hospitalUpdate.ContactMethod)
+                        .SetProperty(e => e.Email, hospitalUpdate.Email)
+                        .SetProperty(e => e.Phone, hospitalUpdate.Phone)
+                        .SetProperty(e => e.Location, hospitalUpdate.Location)
+                );
+
+            await this._payment.SaveChangesAsync();
+            return Ok($"Updated - Hospital information");
         }
         private class BankLinkList
         {
