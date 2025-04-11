@@ -14,7 +14,7 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         public string? PatientGender { get; set; }
         public string? PatientAddress { get; set; }
-        public string? PatientPhoneNumber{ get; set; }
+        public string? PatientPhoneNumber { get; set; }
         public int PatientAge { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }

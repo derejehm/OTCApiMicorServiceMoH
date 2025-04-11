@@ -22,10 +22,10 @@ namespace MoH_Microservice.Controllers
             this._roleManager = roleManager;
             this._organiztion = organiztion;
         }
-        [HttpGet("Organization/{username}")]
-        public async Task<IActionResult> GetOrganiztions([FromRoute] string username)
+        [HttpGet("Organization/{loggedInUser}")]
+        public async Task<IActionResult> GetOrganiztions([FromRoute] string loggedInUser)
         {
-            var user = await this._userManager.FindByNameAsync(username);
+            var user = await this._userManager.FindByNameAsync(loggedInUser);
             if (user == null)
                 return NotFound("User not found");
 
@@ -71,7 +71,6 @@ namespace MoH_Microservice.Controllers
             return Ok($"Update - Organization updated to {organiztion.Organization}");
         }
 
-
         [HttpDelete("Organization")]
         public async Task<IActionResult> DeleteOrganiztions([FromBody] OrganiztionDelete organiztion)
         {
@@ -85,5 +84,55 @@ namespace MoH_Microservice.Controllers
 
             return Ok($"Delete - item deleted");
         }
+
+        [HttpPost ("add-workers")]
+        public async Task<IActionResult> AddWorking([FromBody] OrganiztionalUsersReg workers)
+        {
+            var user = await this._userManager.FindByNameAsync(workers.UploadedBy);
+            if (user == null)
+                return NotFound("User not found");
+            try
+            {
+                for (var i=0;i < workers.EmployeeEmail.Count; i++)
+                {
+                    OrganiztionalUsers worker = new OrganiztionalUsers
+                    {
+                        EmployeeID = workers.EmployeeID[i],
+                        EmployeeName = workers.EmployeeName[i],
+                        EmployeeEmail = workers.EmployeeEmail[i],
+                        EmployeePhone = workers.EmployeePhone[i],
+                        UploadedBy = workers.UploadedBy,
+                        UploadedOn = DateTime.Now,
+                        AssignedHospital = user.Hospital,
+
+                    };
+
+                    await this._organiztion.OrganiztionalUsers.AddAsync(worker);
+                    await this._organiztion.SaveChangesAsync();
+                }
+
+                return Ok("Data uploaded Successfully!");
+                
+            }
+            catch (Exception ex)
+            {
+                BadRequest($"Insertion failed reason : {ex.Message}");
+            }
+
+            return Ok("Data uploaded Successfully!");
+        }
+
+        [HttpGet("get-workers/{loggedInUser}")]
+        public async Task<IActionResult> GetWorkers([FromRoute] string loggedInUser)
+        {
+            var user = await this._userManager.FindByNameAsync(loggedInUser);
+            if (user == null)
+                return NotFound("User not found");
+            var workers = await this._organiztion.OrganiztionalUsers.ToArrayAsync();
+            if (workers == null)
+                NoContent();
+            return Ok(workers);
+        }
+
     }
 }
