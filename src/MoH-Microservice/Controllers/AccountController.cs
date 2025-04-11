@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Models;
+using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -64,6 +65,7 @@ namespace MoH_Microservice.Controllers
                     new Claim("Departement", user.Departement!),
                     new Claim("Hospital", user.Hospital!),
                     new Claim("userId", user.Id!),
+                    
 
                 };
 
@@ -71,19 +73,17 @@ namespace MoH_Microservice.Controllers
 
                 var token = new JwtSecurityToken(
                     issuer: _configuration["Jwt:Issuer"],
-<<<<<<< HEAD
                     expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
-=======
-                    expires: DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc).AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
->>>>>>> b7530ff1d3d159ca23e1d7dbd99d7de0dbb120af
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
                     SecurityAlgorithms.HmacSha256));
 
                 await _userManager.SetAuthenticationTokenAsync(user, "Default",model.Username, new JwtSecurityTokenHandler().WriteToken(token));
-
+                
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
             }
+
+            
 
             return Unauthorized(new { message = "Invalid User name or passowrd." });
 
@@ -156,6 +156,18 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(addPasswordResult.Errors);
 
             return Ok(new { Message = "Password reset to default successfully!" });
+        }
+
+        [HttpGet("check-login")]
+        public async Task<IActionResult> CheckLogin([FromHeader] string? Authorization)
+        {
+            if (Authorization == null)
+                return BadRequest("Invalid token");
+            var tokens = new JwtSecurityToken(Authorization?.Split(" ")[1]);
+            if (!(tokens.Payload.Exp >= DateTimeOffset.UtcNow.ToUnixTimeSeconds())) 
+                return Unauthorized("No token / Token has expired!");
+
+            return Ok();
         }
     }
 }
