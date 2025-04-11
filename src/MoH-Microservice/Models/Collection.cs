@@ -12,6 +12,8 @@ namespace MoH_Microservice.Models
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public string?  Casher {  get; set; } // Forign key from users
+        public DateTime CreatedOn { get; set; }
+        public string CreatedBy { get; set; }
     }
 
 
