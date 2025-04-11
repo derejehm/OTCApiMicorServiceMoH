@@ -21,6 +21,8 @@ namespace MoH_Microservice.Data
         public DbSet<Organiztion> Organiztions { get; set; }
         public DbSet<Hospital> Hospitals { get; set; }
         public DbSet<PaymentCollectors> PaymentCollectors { get; set; }
+        public DbSet<OrganiztionalUsers> OrganiztionalUsers { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -42,13 +44,14 @@ namespace MoH_Microservice.Data
                 NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                 PhoneNumber = "+251912657147",
                 EmailConfirmed = true,
-                UserType="Admin",
-                Departement="Tsedey Bank",
+                UserType = "Admin",
+                Departement = "Tsedey Bank",
                 PhoneNumberConfirmed = true,
                 LockoutEnabled = false,
             };
 
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "Dereje@Tsedeybank");
+
 
             builder.Entity<AppUser>().HasData(adminUser);
 
@@ -78,17 +81,22 @@ namespace MoH_Microservice.Data
                 );
 
             builder.Entity<PaymentPurpose>().HasData(
-                new PaymentPurpose { Id = 1, Purpose = "Card", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                  new PaymentPurpose { Id = 1, Purpose = "Card", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 , new PaymentPurpose { Id = 2, Purpose = "Medicine/Drug", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 , new PaymentPurpose { Id = 3, Purpose = "Labratory", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 , new PaymentPurpose { Id = 4, Purpose = "X-RAY", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 );
 
             builder.Entity<PaymentChannel>().HasData(
-                     new PaymentChannel { Id = 1, Channel = "In Person", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                    , new PaymentChannel { Id = 2, Channel = "TeleBirr", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                    , new PaymentChannel { Id = 3, Channel = "Mobile Banking", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                    , new PaymentChannel { Id = 4, Channel = "Other", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                     
+                      new PaymentChannel { Id = 1, Channel = "TeleBirr", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 2, Channel = "Mobile Banking", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 3, Channel = "Awash Bank", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 4, Channel = "Bank of Abyssinia", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 5, Channel = "Amhara Bank", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 6, Channel = "Tsedey Bank", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 7, Channel = "Other", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 8, Channel = "Chapa", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 );
         }
     }

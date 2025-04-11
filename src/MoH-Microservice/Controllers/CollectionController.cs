@@ -33,7 +33,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var result = await this._collection.Set<PaymentCollectors>()
-                .Where(e => e.EmployeeID == collectionReg.CollecterID && e.EmployeeName == collectionReg.CollectedBy && e.AssignedLocation == user.Hospital).ToArrayAsync();
+                .Where(e => e.EmployeeID.ToLower() == collectionReg.CollecterID.ToLower() && e.EmployeeName.ToLower() == collectionReg.CollectedBy.ToLower() && e.AssignedLocation.ToLower() == user.Hospital.ToLower()).ToArrayAsync();
             if (result.Length <= 0)
             {
                 return NotFound("Collector not found!");
@@ -103,14 +103,14 @@ namespace MoH_Microservice.Controllers
                         EmployeeName = collector.EmployeeName[i],
                         EmployeePhone = collector.EmployeePhone[i],
                         EmployeeEmail = collector.EmployeeEmail[i],
-                        AssignedLocation = collector.AssignedLocation[i],
+                        AssignedLocation = user.Hospital,
                         AssignedAs = collector.AssignedAs[i],
                         ContactMethod = collector.ContactMethod[i],
                         AssignedOn = DateTime.Now,
                         AssignedBy = collector.AssignedBy[i]
                     };
                     var text = $"\r\nDear {collector.EmployeeName[i]} " +
-                        $"\nYou have been assigned to collect cash from {collector.AssignedLocation[i]} Hospital " +
+                        $"\nYou have been assigned to collect cash from {user.Hospital} Hospital " +
                         $"by {collector.AssignedBy[i]}";
                     if (collector.ContactMethod[i].ToLower() == "email")
                     {
@@ -140,7 +140,11 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             try
             {
-                var result = await this._collection.Set<PaymentCollectors>().Where(e => e.EmployeeID == collector.EmployeeID && e.EmployeeName == e.EmployeeName && e.AssignedLocation == user.Hospital).ToArrayAsync();
+                var result = await this._collection.PaymentCollectors
+                            .Where(e => e.EmployeeID.ToLower() == collector.EmployeeID.ToLower() 
+                                && e.EmployeeName.ToLower() == collector.EmployeeName.ToLower() 
+                                && e.AssignedLocation.ToLower() == user.Hospital.ToLower())
+                    .ToArrayAsync();
                 if (result.Length <= 0)
                 {
                     return NotFound("Employee Not Found!");

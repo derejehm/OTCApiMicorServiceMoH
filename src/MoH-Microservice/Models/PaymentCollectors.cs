@@ -59,7 +59,6 @@ namespace MoH_Microservice.Models
         public List<string> EmployeeName { get; set; }
         public List<string> EmployeePhone { get; set; }
         public List<string> EmployeeEmail { get; set; }
-        public List<string> AssignedLocation { get; set; }
         public List<string> AssignedAs { get; set; } // collectors or supervisor
         public List<string> AssignedBy { get; set; }
         public List<string> ContactMethod { get; set; }

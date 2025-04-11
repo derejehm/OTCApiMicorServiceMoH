@@ -142,6 +142,15 @@ namespace MoH_Microservice.Controllers
             if (user.UserType.ToLower() != "cashier")
                 return Unauthorized("You are unautorized to perform payment registration!");
 
+            if (payment.PaymentType.ToLower() == "credit")
+            {
+                var worker =await this._payment.OrganiztionalUsers.Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower() && e.AssignedHospital==payment.PatientWorkingPlace).ToArrayAsync();
+                if (worker.Length <=0)
+                {
+                       return NotFound($"Patient \nEmployeeID: {payment.PatientWorkID}\nWorking Place:{payment.PatientWorkingPlace}\n is not assigned to this hospital");
+                }   
+            }
+
             var RefNo = $"TS_{payment.Hospital.Trim().Substring(0, 2).ToUpper()}-{payment.PaymentType}{DateTime.Now.Microsecond + new Random().Next()}";
             
             try
@@ -163,7 +172,7 @@ namespace MoH_Microservice.Controllers
                         PaymentVerifingID = payment.PaymentVerifingID,
                         Department = payment.Department,
                         Channel = payment.Channel,
-                        Description = payment.Description
+                        Description = payment.Description,
                     };
 
                     await this._payment.AddAsync<Payment>(data);
