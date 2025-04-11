@@ -71,7 +71,11 @@ namespace MoH_Microservice.Controllers
 
                 var token = new JwtSecurityToken(
                     issuer: _configuration["Jwt:Issuer"],
+<<<<<<< HEAD
                     expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
+=======
+                    expires: DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc).AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
+>>>>>>> b7530ff1d3d159ca23e1d7dbd99d7de0dbb120af
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
                     SecurityAlgorithms.HmacSha256));

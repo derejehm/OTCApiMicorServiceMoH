@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace MoH_Microservice.Controllers
@@ -18,31 +20,44 @@ namespace MoH_Microservice.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private AppDbContext _payment;
+        
+
         public LookupController(
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             AppDbContext payment
+          
             )
         {
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._payment = payment;
+           
         }
 
-        private static readonly HttpClient client;
+
 
         [HttpGet("payment-verify/{receptId}")]
-        public async Task<IActionResult> PaymentVerify([FromRoute] string receptId,string channel)
+        public async Task<IActionResult> PaymentVerify(string receptId,string channel)
         {
+
+            HttpClient client = new HttpClient();
             var url = "";
             if (channel == "TELEBIRR")
             {
                 url = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}";
             }
             
-            if(channel == "CBE")
+            if(channel == "CBE MOBILE BANKING")
             {
                 url = $"https://apps.cbe.com.et:100/?id={receptId}";
+            }
+
+            if (channel == "BANK OF ABYSSINIA")
+            {
+                url = $"https://cs.bankofabyssinia.com/api/onlineSlip/getDetails/?id={receptId}";
+
+                //https://cs.bankofabyssinia.com/api/onlineSlip/getDetails/?id=FT2509091DCW10104
             }
 
 
@@ -50,17 +65,39 @@ namespace MoH_Microservice.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                var stringResponse = await response.Content.ReadAsStringAsync();
+              
+                if (channel == "TELEBIRR")
+                {
+                    return Ok(await response.Content.ReadAsStringAsync());
+                }
 
-                return Ok(stringResponse);
-                   
+                if (channel == "CBE MOBILE BANKING") 
+                {
+
+                    return File(await response.Content.ReadAsByteArrayAsync(), "application/pdf", "payment_verification.pdf");
+                    //return Ok(await response.Content.ReadAsByteArrayAsync());
+                }
+
+                if (channel == "BANK OF ABYSSINIA")
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(result);
+                    return Ok(result);
+                    //return Ok(await response.Content.ReadAsByteArrayAsync());
+                }
+
+
+
+
             }
             else
             {
-                throw new HttpRequestException(response.ReasonPhrase);
+               // throw new HttpRequestException("Erorr response: " + response.ReasonPhrase);
+
+                return BadRequest(new {message= "Incorrect referance number" });
             }
 
-           // return BadRequest();
+            // return BadRequest();
 
             //var BankQrLinkList = new List<BankLinkList>();
             //BankQrLinkList.Add(new BankLinkList { Institution = "telebirr", QRLink = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}" });
@@ -69,6 +106,8 @@ namespace MoH_Microservice.Controllers
             // Browse and Return a HTML Page
 
             //return Created($"/{receptId}", new JsonResult(BankQrLinkList).Value);
+
+            return BadRequest(new { message = "Incorrect referance number" });
         }
         [HttpGet("payment-info")]
         [Authorize(Policy = "AdminPolicy")] // 
@@ -311,6 +350,48 @@ namespace MoH_Microservice.Controllers
 
             return Ok($"Deleted - payment Purpose");
         }
+        [HttpGet("redirecttoboa")]
+        public IActionResult RedirectToSlip(string transactionId)
+        {
+            var slipUrl = $"https://cs.bankofabyssinia.com/slip/?trx={WebUtility.UrlEncode(transactionId)}";
+            return Redirect(slipUrl);
+        }
+
+        [HttpGet("slip")]
+        public async Task<IActionResult> GetSlip([FromQuery] string trx)
+        {
+            try
+            {
+                // Create the HttpClient
+                //  var client = _httpClientFactory.CreateClient("BankOfAbyssinia");
+                HttpClient client = new HttpClient();
+
+                // Encode the `trx` parameter to ensure URL safety
+                string encodedTrx = WebUtility.UrlEncode(trx);
+                string requestUrl = $"https://cs.bankofabyssinia.com/slip/?trx={encodedTrx}";
+
+                // Send the GET request
+                var response = await client.GetAsync(requestUrl);
+
+                // Handle the response
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return Ok(content); // Return the external service's response
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode, "Failed to fetch data from external service.");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // Log the exception (e.g., using ILogger)
+                return StatusCode(500, "Error connecting to the external service.");
+            }
+        }
+
+
 
         // register hospitals
         [HttpGet("hospitals")]
