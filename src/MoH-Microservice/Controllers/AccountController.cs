@@ -83,8 +83,6 @@ namespace MoH_Microservice.Controllers
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
             }
 
-            
-
             return Unauthorized(new { message = "Invalid User name or passowrd." });
 
         }

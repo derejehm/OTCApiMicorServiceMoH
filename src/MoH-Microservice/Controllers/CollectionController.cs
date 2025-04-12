@@ -64,7 +64,9 @@ namespace MoH_Microservice.Controllers
                     CollectedBy = collectionReg.CollectedBy,
                     CollecterID = collectionReg.CollecterID,
                     CollectedOn = collectionReg.CollectedOn,
-                    CollectedAmount = collectionReg.CollectedAmount
+                    CollectedAmount = collectionReg.CollectedAmount,
+                    CreatedBy=user.UserName,
+                    CreatedOn=DateTime.Now,
                 };
 
                 await this._collection.AddAsync(Collection);
@@ -157,11 +159,11 @@ namespace MoH_Microservice.Controllers
             }
         }
 
-        [HttpGet("collector/{username}")]
+        [HttpGet("collector/{loggedUser}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> GetListOfCollector([FromRoute] string username)
+        public async Task<IActionResult> GetListOfCollector([FromRoute] string loggedUser)
         {
-            var user = await this._userManager.FindByNameAsync(username);
+            var user = await this._userManager.FindByNameAsync(loggedUser);
             if (user == null)
                 return NotFound("User not found");
             try
@@ -180,14 +182,14 @@ namespace MoH_Microservice.Controllers
         }
 
 
-        [HttpGet("collection/{username}")]
+        [HttpGet("collection/{loggedUser}")]
 
-        public async Task<IActionResult> ListOfCollections([FromRoute] string username)
+        public async Task<IActionResult> ListOfCollections([FromRoute] string loggedUser)
         {
-            var user = await this._userManager.FindByNameAsync(username);
+            var user = await this._userManager.FindByNameAsync(loggedUser);
             if (user == null)
                 return NotFound("User not found");
-            var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == username).Take(100).ToArrayAsync();
+            var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == user.UserName).Take(100).ToArrayAsync();
 
             if (collectionList.Count() <= 0) return NoContent(); // there is no collected cash
 
@@ -218,6 +220,72 @@ namespace MoH_Microservice.Controllers
             if (collectionList.Count() <= 0) return NoContent();
 
             return Ok(collectionList);
+        }
+
+        [HttpGet("rpt-uncollected/{loggedinuser}")]
+
+        public async Task<IActionResult> UncollectedByuser([FromRoute] string loggedinuser)
+        {
+            var user = await this._userManager.FindByNameAsync(loggedinuser);
+            if (user == null)
+                return NotFound("User not found");
+            
+            if (user.UserType.ToLower() == "cashier")
+            {
+                 var collectionList = await this._collection.Set<Payment>()
+                                 .Where(col => col.Createdby == loggedinuser &&
+                                               col.IsCollected != 1 &&
+                                               col.Type.ToLower() == "cash")
+                                 .GroupBy(e => new { e.Createdby, e.IsCollected })
+                                 .Select(e => new {
+                                     Cashier = e.Key.Createdby,
+                                     CashAmount = e.Sum(e => e.Amount),
+                                 })
+                                 .ToArrayAsync();
+                if (collectionList.Count() <= 0) return NoContent();
+
+                return Ok(collectionList);
+            }else if(user.UserType.ToLower() == "supervisor")
+            {
+                var collectionList = await this._collection.Set<Payment>()
+                                 .Where(col => col.IsCollected != 1 && col.Type.ToLower() == "cash")
+                                 .GroupBy(e => new { e.Createdby, e.IsCollected })
+                                 .Select(e => new {Cashier = e.Key.Createdby,CashAmount = e.Sum(e => e.Amount)})
+                                 .ToArrayAsync();
+
+                if (collectionList.Count() <= 0) return NoContent();
+
+                return Ok(collectionList);
+            }
+            else
+            {
+                return NoContent();
+            } 
+        }
+        [HttpGet("get-last-collections/{loggedUser}")]
+        public async Task<IActionResult> lastCollectedCash([FromRoute] string loggedUser)
+        {
+            var user = await this._userManager.FindByNameAsync(loggedUser); // Check if the user exists
+            //var usersHttp = HttpContext.GetTokenAsync
+            if (user == null)
+                return NotFound("User not found");
+
+
+            PCollections[] PymentInfo = [];
+            if (user.UserType != "Supervisor")
+            {
+                PymentInfo = await this._collection.Set<PCollections>().Where(x=> x.Casher == user.UserName).OrderByDescending(e=>e.CollectedOn).Take(10).ToArrayAsync();
+
+            }
+            else
+            {
+                PymentInfo = await this._collection.Set<PCollections>().OrderByDescending(e => e.CollectedOn).Take(10).ToArrayAsync();
+
+            }
+
+            if (PymentInfo.Length <= 0)
+                return NoContent();
+            return Ok(new JsonResult(PymentInfo).Value);
         }
 
         [HttpPut("Get-all-Collection")]

@@ -42,11 +42,16 @@ namespace MoH_Microservice.Models
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
         public string PatientLoaction { get; set; } = string.Empty; // Address such as woreda
-        
+
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
         public string PatientWorkingPlace { get; set; } = string.Empty; // WorkPlace such as MOH
+
+        [MaxLength(100)]
+        [DataType(DataType.Text)]
+        [DefaultValue("Unkown")]
+        public string PatientWorkID { get; set; } = string.Empty; // WorkPlace such as MOH
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
