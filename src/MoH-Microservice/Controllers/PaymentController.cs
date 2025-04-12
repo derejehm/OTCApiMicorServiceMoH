@@ -169,6 +169,7 @@ namespace MoH_Microservice.Controllers
                         Amount = items.Amount,
                         PatientLoaction = payment.PatientLocation,
                         PatientWorkingPlace = payment.PatientWorkingPlace,
+                        PatientWorkID = payment.PatientWorkID,
                         PaymentVerifingID = payment.PaymentVerifingID,
                         Department = payment.Department,
                         Channel = payment.Channel,
