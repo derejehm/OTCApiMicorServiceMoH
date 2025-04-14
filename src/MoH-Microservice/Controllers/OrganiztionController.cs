@@ -114,11 +114,9 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
-<<<<<<< HEAD
-                        WorkPlace = workers.Workplace[i],
-=======
+
                         WorkPlace = workers.Workplace,
->>>>>>> 775773cf51ab1a8507ad829c5a47810b9a564de2
+
                         AssignedHospital = user.Hospital,
 
                     };
