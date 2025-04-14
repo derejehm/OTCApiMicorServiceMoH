@@ -144,10 +144,18 @@ namespace MoH_Microservice.Controllers
 
             if (payment.PaymentType.ToLower() == "credit")
             {
-                var worker =await this._payment.OrganiztionalUsers.Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower() && e.AssignedHospital==payment.PatientWorkingPlace).ToArrayAsync();
+                var worker =await this._payment.OrganiztionalUsers
+                    .Where(e => 
+                               e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower() 
+                            && e.AssignedHospital.ToLower() == user.Hospital.ToLower() 
+                            && e.WorkPlace.ToLower()==payment.PatientWorkingPlace.ToLower())
+                    .ToArrayAsync();
                 if (worker.Length <=0)
                 {
-                       return NotFound($"Patient \nEmployeeID: {payment.PatientWorkID}\nWorking Place:{payment.PatientWorkingPlace}\n is not assigned to this hospital");
+                       return NotFound($"Patient <br/>" +
+                           $"EmployeeID: {payment.PatientWorkID} <br/>" +
+                           $"Working Place:{payment.PatientWorkingPlace} <br/> " +
+                           $"is not assigned to this hospital");
                 }   
             }
 

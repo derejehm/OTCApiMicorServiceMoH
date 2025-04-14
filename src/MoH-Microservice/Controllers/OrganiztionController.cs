@@ -45,6 +45,7 @@ namespace MoH_Microservice.Controllers
             Organiztion recored = new Organiztion
             {
                 Organization = organiztion.Organization,
+                Location=organiztion.Address,
                 CreatedBy = organiztion.CreatedBy,
                 CreatedOn = DateTime.Now,
                 UpdatedBy = null, UpdatedOn = null,
@@ -105,6 +106,7 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
+                        WorkPlace = workers.Workplace[],
                         AssignedHospital = user.Hospital,
 
                     };
