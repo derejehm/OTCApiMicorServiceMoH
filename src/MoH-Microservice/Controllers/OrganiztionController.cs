@@ -144,7 +144,7 @@ namespace MoH_Microservice.Controllers
                 .OrderByDescending(e=>e.UploadedOn)
                 .Take(1000)
                 .ToArrayAsync();
-            if (workers == null)
+            if (workers.Length <= 0)
                  NoContent();
           return Ok(workers);
             
@@ -161,7 +161,7 @@ namespace MoH_Microservice.Controllers
             var workers = await this._organiztion.OrganiztionalUsers
                 .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower())
                 .ToArrayAsync();
-            if (workers == null)
+            if (workers.Length <=0)
                 NoContent();
             return Ok(workers);
 
