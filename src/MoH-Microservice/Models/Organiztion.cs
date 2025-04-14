@@ -11,6 +11,8 @@ namespace MoH_Microservice.Models
         [Required, MaxLength(200)]
         public string Organization { get; set; }
         [Required, MaxLength(200)]
+        public string Location { get; set; }
+        [Required, MaxLength(200)]
         public string CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -30,6 +32,10 @@ namespace MoH_Microservice.Models
         public string EmployeeEmail { get; set; }
         [Required, MaxLength(200), DataType(DataType.MultilineText)]
         public string AssignedHospital { get; set; } // Hospiatl Name
+
+        [Required, MaxLength(200), DataType(DataType.MultilineText)]
+        public string WorkPlace { get; set; } // Hospiatl Name
+
         [AllowNull,MaxLength(255)]
         public string UploadedBy { get; set; }
         [AllowNull]
@@ -42,11 +48,13 @@ namespace MoH_Microservice.Models
         public List<string>? EmployeeName { get; set; }
         public List<string>? EmployeePhone { get; set; }
         public List<string>? EmployeeEmail { get; set; }
+        public List<string>? Workplace { get; set; } // Hospiatl Name
         public string UploadedBy { get; set; }
     }
     public class OrganiztionReg
     { 
         public string Organization { get; set; }
+        public string Address { get; set; }
         public string CreatedBy { get; set; }
     }
     public class OrganiztionUpdate

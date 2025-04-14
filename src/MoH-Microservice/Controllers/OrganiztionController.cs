@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace MoH_Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrganiztionController : ControllerBase
     {
         public readonly UserManager<AppUser> _userManager;
@@ -43,6 +45,7 @@ namespace MoH_Microservice.Controllers
             Organiztion recored = new Organiztion
             {
                 Organization = organiztion.Organization,
+                Location=organiztion.Address,
                 CreatedBy = organiztion.CreatedBy,
                 CreatedOn = DateTime.Now,
                 UpdatedBy = null, UpdatedOn = null,
@@ -103,6 +106,7 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
+                        WorkPlace = workers.Workplace[],
                         AssignedHospital = user.Hospital,
 
                     };
