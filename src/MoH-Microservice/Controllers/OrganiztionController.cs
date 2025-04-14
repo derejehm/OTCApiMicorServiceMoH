@@ -114,7 +114,9 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
+
                         WorkPlace = workers.Workplace,
+
                         AssignedHospital = user.Hospital,
 
                     };

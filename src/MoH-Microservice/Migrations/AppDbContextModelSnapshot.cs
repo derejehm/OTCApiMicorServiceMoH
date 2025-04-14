@@ -152,7 +152,7 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "77ae757e-e3f8-407e-b297-147d9973d221",
+                            UserId = "7b36a8a8-f293-41ec-be54-ded00dcd4979",
                             RoleId = "1"
                         });
                 });
@@ -255,9 +255,9 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "77ae757e-e3f8-407e-b297-147d9973d221",
+                            Id = "7b36a8a8-f293-41ec-be54-ded00dcd4979",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dca49733-7b43-4781-a7cf-ec07040a9430",
+                            ConcurrencyStamp = "a0cb0b32-cf59-49f4-8679-f841d7d9788e",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
@@ -265,10 +265,10 @@ namespace MoH_Microservice.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAELjsMBF/jZzJbw6/WJg8pho+BeQDG0kQmt2Nc6ztURxstVRruvXU5fJJUhCrwxTW1A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPCtBN7R63ZACUfIBbKXevBfO+v8NoX7RHVgisTBX8LluSe4cqwMfuNR2awo3fdT0Q==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "d356c6b3-3627-4e6a-a701-6e360dc53569",
+                            SecurityStamp = "becdc453-6beb-4cab-a420-77d635a95fc9",
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
@@ -329,6 +329,11 @@ namespace MoH_Microservice.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("Organization")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -385,6 +390,11 @@ namespace MoH_Microservice.Migrations
 
                     b.Property<DateTime>("UploadedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("WorkPlace")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -613,56 +623,56 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             Channel = "TeleBirr",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2586)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(952)
                         },
                         new
                         {
                             Id = 2,
                             Channel = "Mobile Banking",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2589)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(956)
                         },
                         new
                         {
                             Id = 3,
                             Channel = "Awash Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2592)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(958)
                         },
                         new
                         {
                             Id = 4,
                             Channel = "Bank of Abyssinia",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2594)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(960)
                         },
                         new
                         {
                             Id = 5,
                             Channel = "Amhara Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2596)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(962)
                         },
                         new
                         {
                             Id = 6,
                             Channel = "Tsedey Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2597)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(964)
                         },
                         new
                         {
                             Id = 7,
                             Channel = "Other",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2648)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(966)
                         },
                         new
                         {
                             Id = 8,
                             Channel = "Chapa",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2650)
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(969)
                         });
                 });
 
@@ -759,28 +769,28 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2536),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(906),
                             Purpose = "Card"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2539),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(909),
                             Purpose = "Medicine/Drug"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2541),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(912),
                             Purpose = "Labratory"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2543),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(914),
                             Purpose = "X-RAY"
                         });
                 });
@@ -822,42 +832,42 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2449),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(781),
                             type = "ALL"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2455),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(788),
                             type = "CASH"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2457),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(790),
                             type = "CBHI"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2460),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(792),
                             type = "Credit"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2462),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(795),
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 6,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 12, 11, 38, 9, 473, DateTimeKind.Local).AddTicks(2464),
+                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(798),
                             type = "Digital"
                         });
                 });
