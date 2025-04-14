@@ -48,7 +48,8 @@ namespace MoH_Microservice.Models
         public List<string>? EmployeeName { get; set; }
         public List<string>? EmployeePhone { get; set; }
         public List<string>? EmployeeEmail { get; set; }
-        public List<string>? Workplace { get; set; } // Hospiatl Name
+        public bool IsExtend { get; set; }
+        public string Workplace { get; set; } // Hospiatl Name
         public string UploadedBy { get; set; }
     }
     public class OrganiztionReg
@@ -68,6 +69,12 @@ namespace MoH_Microservice.Models
     {
         public int Id { get; set; }
         public string deletedBy { get; set; }
+    }
+
+    public class OrganizationalUserGet
+    {
+        public string? EmployeeID { get; set; }
+        public string? LoggedInUser { get; set; }
     }
 
 
