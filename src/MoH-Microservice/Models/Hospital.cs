@@ -15,7 +15,6 @@
 
     public class HospitalReg
     {
-        public int Id { get; set; }
         public string HospitalName { get; set; }
         public string? HospitalManager { get; set; }
         public string? Email { get; set; }
