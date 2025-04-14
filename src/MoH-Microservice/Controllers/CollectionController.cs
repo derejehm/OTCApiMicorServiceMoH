@@ -122,7 +122,7 @@ namespace MoH_Microservice.Controllers
                     {
                         SendConfirmationSMS(collector.EmployeePhone[i], text);
                     }
-
+                    
                     await this._collection.AddAsync<PaymentCollectors>(banker);
                     await this._collection.SaveChangesAsync();
                 }
@@ -346,8 +346,14 @@ namespace MoH_Microservice.Controllers
             {
                 return false;
             }
+            var _hospital = await this._collection.Hospitals.Where(e => e.HospitalName.ToLower() == hospital.ToLower()).Select(e=> new
+            {
+                EmployeeEmail=e.Email,
+                EmployeeName=e.HospitalManager,
+                ContactMethod= e.ContactMethod
+            }).ToArrayAsync();
 
-            foreach( var item in result)
+            foreach (var item in result)
             {
                 var text = $"\r\nDear {item.EmployeeName}\r\n" +
                     $"[ {collection.CollectedAmount} ] Birr has been " +
@@ -365,6 +371,27 @@ namespace MoH_Microservice.Controllers
                 }
 
             }
+
+            foreach (var item in _hospital)
+            {
+                var text = $"\r\nDear {item.EmployeeName}\r\n" +
+                    $"[ {collection.CollectedAmount} ] Birr has been " +
+                    $"Collected by [ {collection.CollectedBy} ] " +
+                    $"On [ {collection.CollectedOn} ] " +
+                    $"from [ {collection.Casher} ]\r\n" +
+                    $" - Tsedey Bank OTC-MOHSystem [{DateTime.Now}] ";
+                if (item != null && item.ContactMethod.ToLower() == "email")
+                {
+                    SendConfirmationEmail(item.EmployeeEmail, text);
+                }
+                if (item != null && item.ContactMethod.ToLower() == "sms")
+                {
+                    SendConfirmationSMS(item.EmployeeEmail, text);
+                }
+
+            }
+
+
 
             return true;
         }

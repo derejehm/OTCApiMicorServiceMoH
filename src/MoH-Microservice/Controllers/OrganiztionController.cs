@@ -68,6 +68,7 @@ namespace MoH_Microservice.Controllers
                             .Where<Organiztion>((type) => type.Id == organiztion.Id)
                              .ExecuteUpdateAsync(e =>
                                         e.SetProperty(e => e.Organization, organiztion.Organization)
+                                        .SetProperty(e=>e.Location, organiztion.Address)
                                         .SetProperty(e => e.UpdatedOn, DateTime.Now)
                                         .SetProperty(e => e.UpdatedBy, organiztion.UpdatedBy));
 
@@ -96,11 +97,11 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             if (workers.IsExtend)
             {
-                workers = await this.UniqueWorkers(workers);
+                workers = await this.UniqueWorkers(user.Hospital.ToLower(),workers);
             }
             else
             {
-               var deleteWorkers = await this._organiztion.OrganiztionalUsers.Where(e => e.WorkPlace.ToLower() == workers.Workplace.ToLower()).ExecuteDeleteAsync();
+               var deleteWorkers = await this._organiztion.OrganiztionalUsers.Where(e => e.WorkPlace.ToLower() == workers.Workplace.ToLower() && e.AssignedHospital.ToLower()==user.Hospital.ToLower()).ExecuteDeleteAsync();
             }
             try
             {
@@ -143,6 +144,7 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
             var workers = await this._organiztion.OrganiztionalUsers
+                .Where(e=> e.AssignedHospital.ToLower() == user.Hospital.ToLower())
                 .OrderByDescending(e=>e.UploadedOn)
                 .Take(1000)
                 .ToArrayAsync();
@@ -161,7 +163,7 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             var workers = await this._organiztion.OrganiztionalUsers
-                .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower())
+                .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower() && e.AssignedHospital.ToLower() == user.Hospital.ToLower())
                 .ToArrayAsync();
             if (workers.Length <=0)
                 NoContent();
@@ -169,7 +171,7 @@ namespace MoH_Microservice.Controllers
 
         }
 
-        private async Task<OrganiztionalUsersReg> UniqueWorkers(OrganiztionalUsersReg workers)
+        private async Task<OrganiztionalUsersReg> UniqueWorkers(string hospital,OrganiztionalUsersReg workers)
         {
             List<string> _EmployeeID = new List<string>();
             List<string> _EmployeeName = new List<string>();
@@ -178,7 +180,9 @@ namespace MoH_Microservice.Controllers
             for (var i = 0; i < workers.EmployeeEmail.Count; i++)
             {
                 var employee = await this._organiztion.OrganiztionalUsers
-                    .Where(e => e.EmployeeID.ToLower() == workers.EmployeeID[i].ToLower() && e.WorkPlace.ToLower() == workers.Workplace.ToLower())
+                    .Where(e => e.EmployeeID.ToLower() == workers.EmployeeID[i].ToLower() 
+                    && e.WorkPlace.ToLower() == workers.Workplace.ToLower() 
+                    && e.AssignedHospital.ToLower() == hospital)
                     .ToArrayAsync();
                 if (employee.Length <= 0)
                 {

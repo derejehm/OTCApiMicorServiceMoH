@@ -62,6 +62,7 @@ namespace MoH_Microservice.Models
     {
         public int Id { get; set; }
         public string Organization { get; set; }
+        public string Address { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
