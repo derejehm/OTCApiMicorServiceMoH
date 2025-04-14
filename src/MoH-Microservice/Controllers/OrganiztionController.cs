@@ -94,6 +94,14 @@ namespace MoH_Microservice.Controllers
             var user = await this._userManager.FindByNameAsync(workers.UploadedBy);
             if (user == null)
                 return NotFound("User not found");
+            if (workers.IsExtend)
+            {
+                workers = await this.UniqueWorkers(workers);
+            }
+            else
+            {
+               var deleteWorkers = await this._organiztion.OrganiztionalUsers.Where(e => e.WorkPlace.ToLower() == workers.Workplace.ToLower()).ExecuteDeleteAsync();
+            }
             try
             {
                 for (var i=0;i < workers.EmployeeEmail.Count; i++)
@@ -106,7 +114,7 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
-                        WorkPlace = workers.Workplace[],
+                        WorkPlace = workers.Workplace,
                         AssignedHospital = user.Hospital,
 
                     };
@@ -126,16 +134,69 @@ namespace MoH_Microservice.Controllers
             return Ok("Data uploaded Successfully!");
         }
 
-        [HttpGet("get-workers/{loggedInUser}")]
-        public async Task<IActionResult> GetWorkers([FromRoute] string loggedInUser)
+        [HttpGet("get-workers/{LoggedInUser}")]
+        public async Task<IActionResult> GetWorkersAll([FromRoute] OrganizationalUserGet worker)
         {
-            var user = await this._userManager.FindByNameAsync(loggedInUser);
+            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
             if (user == null)
                 return NotFound("User not found");
-            var workers = await this._organiztion.OrganiztionalUsers.ToArrayAsync();
+            var workers = await this._organiztion.OrganiztionalUsers
+                .OrderByDescending(e=>e.UploadedOn)
+                .Take(1000)
+                .ToArrayAsync();
+            if (workers == null)
+                 NoContent();
+          return Ok(workers);
+            
+
+        }
+
+        [HttpGet("get-workers/{LoggedInUser}/{EmployeeID}")]
+        public async Task<IActionResult> GetWorkers([FromRoute] OrganizationalUserGet worker)
+        {
+            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
+            if (user == null)
+                return NotFound("User not found");
+
+            var workers = await this._organiztion.OrganiztionalUsers
+                .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower())
+                .ToArrayAsync();
             if (workers == null)
                 NoContent();
             return Ok(workers);
+
+        }
+
+        private async Task<OrganiztionalUsersReg> UniqueWorkers(OrganiztionalUsersReg workers)
+        {
+            List<string> _EmployeeID = new List<string>();
+            List<string> _EmployeeName = new List<string>();
+            List<string> _EmployeeEmail = new List<string>();
+            List<string> _EmployeePhone = new List<string>();
+            for (var i = 0; i < workers.EmployeeEmail.Count; i++)
+            {
+                var employee = await this._organiztion.OrganiztionalUsers
+                    .Where(e => e.EmployeeID.ToLower() == workers.EmployeeID[i].ToLower() && e.WorkPlace.ToLower() == workers.Workplace.ToLower())
+                    .ToArrayAsync();
+                if (employee.Length <= 0)
+                {
+                    _EmployeeID.Add(workers.EmployeeID[i]);
+                    _EmployeeName.Add(workers.EmployeeName[i]);
+                    _EmployeeEmail.Add(workers.EmployeeEmail[i]);
+                    _EmployeePhone.Add(workers.EmployeePhone[i]);
+                }
+            }
+            OrganiztionalUsersReg worker = new OrganiztionalUsersReg
+            {
+                EmployeeID =  _EmployeeID,
+                EmployeeName = _EmployeeName,
+                EmployeeEmail = _EmployeeEmail,
+                EmployeePhone =_EmployeePhone,
+                UploadedBy = workers.UploadedBy,
+                Workplace = workers.Workplace,
+            };
+
+            return worker;
         }
 
     }
