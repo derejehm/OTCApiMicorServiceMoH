@@ -71,5 +71,11 @@ namespace MoH_Microservice.Models
         public string deletedBy { get; set; }
     }
 
+    public class OrganizationalUserGet
+    {
+        public string? EmployeeID { get; set; }
+        public string? LoggedInUser { get; set; }
+    }
+
 
 }

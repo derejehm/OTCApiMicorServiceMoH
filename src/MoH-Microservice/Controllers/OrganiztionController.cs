@@ -100,7 +100,7 @@ namespace MoH_Microservice.Controllers
             }
             else
             {
-               var deleteWorkers = await this._organiztion.OrganiztionalUsers.Where(e => e.WorkPlace == workers.Workplace).ExecuteDeleteAsync();
+               var deleteWorkers = await this._organiztion.OrganiztionalUsers.Where(e => e.WorkPlace.ToLower() == workers.Workplace.ToLower()).ExecuteDeleteAsync();
             }
             try
             {
@@ -134,16 +134,37 @@ namespace MoH_Microservice.Controllers
             return Ok("Data uploaded Successfully!");
         }
 
-        [HttpGet("get-workers/{loggedInUser}")]
-        public async Task<IActionResult> GetWorkers([FromRoute] string loggedInUser)
+        [HttpGet("get-workers/{LoggedInUser}")]
+        public async Task<IActionResult> GetWorkersAll([FromRoute] OrganizationalUserGet worker)
         {
-            var user = await this._userManager.FindByNameAsync(loggedInUser);
+            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
             if (user == null)
                 return NotFound("User not found");
-            var workers = await this._organiztion.OrganiztionalUsers.ToArrayAsync();
+            var workers = await this._organiztion.OrganiztionalUsers
+                .OrderByDescending(e=>e.UploadedOn)
+                .Take(1000)
+                .ToArrayAsync();
+            if (workers == null)
+                 NoContent();
+          return Ok(workers);
+            
+
+        }
+
+        [HttpGet("get-workers/{LoggedInUser}/{EmployeeID}")]
+        public async Task<IActionResult> GetWorkers([FromRoute] OrganizationalUserGet worker)
+        {
+            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
+            if (user == null)
+                return NotFound("User not found");
+
+            var workers = await this._organiztion.OrganiztionalUsers
+                .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower())
+                .ToArrayAsync();
             if (workers == null)
                 NoContent();
             return Ok(workers);
+
         }
 
         private async Task<OrganiztionalUsersReg> UniqueWorkers(OrganiztionalUsersReg workers)
