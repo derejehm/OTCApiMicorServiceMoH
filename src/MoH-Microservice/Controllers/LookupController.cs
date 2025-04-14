@@ -43,17 +43,17 @@ namespace MoH_Microservice.Controllers
 
             HttpClient client = new HttpClient();
             var url = "";
-            if (channel == "TELEBIRR")
+            if (channel.ToUpper() == "TELEBIRR")
             {
                 url = $"https://transactioninfo.ethiotelecom.et/receipt/{receptId}";
             }
             
-            if(channel == "CBE MOBILE BANKING")
+            if(channel.ToUpper() == "CBE MOBILE BANKING")
             {
                 url = $"https://apps.cbe.com.et:100/?id={receptId}";
             }
 
-            if (channel == "BANK OF ABYSSINIA")
+            if (channel.ToUpper() == "BANK OF ABYSSINIA")
             {
                 url = $"https://cs.bankofabyssinia.com/api/onlineSlip/getDetails/?id={receptId}";
 
@@ -66,19 +66,19 @@ namespace MoH_Microservice.Controllers
             if (response.IsSuccessStatusCode)
             {
               
-                if (channel == "TELEBIRR")
+                if (channel.ToUpper() == "TELEBIRR")
                 {
                     return Ok(await response.Content.ReadAsStringAsync());
                 }
 
-                if (channel == "CBE MOBILE BANKING") 
+                if (channel.ToUpper() == "CBE MOBILE BANKING") 
                 {
 
                     return File(await response.Content.ReadAsByteArrayAsync(), "application/pdf", "payment_verification.pdf");
                     //return Ok(await response.Content.ReadAsByteArrayAsync());
                 }
 
-                if (channel == "BANK OF ABYSSINIA")
+                if (channel.ToUpper() == "BANK OF ABYSSINIA")
                 {
                     var result = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(result);
