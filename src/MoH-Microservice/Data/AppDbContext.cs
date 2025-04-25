@@ -90,7 +90,7 @@ namespace MoH_Microservice.Data
             builder.Entity<PaymentChannel>().HasData(
                      
                       new PaymentChannel { Id = 1, Channel = "TeleBirr", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                    , new PaymentChannel { Id = 2, Channel = "Mobile Banking", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                    , new PaymentChannel { Id = 2, Channel = "CBE Mobile Banking", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                     , new PaymentChannel { Id = 3, Channel = "Awash Bank", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                     , new PaymentChannel { Id = 4, Channel = "Bank of Abyssinia", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                     , new PaymentChannel { Id = 5, Channel = "Amhara Bank", CreatedBy = "SYS", CreatedOn = DateTime.Now }
