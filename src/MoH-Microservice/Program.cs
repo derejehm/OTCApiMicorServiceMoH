@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using MoH_Microservice.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +47,8 @@ builder.Services.AddSwaggerGen(c =>
                 });
 });
 builder.Services.AddDbContext<AppDbContext>(option=> option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddTransient<IEmailSender,EmailSender>();
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 {
