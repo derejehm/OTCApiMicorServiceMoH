@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using System.Globalization;
 
 namespace MoH_Microservice.Controllers
 {
@@ -16,13 +18,14 @@ namespace MoH_Microservice.Controllers
         public readonly UserManager<AppUser> _userManager;
         public readonly RoleManager<IdentityRole> _roleManager;
         public readonly AppDbContext _collection;
+        public readonly IEmailSender _emailSender;
 
-
-        public CollectionController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, AppDbContext collection)
+        public CollectionController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, AppDbContext collection,IEmailSender emailSender)
         {
             this._userManager = userManager;
             this._roleManager = roleManager;
-            this._collection = collection;
+            this._collection  = collection;
+            this._emailSender = emailSender;
         }
 
         [HttpPost("collection")]
@@ -318,8 +321,13 @@ namespace MoH_Microservice.Controllers
         {
 
             // email sending function
-            Console.WriteLine($"Email been sent to {email} {content}");
-
+            try
+            {
+                await this._emailSender.SendEmailAsync(email, "Payment Collection", content);
+            }catch (Exception ex)
+            {
+                Console.WriteLine($"Sending email to {email} failed! Reason : {ex.Message}"); 
+            }
         }
         private async void SendConfirmationSMS(string phone, string content)
         {
@@ -363,6 +371,11 @@ namespace MoH_Microservice.Controllers
                     $" - Tsedey Bank OTC-MOHSystem [{DateTime.Now}] ";
                 if (item != null && item.ContactMethod.ToLower() == "email")
                 {
+                    text = $"<p>Dear <strong>{item.EmployeeName.ToUpper()}</strong>,</p>" +
+                        $"<p><strong>{ collection.CollectedAmount.ToString("C",CultureInfo.InvariantCulture)} BIRR </strong> " +
+                        $"has been Collected by <strong>{ collection.CollectedBy.ToUpper()}</strong> On <strong>{ collection.CollectedOn} </strong>  " +
+                        $"from cashier <strong>{ collection.Casher.ToUpper()}</strong> at  <strong> {hospital.ToUpper()} </strong> hospital.</p>" +
+                        $"<br/><p> -Tsedey Bank OTC-MOHSystem { DateTime.Now} </p> ";
                     SendConfirmationEmail(item.EmployeeEmail, text);
                 }
                 if (item != null && item.ContactMethod.ToLower() == "sms")
