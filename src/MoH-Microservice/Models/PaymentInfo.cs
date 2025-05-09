@@ -121,8 +121,9 @@ namespace MoH_Microservice.Models
     }
     public class PaymentPurposeReg
     {
-        public string? Purpose { get; set; }
-        public string? CreatedBy { get; set; }
+        public string[] Purpose { get; set; }
+        public decimal[] Amount { get; set; }
+        public string CreatedBy { get; set; }
     }
     public class PaymentPurposeUpdate
     {

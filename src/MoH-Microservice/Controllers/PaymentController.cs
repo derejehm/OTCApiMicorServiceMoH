@@ -142,6 +142,11 @@ namespace MoH_Microservice.Controllers
             if (user.UserType.ToLower() != "cashier")
                 return Unauthorized("You are unautorized to perform payment registration!");
 
+            var MaxCardDate = await this._payment.Payments.Where(e => e.CardNumber == payment.CardNumber)
+                    .GroupBy(e => new { e.CardNumber })
+                    .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
+                    .ToArrayAsync();
+
             if (payment.PaymentType.ToLower() == "credit")
             {
                 var worker =await this._payment.OrganiztionalUsers
@@ -165,6 +170,13 @@ namespace MoH_Microservice.Controllers
             {
                 foreach (var items in payment.Amount)
                 {
+                    
+
+                    if ((MaxCardDate[0].maxregdate - DateTime.Now).Value.Days <= 15 
+                        && items.Purpose.ToLower() == "card")
+                    {
+                        return BadRequest("Card usage has't yet expired!");
+                    }
 
                     Payment data = new Payment()
                     {

@@ -228,24 +228,25 @@ namespace MoH_Microservice.Controllers
             if (username == null)
                 return NotFound("User not found");
 
-            var PymentInfo = await this._payment.Set<PaymentPurpose>().Where<PaymentPurpose>((e) => e.Purpose == paymentPurpose.Purpose).ToArrayAsync();
-
-            if (PymentInfo.Length > 0)
-                return BadRequest("Payment purpose aleady exist");
-
-            PaymentPurpose purpose = new PaymentPurpose
+            for(var i =0; i<paymentPurpose.Purpose.Length;i++)
             {
-                Purpose = paymentPurpose.Purpose,
-                CreatedBy = paymentPurpose.CreatedBy,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = null,
-                UpdatedBy = "",
-            };
+                var PymentInfo = await this._payment.Set<PaymentPurpose>().Where<PaymentPurpose>((e) => e.Purpose == paymentPurpose.Purpose[i]).ToArrayAsync();
 
-            await this._payment.AddAsync<PaymentPurpose>(purpose);
-            await this._payment.SaveChangesAsync();
+                PaymentPurpose purpose = new PaymentPurpose
+                {
+                    Purpose = paymentPurpose.Purpose[i],
+                    Amount = paymentPurpose.Amount[i],
+                    CreatedBy = paymentPurpose.CreatedBy,
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = null,
+                    UpdatedBy = "",
+                };
+                if (PymentInfo.Length <= 0)
+                    await this._payment.AddAsync<PaymentPurpose>(purpose);
 
-            return Created("/", new JsonResult(purpose).Value);
+                await this._payment.SaveChangesAsync();
+            }
+            return Created("/", new JsonResult(paymentPurpose).Value);
         }
         //Update
 
