@@ -102,7 +102,8 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [Required]
         public string? Purpose { get; set; }
-
+        [DataType(DataType.Currency)]
+        public Decimal? Amount { get; set; }
         [MaxLength(100)]
         [Required]
         public string? CreatedBy { get; set; }
