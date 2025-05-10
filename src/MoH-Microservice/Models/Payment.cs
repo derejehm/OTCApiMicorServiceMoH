@@ -130,6 +130,4 @@ namespace MoH_Microservice.Models
         [DataType(DataType.DateTime)]
         public DateTime? CreatedOn { get; set; } = DateTime.Now;
     }
-
-
 }
