@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using System.Threading.Tasks.Dataflow;
 
 
 namespace MoH_Microservice.Controllers
@@ -35,29 +37,90 @@ namespace MoH_Microservice.Controllers
             if (user == null)
                 return NotFound("User not found");
 
-
-            Payment[] PymentInfo = [];
             if (user.UserType != "Supervisor")
             {
-                PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date && x.Createdby == user.UserName).ToArrayAsync();
+                
+                var data = await (from payments in this._payment.Payments
+                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date
+                                  && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
+                                  && payments.Createdby == user.UserName &&payments.PatientWorkID !="-"
+                                  join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
+                                  from report in rpt_patient.DefaultIfEmpty()
+                                  join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
+                                  from report_workers in rpt_worker.DefaultIfEmpty()
+                                  select new
+                                  {
+                                      RefNo = payments.RefNo,
+                                      CardNumber = payments.CardNumber,
+                                      HospitalName = payments.HospitalName,
+                                      Department = payments.Department,
+                                      Channel = payments.Channel,
+                                      PatientName = report.PatientName == null ? report_workers.EmployeeName == null ? "" : report_workers.EmployeeName : report.PatientName,
+                                      PatientPhone = report.PatientPhoneNumber == null ? report_workers.EmployeePhone == null ? "" : report_workers.EmployeePhone : report.PatientPhoneNumber,
+                                      PatientAge = report.PatientAge == null ? "" : report.PatientAge.ToString(),
+                                      PatientAddress = report.PatientAddress == null ? "" : report.PatientAddress,
+                                      PatientGender = report.PatientGender == null ? "" : report.PatientGender,
+                                      PaymentVerifingID = payments.PaymentVerifingID,
+                                      PatientLoaction = payments.PatientLoaction,
+                                      PatientWorkingPlace = payments.PatientWorkingPlace,
+                                      PatientWorkID = payments.PatientWorkID,
+                                      Purpose = payments.Purpose,
+                                      Amount = payments.Amount,
+                                      Description = payments.Description,
+                                      IsCollected = payments.IsCollected,
+                                      Createdby = payments.Createdby,
+                                      CreatedOn = payments.CreatedOn,
+                                  }
+                            ).ToArrayAsync();
 
+                if (data.Length <= 0)
+                    return NoContent();
+
+                return Ok(new JsonResult(data).Value);
             }
             else
             {
-                PymentInfo = await this._payment.Set<Payment>().Where(x => x.CreatedOn.Value.Date >= payment.startDate.Value.Date && x.CreatedOn.Value.Date <= payment.endDate.Value.Date).ToArrayAsync();
+                var data = await (from payments in this._payment.Payments
+                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date
+                                  && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
+                                  join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
+                                  from report in rpt_patient.DefaultIfEmpty()
+                                  join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
+                                  from report_workers in rpt_worker.DefaultIfEmpty()
+                                  select new
+                                  {
+                                      RefNo = payments.RefNo,
+                                      CardNumber = payments.CardNumber,
+                                      HospitalName = payments.HospitalName,
+                                      Department = payments.Department,
+                                      Channel = payments.Channel,
+                                      PatientName = report.PatientName == null ? report_workers.EmployeeName ==null ? "": report_workers.EmployeeName : report.PatientName,
+                                      PatientPhone = report.PatientPhoneNumber == null ? report_workers.EmployeePhone == null ? "" : report_workers.EmployeePhone : report.PatientPhoneNumber,
+                                      PatientAge = report.PatientAge == null ? "" : report.PatientAge.ToString(),
+                                      PatientAddress = report.PatientAddress == null ? "" : report.PatientAddress,
+                                      PatientGender = report.PatientGender == null ? "" : report.PatientGender,
+                                      PaymentVerifingID = payments.PaymentVerifingID,
+                                      PatientLoaction = payments.PatientLoaction,
+                                      PatientWorkingPlace = payments.PatientWorkingPlace,
+                                      PatientWorkID = payments.PatientWorkID,
+                                      Purpose = payments.Purpose,
+                                      Amount = payments.Amount,
+                                      Description = payments.Description,
+                                      IsCollected = payments.IsCollected,
+                                      Createdby = payments.Createdby,
+                                      CreatedOn = payments.CreatedOn,
+                                  }
+                            ).ToArrayAsync();
+
+                if (data.Length <= 0)
+                    return NoContent();
+
+                return Ok(new JsonResult(data).Value);
 
             }
 
 
-
-            if (PymentInfo.Length <= 0)
-                return NoContent();
-
-            return Ok(new JsonResult(PymentInfo).Value);
         }
-
-
-     
 
 
 
@@ -141,11 +204,12 @@ namespace MoH_Microservice.Controllers
 
             if (user.UserType.ToLower() != "cashier")
                 return Unauthorized("You are unautorized to perform payment registration!");
-
-            var MaxCardDate = await this._payment.Payments.Where(e => e.CardNumber == payment.CardNumber)
+            
+            var MaxCardDate = await this._payment.Payments.Where(e => e.CardNumber == payment.CardNumber && e.Purpose.ToLower() == "card")
                     .GroupBy(e => new { e.CardNumber })
                     .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
                     .ToArrayAsync();
+
 
             if (payment.PaymentType.ToLower() == "credit")
             {
@@ -170,12 +234,13 @@ namespace MoH_Microservice.Controllers
             {
                 foreach (var items in payment.Amount)
                 {
-                    
 
-                    if ((MaxCardDate[0].maxregdate - DateTime.Now).Value.Days <= 15 
+
+
+                    if ((DateTime.Now-MaxCardDate[0].maxregdate).Value.Days <= 15
                         && items.Purpose.ToLower() == "card")
                     {
-                        return BadRequest("Card usage has't yet expired!");
+                        return BadRequest($"Card usage has't yet expired! {(DateTime.Now - MaxCardDate[0].maxregdate).Value.Days}. Days Passed since registration, Last Registration Date : {MaxCardDate[0].maxregdate}");
                     }
 
                     Payment data = new Payment()
