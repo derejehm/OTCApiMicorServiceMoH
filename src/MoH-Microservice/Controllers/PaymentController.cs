@@ -237,7 +237,7 @@ namespace MoH_Microservice.Controllers
 
 
 
-                    if ((DateTime.Now-MaxCardDate[0].maxregdate).Value.Days <= 15
+                    if (MaxCardDate.Length>0 && (DateTime.Now-MaxCardDate[0].maxregdate).Value.Days <= 15
                         && items.Purpose.ToLower() == "card")
                     {
                         return BadRequest($"Card usage has't yet expired! {(DateTime.Now - MaxCardDate[0].maxregdate).Value.Days}. Days Passed since registration, Last Registration Date : {MaxCardDate[0].maxregdate}");
