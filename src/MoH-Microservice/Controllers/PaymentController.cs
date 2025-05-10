@@ -209,7 +209,10 @@ namespace MoH_Microservice.Controllers
                     .GroupBy(e => new { e.CardNumber })
                     .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
                     .ToArrayAsync();
-
+            if (MaxCardDate.Length <= 0)
+            {
+                return BadRequest("The patient Does't have a card number please create one.");
+            }
 
             if (payment.PaymentType.ToLower() == "credit")
             {
@@ -241,6 +244,7 @@ namespace MoH_Microservice.Controllers
                         throw new Exception($"Card usage has't yet expired! {(DateTime.Now - MaxCardDate[0].maxregdate).Value.Days}. Days Passed since registration, Last Registration Date : {MaxCardDate[0].maxregdate}");
                     }
 
+
                     Payment data = new Payment()
                     {
                         RefNo = RefNo,
@@ -267,7 +271,7 @@ namespace MoH_Microservice.Controllers
             catch (Exception ex)
             {
                 // Error [Pay0000] = "Insert Failed"
-                return BadRequest($"Error [Pay0000] Insert Failed Reason: {ex}");
+                return BadRequest($"Error [Pay0000] Insert Failed Reason: {ex.Message}");
             }
                        
            
