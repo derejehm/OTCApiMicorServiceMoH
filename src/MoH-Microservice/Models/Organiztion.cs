@@ -42,9 +42,9 @@ namespace MoH_Microservice.Models
         public DateTime UploadedOn { get; set; }
 
         [AllowNull, MaxLength(255)]
-        public string UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
         [AllowNull]
-        public DateTime UpdatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; }
     }
 
     public class OrganiztionalUsersReg
