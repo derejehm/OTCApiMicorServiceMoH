@@ -36,10 +36,15 @@ namespace MoH_Microservice.Models
         [Required, MaxLength(200), DataType(DataType.MultilineText)]
         public string WorkPlace { get; set; } // Hospiatl Name
 
-        [AllowNull,MaxLength(255)]
+        [AllowNull, MaxLength(255)]
         public string UploadedBy { get; set; }
         [AllowNull]
         public DateTime UploadedOn { get; set; }
+
+        [AllowNull, MaxLength(255)]
+        public string? UpdatedBy { get; set; }
+        [AllowNull]
+        public DateTime? UpdatedOn { get; set; }
     }
 
     public class OrganiztionalUsersReg
@@ -75,6 +80,17 @@ namespace MoH_Microservice.Models
     public class OrganizationalUserGet
     {
         public string? EmployeeID { get; set; }
+        public string? LoggedInUser { get; set; }
+    }
+    public class OrganiztionalUsersUpdate
+    {
+        public int Id { get; set; }
+        public string? EmployeeID { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? EmployeePhone { get; set; }
+        public string? EmployeeEmail { get; set; }
+        public bool IsExtend { get; set; }
+        public string Workplace { get; set; } // Hospiatl Name
         public string? LoggedInUser { get; set; }
     }
 

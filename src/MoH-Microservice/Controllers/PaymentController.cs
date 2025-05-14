@@ -43,7 +43,7 @@ namespace MoH_Microservice.Controllers
                 var data = await (from payments in this._payment.Payments
                                   where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date
                                   && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
-                                  && payments.Createdby == user.UserName &&payments.PatientWorkID !="-"
+                                  && payments.Createdby == user.UserName
                                   join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
                                   from report in rpt_patient.DefaultIfEmpty()
                                   join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
@@ -75,14 +75,12 @@ namespace MoH_Microservice.Controllers
 
                 if (data.Length <= 0)
                     return NoContent();
-
                 return Ok(new JsonResult(data).Value);
             }
             else
             {
                 var data = await (from payments in this._payment.Payments
-                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date
-                                  && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
+                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
                                   join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
                                   from report in rpt_patient.DefaultIfEmpty()
                                   join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
@@ -211,7 +209,7 @@ namespace MoH_Microservice.Controllers
                     .ToArrayAsync();
             if (MaxCardDate.Length <= 0 && !payment.Amount.Any(e=>e.Purpose.ToLower()=="card"))
             {
-                return BadRequest("The patient Does't have a card number please create one.");
+                return BadRequest("No Payment has been done for a card.");
             }
 
             if (payment.PaymentType.ToLower() == "credit")

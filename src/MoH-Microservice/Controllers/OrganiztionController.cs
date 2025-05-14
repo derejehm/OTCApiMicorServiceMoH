@@ -115,6 +115,8 @@ namespace MoH_Microservice.Controllers
                         EmployeePhone = workers.EmployeePhone[i],
                         UploadedBy = workers.UploadedBy,
                         UploadedOn = DateTime.Now,
+                        UpdatedBy=null,
+                        UpdatedOn=null,
                         WorkPlace = workers.Workplace,
 
                         AssignedHospital = user.Hospital,
@@ -142,11 +144,13 @@ namespace MoH_Microservice.Controllers
             var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
             if (user == null)
                 return NotFound("User not found");
+
             var workers = await this._organiztion.OrganiztionalUsers
-                .Where(e=> e.AssignedHospital.ToLower() == user.Hospital.ToLower())
-                .OrderByDescending(e=>e.UploadedOn)
+                .Where(e => e.AssignedHospital.ToLower() == user.Hospital.ToLower())
+                .OrderByDescending(e => e.UploadedOn)
                 .Take(1000)
                 .ToArrayAsync();
+
             if (workers.Length <= 0)
                  NoContent();
           return Ok(workers);
@@ -164,8 +168,32 @@ namespace MoH_Microservice.Controllers
             var workers = await this._organiztion.OrganiztionalUsers
                 .Where(e => e.EmployeeID.ToLower() == worker.EmployeeID.ToLower() && e.AssignedHospital.ToLower() == user.Hospital.ToLower())
                 .ToArrayAsync();
-            if (workers.Length <=0)
+            if (workers.Length <= 0)
                 NoContent();
+            return Ok(workers);
+
+        }
+
+        [HttpPut("Update-workers/")]
+        public async Task<IActionResult> UpdateWorkers([FromBody] OrganiztionalUsersUpdate worker)
+        {
+            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
+            if (user == null)
+                return NotFound("User not found");
+
+            var workers = await this._organiztion.OrganiztionalUsers
+                .Where(e => e.Id == worker.Id)
+                .ExecuteUpdateAsync(item => 
+                        item
+                        .SetProperty(d => d.EmployeeID, worker.EmployeeID)
+                        .SetProperty(d => d.EmployeeName, worker.EmployeeName)
+                        .SetProperty(d => d.EmployeePhone, worker.EmployeePhone)
+                        .SetProperty(d => d.EmployeeEmail, worker.EmployeeEmail)
+                        .SetProperty(d => d.WorkPlace, worker.Workplace)
+                        .SetProperty(d => d.UpdatedOn, DateTime.Now)
+                        .SetProperty(d => d.UpdatedBy, worker.LoggedInUser)
+                 );
+            
             return Ok(workers);
 
         }
