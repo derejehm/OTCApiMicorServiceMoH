@@ -152,7 +152,7 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "7b36a8a8-f293-41ec-be54-ded00dcd4979",
+                            UserId = "f5f1ae89-611a-495e-bea6-b3e4605bb4d5",
                             RoleId = "1"
                         });
                 });
@@ -255,9 +255,9 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7b36a8a8-f293-41ec-be54-ded00dcd4979",
+                            Id = "f5f1ae89-611a-495e-bea6-b3e4605bb4d5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a0cb0b32-cf59-49f4-8679-f841d7d9788e",
+                            ConcurrencyStamp = "4db1ca0f-d880-4019-8dd2-6b2527554417",
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
@@ -265,10 +265,10 @@ namespace MoH_Microservice.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPCtBN7R63ZACUfIBbKXevBfO+v8NoX7RHVgisTBX8LluSe4cqwMfuNR2awo3fdT0Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEENtoQNoCJIarImNnytz+2UW/r16dcghL8NVNuf//fEE7n3hIrTDwphP1fak0N01HQ==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "becdc453-6beb-4cab-a420-77d635a95fc9",
+                            SecurityStamp = "a72b1252-2a2b-4134-9cdb-b89e029e3428",
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
@@ -315,11 +315,11 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("MoH_Microservice.Models.Organiztion", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -352,11 +352,11 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("MoH_Microservice.Models.OrganiztionalUsers", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AssignedHospital")
                         .IsRequired()
@@ -382,6 +382,13 @@ namespace MoH_Microservice.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UploadedBy")
                         .IsRequired()
@@ -444,75 +451,204 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("MoH_Microservice.Models.Patient", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("CreatedBy")
+                    b.Property<string>("EmployementID")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<string>("MRN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("PatientDOB")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PatientAddress")
+                    b.Property<string>("address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PatientAge")
+                    b.Property<int>("age")
                         .HasColumnType("int");
 
-                    b.Property<string>("PatientCardNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PatientGender")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PatientName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PatientPhoneNumber")
+                    b.Property<string>("appointment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UpdatedBy")
+                    b.Property<string>("createdBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedOn")
+                    b.Property<DateTime>("createdOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("department")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("educationlevel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("iscbhiuser")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("iscreadituser")
+                        .HasColumnType("int");
+
+                    b.Property<string>("kinAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("maritalstatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("middleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("motherName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("multiplebirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("occupation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phonenumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("placeofbirth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("religion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("spouseFirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("spouselastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("updatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("visitDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MRN")
+                        .IsUnique();
+
+                    b.HasIndex("firstName");
+
+                    b.HasIndex("lastName");
+
+                    b.HasIndex("middleName");
+
+                    b.HasIndex("phonenumber");
+
                     b.ToTable("Patients");
+                });
+
+            modelBuilder.Entity("MoH_Microservice.Models.PatientAddress", b =>
+                {
+                    b.Property<long>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
+
+                    b.Property<string>("AddressDetail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Kebele")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MRN")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("REFMRN")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Woreda")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("createdBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createdOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("isNextOfKin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("updatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("updatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("MRN");
+
+                    b.HasIndex("REFMRN");
+
+                    b.ToTable("PatientAddress");
                 });
 
             modelBuilder.Entity("MoH_Microservice.Models.Payment", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<long>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("id"));
 
                     b.Property<decimal?>("Amount")
                         .IsRequired()
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("CardNumber")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<long?>("CBHIID")
+                        .HasMaxLength(100)
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Channel")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("CollectionID")
+                    b.Property<int?>("CollectionID")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -524,7 +660,6 @@ namespace MoH_Microservice.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Department")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -539,23 +674,16 @@ namespace MoH_Microservice.Migrations
                     b.Property<int?>("IsCollected")
                         .HasColumnType("int");
 
-                    b.Property<string>("PatientLoaction")
+                    b.Property<string>("MRN")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PatientWorkID")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PatientWorkingPlace")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PaymentVerifingID")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -623,66 +751,66 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             Channel = "TeleBirr",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(952)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(395)
                         },
                         new
                         {
                             Id = 2,
-                            Channel = "Mobile Banking",
+                            Channel = "CBE Mobile Banking",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(956)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(397)
                         },
                         new
                         {
                             Id = 3,
                             Channel = "Awash Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(958)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(398)
                         },
                         new
                         {
                             Id = 4,
                             Channel = "Bank of Abyssinia",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(960)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(399)
                         },
                         new
                         {
                             Id = 5,
                             Channel = "Amhara Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(962)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(400)
                         },
                         new
                         {
                             Id = 6,
                             Channel = "Tsedey Bank",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(964)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(402)
                         },
                         new
                         {
                             Id = 7,
                             Channel = "Other",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(966)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(403)
                         },
                         new
                         {
                             Id = 8,
                             Channel = "Chapa",
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(969)
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(404)
                         });
                 });
 
             modelBuilder.Entity("MoH_Microservice.Models.PaymentCollectors", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AssignedAs")
                         .IsRequired()
@@ -740,6 +868,9 @@ namespace MoH_Microservice.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -769,29 +900,36 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(906),
-                            Purpose = "Card"
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(368),
+                            Purpose = "Card/ካርድ"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(909),
-                            Purpose = "Medicine/Drug"
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(370),
+                            Purpose = "Medicne/መድሃኒት"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(912),
-                            Purpose = "Labratory"
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(371),
+                            Purpose = "Laboratory/ላብራቶሪ"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(914),
-                            Purpose = "X-RAY"
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(372),
+                            Purpose = "Rag/X-RAY/ራጅ፣አልትራሳውንድ"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedBy = "SYS",
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(374),
+                            Purpose = "Others/ሌሎች"
                         });
                 });
 
@@ -832,53 +970,53 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(781),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(302),
                             type = "ALL"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(788),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(303),
                             type = "CASH"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(790),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(305),
                             type = "CBHI"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(792),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(306),
                             type = "Credit"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(795),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(307),
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 6,
                             CreatedBy = "SYS",
-                            CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(798),
+                            CreatedOn = new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(308),
                             type = "Digital"
                         });
                 });
 
             modelBuilder.Entity("MoH_Microservice.Models.Providers", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -911,16 +1049,11 @@ namespace MoH_Microservice.Migrations
 
             modelBuilder.Entity("MoH_Microservice.Models.ProvidersMapUsers", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CardNumber")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -942,6 +1075,11 @@ namespace MoH_Microservice.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Kebele")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MRN")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 

@@ -5,7 +5,7 @@ namespace MoH_Microservice.Models
 {
     public class PaymentCollectors
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required,MaxLength(200),DataType(DataType.Text)]
         public string EmployeeID { get; set; }
         [Required, MaxLength(200), DataType(DataType.Text)]

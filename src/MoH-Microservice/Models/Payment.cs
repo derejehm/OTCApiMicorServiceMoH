@@ -7,7 +7,7 @@ namespace MoH_Microservice.Models
 {
     public class Payment
     {
-        public int id {  get; set; }
+        public long id {  get; set; }
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment RefNo Is required / የክፍያ መለዮ ቁጥር ያስፈልጋል !")]
@@ -18,7 +18,7 @@ namespace MoH_Microservice.Models
         public string? Type { get; set; } // CASH,
         
         [MaxLength(200)]
-        public string CardNumber { get; set; } = string.Empty;
+        public string MRN { get; set; }
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
@@ -26,36 +26,31 @@ namespace MoH_Microservice.Models
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
-        public string Department { get; set; } = string.Empty; // Card, paharmacy, bank, Hospital
+        public string? Department { get; set; } = string.Empty; // Card, paharmacy, bank, Hospital
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("In person")]
-        public string Channel { get; set; } = string.Empty; // TeleBirr, MobileBanking,Other etc
+        public string? Channel { get; set; } = string.Empty; // TeleBirr, MobileBanking,Other etc
                                                             // 
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [AllowNull]
-        public string PaymentVerifingID { get; set; } = string.Empty; // If the payment is done using Other than cash method eg. telebirr to bank account
+        public string? PaymentVerifingID { get; set; } = string.Empty; // If the payment is done using Other than cash method eg. telebirr to bank account
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
-        public string PatientLoaction { get; set; } = string.Empty; // Address such as woreda
+        public string? PatientWorkID { get; set; } = string.Empty; // WorkPlace such as MOH
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
-        public string PatientWorkingPlace { get; set; } = string.Empty; // WorkPlace such as MOH
-
-        [MaxLength(100)]
-        [DataType(DataType.Text)]
-        [DefaultValue("Unkown")]
-        public string PatientWorkID { get; set; } = string.Empty; // WorkPlace such as MOH
+        public long? CBHIID { get; set; }
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
-        public string Purpose { get; set; } = string.Empty; // CARD, CBHI, MEDICEN, LAB [ Could be as services provided by the hospital] 
+        public string? Purpose { get; set; } = string.Empty; // CARD, CBHI, MEDICEN, LAB [ Could be as services provided by the hospital] 
         
         [Required(ErrorMessage = "Payment Amount is required / የክፍያ መጠን ያስፈልጋል !")]
         [DataType(DataType.Currency)]
@@ -70,7 +65,7 @@ namespace MoH_Microservice.Models
 
         [DefaultValue(0)]
         public int? IsCollected { get; set; } = 0;
-        public int CollectionID { get; set; } // forign key from collection
+        public int? CollectionID { get; set; } // forign key from collection
 
         [DataType(DataType.Date)]
         public DateTime? CreatedOn { get; set;}= DateTime.Now;

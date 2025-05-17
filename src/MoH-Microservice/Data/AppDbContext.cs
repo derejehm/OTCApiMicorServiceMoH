@@ -16,6 +16,7 @@ namespace MoH_Microservice.Data
         public DbSet<PaymentPurpose> PaymentPurposes { get; set; }
         public DbSet<PCollections> PaymentCollections { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<PatientAddress> PatientAddress { get; set; }
         public DbSet<Providers> Providers { get; set; }
         public DbSet<ProvidersMapUsers> ProvidersMapPatient { get; set; }
         public DbSet<Organiztion> Organiztions { get; set; }
@@ -68,6 +69,17 @@ namespace MoH_Microservice.Data
             builder.Entity<Payment>().HasIndex("RefNo", "Createdby").IsUnique(false);
             builder.Entity<Payment>().HasIndex("RefNo").IsUnique(false);
             builder.Entity<Payment>().HasIndex("Createdby").IsUnique(false);
+
+            builder.Entity<Patient>().HasIndex("MRN").IsUnique(true);
+            builder.Entity<Patient>().HasIndex("phonenumber").IsUnique(false);
+
+            builder.Entity<PatientAddress>().HasIndex("MRN").IsUnique(false);
+            builder.Entity<PatientAddress>().HasIndex("REFMRN").IsUnique(false);
+
+            builder.Entity<Patient>().HasIndex("firstName").IsUnique(false);
+            builder.Entity<Patient>().HasIndex("middleName").IsUnique(false);
+            builder.Entity<Patient>().HasIndex("lastName").IsUnique(false);
+
             builder.Entity<PCollections>().HasKey("CollectionId");
 
             builder.Entity<PaymentType>().HasData(
@@ -77,14 +89,14 @@ namespace MoH_Microservice.Data
                 , new PaymentType { Id = 4, type = "Credit", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 , new PaymentType { Id = 5, type = "Free of Charge", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 , new PaymentType { Id = 6, type = "Digital", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-
                 );
 
             builder.Entity<PaymentPurpose>().HasData(
-                  new PaymentPurpose { Id = 1, Purpose = "Card", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentPurpose { Id = 2, Purpose = "Medicine/Drug", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentPurpose { Id = 3, Purpose = "Labratory", CreatedBy = "SYS", CreatedOn = DateTime.Now }
-                , new PaymentPurpose { Id = 4, Purpose = "X-RAY", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                  new PaymentPurpose { Id = 1, Purpose = "Card/ካርድ", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentPurpose { Id = 2, Purpose = "Medicne/መድሃኒት", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentPurpose { Id = 3, Purpose = "Laboratory/ላብራቶሪ", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentPurpose { Id = 4, Purpose = "Rag/X-RAY/ራጅ፣አልትራሳውንድ", CreatedBy = "SYS", CreatedOn = DateTime.Now }
+                , new PaymentPurpose { Id = 5, Purpose = "Others/ሌሎች", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 );
 
             builder.Entity<PaymentChannel>().HasData(
