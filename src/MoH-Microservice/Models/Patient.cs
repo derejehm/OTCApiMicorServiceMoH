@@ -47,6 +47,7 @@ namespace MoH_Microservice.Models
         public string? Region { get; set; }
         public string? Woreda { get; set; }
         public string? Kebele { get; set; }
+        public string? HouseNo { get; set; }
         public string? AddressDetail { get; set; }
         public string? Phone { get; set; }
         public int? isNextOfKin { get; set;}
@@ -88,12 +89,14 @@ namespace MoH_Microservice.Models
             public string? PatientRegion { get; set; }
             public string? PatientWoreda { get; set; }
             public string? PatientKebele { get; set; }
+            public string? PatientHouseNo { get; set; }
             public string? PatientAddressDetail { get; set; }
             public string? PatientPhone { get; set; }
 
             public string? PatientKinRegion { get; set; }
             public string? PatientKinWoreda { get; set; }
             public string? PatientKinKebele { get; set; }
+            public string? PatientKinHouseNo { get; set; }
             public string? PatientKinAddressDetail { get; set; }
             public string? PatientKinPhone { get; set; }
 
