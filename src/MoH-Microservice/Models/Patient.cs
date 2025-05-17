@@ -50,6 +50,7 @@ namespace MoH_Microservice.Models
         public string? HouseNo { get; set; }
         public string? AddressDetail { get; set; }
         public string? Phone { get; set; }
+        public string? Mobile { get; set; }
         public int? isNextOfKin { get; set;}
         public string createdBy { get; set; }
         public DateTime createdOn { get; set; }
@@ -85,7 +86,7 @@ namespace MoH_Microservice.Models
             public string? PatientSpouselastName { get; set; }
             public string? PatientRegisteredBy { get; set; }
             public DateTime? PatientVisitingDate { get; set; }
-
+            public string? PatientType { get; set; }
             public string? PatientRegion { get; set; }
             public string? PatientWoreda { get; set; }
             public string? PatientKebele { get; set; }
@@ -99,7 +100,7 @@ namespace MoH_Microservice.Models
             public string? PatientKinHouseNo { get; set; }
             public string? PatientKinAddressDetail { get; set; }
             public string? PatientKinPhone { get; set; }
-
+            public string? PatientKinMobile { get; set; }
             public string? Woreda { get; set; }
             public string? Kebele { get; set; }
             public string? Goth { get; set; }
