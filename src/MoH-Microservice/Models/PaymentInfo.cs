@@ -22,12 +22,25 @@ namespace MoH_Microservice.Models
         public string? user { get; set; }
     }
 
-
-
     public class PaymentDetailByCardNo
     {
-        [Required(ErrorMessage ="Patient Card Number is Required")]
+        [Required(ErrorMessage = "Patient Card Number is Required")]
         public string? code { get; set; }
+        [Required(ErrorMessage = "User name is Required")]
+        public string? name { get; set; }
+    }
+    public class PaymentDetailByPhone
+    {
+        [Required(ErrorMessage = "Patient Card Number is Required")]
+        public string? phone { get; set; }
+        [Required(ErrorMessage = "User name is Required")]
+        public string? name { get; set; }
+    }
+
+    public class PaymentDetailByName
+    {
+        [Required(ErrorMessage = "Patient Card Number is Required")]
+        public string? patient { get; set; }
         [Required(ErrorMessage = "User name is Required")]
         public string? name { get; set; }
     }
@@ -48,14 +61,8 @@ namespace MoH_Microservice.Models
         public string? PaymentType { get; set; }
 
         [MaxLength(200)]
-        [Required(ErrorMessage = "Payment Type is required / የታማሚ ካርድ ቁጥር ያስፈልጋል!")]
+        [Required(ErrorMessage = "Patient Cardnumber is required / የታማሚ ካርድ ቁጥር ያስፈልጋል!")]
         public string? CardNumber { get; set; }
-
-        [MaxLength(100)]
-        [MinLength(5)]
-        [DataType(DataType.Text)]
-        public string? Hospital { get; set; } = string.Empty;
-
 
         [Required(ErrorMessage = "Payment Amount is required / የክፍያ መጠን ያስፈልጋል !")]
         [DataType(DataType.Currency)]
@@ -65,33 +72,17 @@ namespace MoH_Microservice.Models
         public string? Description { get; set; }
 
         [MaxLength(200)]
-        [Required(ErrorMessage = "UserName Is required / ሂሳብ ያዥ ስም !")]
+        [Required(ErrorMessage = "Cashier Is required / ሂሳብ ያዥ ስም !")]
         public string? Createdby { get; set; }
-
-        [DataType(DataType.Date)]
-        public DateTime? CreatedOn { get; set; } = DateTime.Now;
 
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Channel is required !")]
         public string? Channel { get; set; }
 
         [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Users Department is required !")]
-        public string? Department { get; set; }
-
-        [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Verifiation ID is required !")]
         public string? PaymentVerifingID { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
-        public string? PatientLocation { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
-        public string? PatientWorkingPlace { get; set; }
-        public string? PatientWorkID{ get; set; }
-        public string? UserType { get; set; }
+        public string? PatientWorkID { get; set; }
     }
 
     public class PaymentTypeReg

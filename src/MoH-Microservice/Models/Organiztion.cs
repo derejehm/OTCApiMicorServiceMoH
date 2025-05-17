@@ -7,7 +7,7 @@ namespace MoH_Microservice.Models
 {
     public class Organiztion
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required, MaxLength(200)]
         public string Organization { get; set; }
         [Required, MaxLength(200)]
@@ -21,7 +21,7 @@ namespace MoH_Microservice.Models
 
     public class OrganiztionalUsers
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required, MaxLength(200), DataType(DataType.Text)]
         public string EmployeeID { get; set; }
         [Required, MaxLength(200), DataType(DataType.Text)]
@@ -34,7 +34,7 @@ namespace MoH_Microservice.Models
         public string AssignedHospital { get; set; } // Hospiatl Name
 
         [Required, MaxLength(200), DataType(DataType.MultilineText)]
-        public string WorkPlace { get; set; } // Hospiatl Name
+        public string WorkPlace { get; set; } 
 
         [AllowNull, MaxLength(255)]
         public string UploadedBy { get; set; }
@@ -84,7 +84,7 @@ namespace MoH_Microservice.Models
     }
     public class OrganiztionalUsersUpdate
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string? EmployeeID { get; set; }
         public string? EmployeeName { get; set; }
         public string? EmployeePhone { get; set; }
