@@ -135,7 +135,7 @@ namespace MoH_Microservice.Models
             public string? PatientMaritalstatus { get; set; }
             public string? PatientSpouseFirstName { get; set; }
             public string? PatientSpouselastName { get; set; }
-            public string? PatientChangedBy { get; set; }
+            public string PatientChangedBy { get; set; }
             public DateTime? PatientVisitingDate { get; set; }
 
             public string? PatientRegion { get; set; }
@@ -165,7 +165,7 @@ namespace MoH_Microservice.Models
             public string? PatientLastName { get; set; }
             public string? PatientMiddleName { get; set; }
             public string? PatientPhone { get; set; }
-            public string? Cashier { get; set; }
+            public string Cashier { get; set; }
 
         }
 

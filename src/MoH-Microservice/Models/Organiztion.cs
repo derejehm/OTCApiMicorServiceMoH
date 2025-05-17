@@ -79,19 +79,19 @@ namespace MoH_Microservice.Models
 
     public class OrganizationalUserGet
     {
-        public string? EmployeeID { get; set; }
-        public string? LoggedInUser { get; set; }
+        public string EmployeeID { get; set; }
+        public string LoggedInUser { get; set; }
     }
     public class OrganiztionalUsersUpdate
     {
         public long Id { get; set; }
-        public string? EmployeeID { get; set; }
-        public string? EmployeeName { get; set; }
-        public string? EmployeePhone { get; set; }
-        public string? EmployeeEmail { get; set; }
+        public string EmployeeID { get; set; }
+        public string EmployeeName { get; set; }
+        public string EmployeePhone { get; set; }
+        public string EmployeeEmail { get; set; }
         public bool IsExtend { get; set; }
         public string Workplace { get; set; } // Hospiatl Name
-        public string? LoggedInUser { get; set; }
+        public string LoggedInUser { get; set; }
     }
 
 

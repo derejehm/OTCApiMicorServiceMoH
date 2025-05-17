@@ -156,7 +156,7 @@ namespace MoH_Microservice.Controllers
         [HttpPut("payment-by-refno")]
         public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment)
         {
-            var user = await this._userManager.FindByNameAsync(payment?.user); // Check if the user exists
+            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
             //var usersHttp = HttpContext.GetTokenAsync
             if (user == null)
                 return NotFound("User not found");
@@ -467,35 +467,35 @@ namespace MoH_Microservice.Controllers
         }
         public class PaymentReportDTO
         {
-            public string ReferenceNo { get; set; }
-            public string PatientCardNumber { get; set; }
-            public string HospitalName { get; set; }
-            public string Department { get; set; }
-            public string PaymentChannel { get; set; }
-            public string PaymentType { get; set; }
-            public string PatientName { get; set; }
-            public string PatientPhone { get; set; }
-            public string PatientAge { get; set; }
-            public string PatientAddress { get; set; }
-            public string PatientGender { get; set; }
+            public string? ReferenceNo { get; set; }
+            public string? PatientCardNumber { get; set; }
+            public string? HospitalName { get; set; }
+            public string? Department { get; set; }
+            public string? PaymentChannel { get; set; }
+            public string? PaymentType { get; set; }
+            public string? PatientName { get; set; }
+            public string? PatientPhone { get; set; }
+            public string? PatientAge { get; set; }
+            public string? PatientAddress { get; set; }
+            public string? PatientGender { get; set; }
             public DateTime? PatientVisiting { get; set; }
-            public string PatientType { get; set; }
-            public string PaymentVerifingID { get; set; }
-            public string PatientLoaction { get; set; }
-            public string PatientWorkingPlace { get; set; }
-            public string PatientWorkID { get; set; }
-            public string PatientWoreda { get; set; }
-            public string PatientKebele{ get; set; }
-            public string PatientsGoth { get; set; }
-            public string PatientCBHI_ID { get; set; }
-            public string PatientReferalNo { get; set; }
-            public string PatientLetterNo { get; set; }
-            public string PatientExamination { get; set; }
-            public string PaymentReason { get; set; }
+            public string? PatientType { get; set; }
+            public string? PaymentVerifingID { get; set; }
+            public string? PatientLoaction { get; set; }
+            public string? PatientWorkingPlace { get; set; }
+            public string? PatientWorkID { get; set; }
+            public string? PatientWoreda { get; set; }
+            public string? PatientKebele{ get; set; }
+            public string? PatientsGoth { get; set; }
+            public string? PatientCBHI_ID { get; set; }
+            public string? PatientReferalNo { get; set; }
+            public string? PatientLetterNo { get; set; }
+            public string? PatientExamination { get; set; }
+            public string? PaymentReason { get; set; }
             public decimal? PaymentAmount { get; set; } // Use decimal for currency
-            public string PaymentDescription { get; set; }
+            public string? PaymentDescription { get; set; }
             public int? PaymentIsCollected { get; set; }
-            public string RegisteredBy { get; set; }
+            public string? RegisteredBy { get; set; }
             public DateTime? RegisteredOn { get; set; }
         }
 

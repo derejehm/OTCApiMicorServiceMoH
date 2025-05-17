@@ -8,7 +8,7 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage ="Payment RefNo is required!")]
         public string? paymentId { get; set; }
         [Required(ErrorMessage = "User Filed is required!")]
-        public string? user { get; set; }
+        public string user { get; set; }
     }
 
     public class PaymentbyDate
@@ -27,14 +27,14 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage = "Patient Card Number is Required")]
         public string? code { get; set; }
         [Required(ErrorMessage = "User name is Required")]
-        public string? name { get; set; }
+        public string name { get; set; }
     }
     public class PaymentDetailByPhone
     {
         [Required(ErrorMessage = "Patient Card Number is Required")]
         public string? phone { get; set; }
         [Required(ErrorMessage = "User name is Required")]
-        public string? name { get; set; }
+        public string name { get; set; }
     }
 
     public class PaymentDetailByName
@@ -42,14 +42,14 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage = "Patient Card Number is Required")]
         public string? patient { get; set; }
         [Required(ErrorMessage = "User name is Required")]
-        public string? name { get; set; }
+        public string name { get; set; }
     }
     public class PaymentDetailByInstitution
     {
         [Required(ErrorMessage = "Payment RefNo is required!")]
         public string? paymentId { get; set; }
         [Required(ErrorMessage = "User Filed is required!")]
-        public string? user { get; set; }
+        public string user { get; set; }
         [Required(ErrorMessage = "Hospital is required!")]
         public string? hospital {  get; set; }
     }
@@ -73,7 +73,7 @@ namespace MoH_Microservice.Models
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Cashier Is required / ሂሳብ ያዥ ስም !")]
-        public string? Createdby { get; set; }
+        public string Createdby { get; set; }
 
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Channel is required !")]
@@ -88,26 +88,26 @@ namespace MoH_Microservice.Models
     public class PaymentTypeReg
     {
         public string? type { get; set; }
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
 
     public class PaymentTypeUpdate
     {
         public int id { get; set; }
         public string? type { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
     public class PaymentChannelReg
     {
         public string? Channel { get; set; }
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
     public class PaymentChannelUpdate
     {
         public int id { get; set; }
         public string? Channel { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; }=DateTime.Now;
     }
     public class PaymentPurposeReg
@@ -120,14 +120,14 @@ namespace MoH_Microservice.Models
     {
         public int id { get; set; }
         public string? Purpose { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
 
     public class PaymentCollection
     {
         public string? Hospital { get; set; }
-        public string? Casher { get; set; }
+        public string Casher { get; set; }
         public string? Type { get; set; }
         public string? Purpose { get; set; }
         public decimal? Amount { get; set; }
@@ -136,17 +136,17 @@ namespace MoH_Microservice.Models
     public class PaymentTypeDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PaymentChannelDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PaymentPurposeDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PurposeAmountMap
     {
