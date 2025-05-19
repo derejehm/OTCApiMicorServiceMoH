@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
-using System.Threading.Tasks.Dataflow;
+
 
 
 namespace MoH_Microservice.Controllers
@@ -39,39 +38,8 @@ namespace MoH_Microservice.Controllers
 
             if (user.UserType != "Supervisor")
             {
-                
-                var data = await (from payments in this._payment.Payments
-                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date
-                                  && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
-                                  && payments.Createdby == user.UserName
-                                  join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
-                                  from report in rpt_patient.DefaultIfEmpty()
-                                  join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
-                                  from report_workers in rpt_worker.DefaultIfEmpty()
-                                  select new
-                                  {
-                                      RefNo = payments.RefNo,
-                                      CardNumber = payments.CardNumber,
-                                      HospitalName = payments.HospitalName,
-                                      Department = payments.Department,
-                                      Channel = payments.Channel,
-                                      PatientName = report.PatientName == null ? report_workers.EmployeeName == null ? "" : report_workers.EmployeeName : report.PatientName,
-                                      PatientPhone = report.PatientPhoneNumber == null ? report_workers.EmployeePhone == null ? "" : report_workers.EmployeePhone : report.PatientPhoneNumber,
-                                      PatientAge = report.PatientAge == null ? "" : report.PatientAge.ToString(),
-                                      PatientAddress = report.PatientAddress == null ? "" : report.PatientAddress,
-                                      PatientGender = report.PatientGender == null ? "" : report.PatientGender,
-                                      PaymentVerifingID = payments.PaymentVerifingID,
-                                      PatientLoaction = payments.PatientLoaction,
-                                      PatientWorkingPlace = payments.PatientWorkingPlace,
-                                      PatientWorkID = payments.PatientWorkID,
-                                      Purpose = payments.Purpose,
-                                      Amount = payments.Amount,
-                                      Description = payments.Description,
-                                      IsCollected = payments.IsCollected,
-                                      Createdby = payments.Createdby,
-                                      CreatedOn = payments.CreatedOn,
-                                  }
-                            ).ToArrayAsync();
+
+                var data = await this.PaymentQuery().Where(e=>e.RegisteredBy.ToLower()==user.UserName.ToLower()).ToArrayAsync();
 
                 if (data.Length <= 0)
                     return NoContent();
@@ -79,36 +47,7 @@ namespace MoH_Microservice.Controllers
             }
             else
             {
-                var data = await (from payments in this._payment.Payments
-                                  where payments.CreatedOn.Value.Date >= payment.startDate.Value.Date && payments.CreatedOn.Value.Date <= payment.endDate.Value.Date
-                                  join patients in this._payment.Patients on payments.CardNumber equals patients.PatientCardNumber into rpt_patient
-                                  from report in rpt_patient.DefaultIfEmpty()
-                                  join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
-                                  from report_workers in rpt_worker.DefaultIfEmpty()
-                                  select new
-                                  {
-                                      RefNo = payments.RefNo,
-                                      CardNumber = payments.CardNumber,
-                                      HospitalName = payments.HospitalName,
-                                      Department = payments.Department,
-                                      Channel = payments.Channel,
-                                      PatientName = report.PatientName == null ? report_workers.EmployeeName ==null ? "": report_workers.EmployeeName : report.PatientName,
-                                      PatientPhone = report.PatientPhoneNumber == null ? report_workers.EmployeePhone == null ? "" : report_workers.EmployeePhone : report.PatientPhoneNumber,
-                                      PatientAge = report.PatientAge == null ? "" : report.PatientAge.ToString(),
-                                      PatientAddress = report.PatientAddress == null ? "" : report.PatientAddress,
-                                      PatientGender = report.PatientGender == null ? "" : report.PatientGender,
-                                      PaymentVerifingID = payments.PaymentVerifingID,
-                                      PatientLoaction = payments.PatientLoaction,
-                                      PatientWorkingPlace = payments.PatientWorkingPlace,
-                                      PatientWorkID = payments.PatientWorkID,
-                                      Purpose = payments.Purpose,
-                                      Amount = payments.Amount,
-                                      Description = payments.Description,
-                                      IsCollected = payments.IsCollected,
-                                      Createdby = payments.Createdby,
-                                      CreatedOn = payments.CreatedOn,
-                                  }
-                            ).ToArrayAsync();
+                var data = await this.PaymentQuery().ToArrayAsync();
 
                 if (data.Length <= 0)
                     return NoContent();
@@ -116,16 +55,108 @@ namespace MoH_Microservice.Controllers
                 return Ok(new JsonResult(data).Value);
 
             }
-
-
         }
+        [HttpPut("rpt-all-Payment")]
+        public async Task<IActionResult> RptPaymentByDate([FromBody] PaymentbyDate payment)
+        {
+            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
+            //var usersHttp = HttpContext.GetTokenAsync
+            if (user == null)
+                return NotFound("User not found");
+            
+            if (user.UserType != "Supervisor")
+            {
 
+                var data = await this.PaymentQuery()
+                                     .Where(e => e.RegisteredBy.ToLower() == user.UserName.ToLower())
+                                     .GroupBy(g => new {
+                                         g.PatientCardNumber,
+                                         g.PatientName,
+                                         g.PatientVisiting,
+                                         g.PatientAge,
+                                         g.PatientGender,
+                                         g.PatientKebele,
+                                         g.PatientsGoth,
+                                         g.PatientReferalNo,
+                                         g.PatientCBHI_ID,
+                                         g.PatientType,
+                                         //g.PaymentReason
+                                     })
+                                     .Select(s => new
+                                     {
+                                         CardNumber = s.FirstOrDefault().PatientCardNumber,
+                                         Name = s.FirstOrDefault().PatientName,
+                                         VisitingDate = s.FirstOrDefault().PatientVisiting,
+                                         Age = s.FirstOrDefault().PatientAge,
+                                         Gender = s.FirstOrDefault().PatientGender,
+                                         Kebele = s.FirstOrDefault().PatientKebele,
+                                         Goth = s.FirstOrDefault().PatientsGoth,
+                                         ReferalNo = s.FirstOrDefault().PatientReferalNo,
+                                         IDNo = s.FirstOrDefault().PatientCBHI_ID,
+                                         PatientType = s.FirstOrDefault().PatientType,
 
+                                         CardPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("card") ? s.PaymentAmount : 0),
+                                         UnltrasoundPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("ultrasound") ? s.PaymentAmount : 0),
+                                         ExaminationPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("exam") ? s.PaymentAmount : 0),
+                                         MedicinePaid = s.Sum(s => s.PaymentReason.ToLower().Contains("medi") ? s.PaymentAmount : 0),
+                                         LaboratoryPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("lab") ? s.PaymentAmount : 0),
+                                         BedPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("bed") ? s.PaymentAmount : 0),
+                                         SurgeryPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("Surgery") ? s.PaymentAmount : 0),
+                                         Foodpaid = s.Sum(s => s.PaymentReason.ToLower().Contains("food") ? s.PaymentAmount : 0),
+                                         OtherPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("other") ? s.PaymentAmount : 0),
+
+                                         TotalPaid = s.Sum(s => s.PaymentAmount),
+
+                                     }).ToArrayAsync();
+
+                if (data.Length <= 0)
+                    return NoContent();
+                return Ok(new JsonResult(data).Value);
+            }
+            else
+            {
+                var data = await this.PaymentQuery()
+                                     .GroupBy(g => new {
+                                         g.PatientCardNumber,
+                                         g.PatientName,
+                                         g.PatientVisiting,
+                                         g.PatientAge,
+                                         g.PatientGender,
+                                         g.PatientKebele,
+                                         g.PatientsGoth,
+                                         g.PatientReferalNo,
+                                         g.PatientCBHI_ID,
+                                         g.PatientType,
+                                         g.PaymentReason
+                                     })
+                                     .Select(s => new
+                                     {
+                                         CardNumber = s.Select(s => s.PatientCardNumber),
+                                         Name = s.Select(s => s.PatientName),
+                                         VisitingDate = s.Select(s => s.PatientVisiting),
+                                         Age = s.Select(s => s.PatientAge),
+                                         Gender = s.Select(s => s.PatientGender),
+                                         Kebele = s.Select(s => s.PatientKebele),
+                                         Goth = s.Select(s => s.PatientsGoth),
+                                         ReferalNo = s.Select(s => s.PatientReferalNo),
+                                         IDNo = s.Select(s => s.PatientCBHI_ID),
+                                         PatientType = s.Select(s => s.PatientType),
+                                         PaymentReason = s.Select(s => s.PaymentReason),
+                                         TotalPaid = s.Sum(s => s.PaymentAmount)
+                                     }).ToArrayAsync();
+
+                if (data.Length <= 0)
+                    return NoContent();
+
+                return Ok(new JsonResult(data).Value);
+
+            }
+        }
 
         [HttpPut("payment-by-refno")]
         public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment)
         {
-            var user = await this._userManager.FindByNameAsync(payment?.user); // Check if the user exists
+            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
             //var usersHttp = HttpContext.GetTokenAsync
             if (user == null)
                 return NotFound("User not found");
@@ -162,7 +193,9 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
             try
             {
-                var PymentInfo = await this._payment.Set<Payment>().Where(x => x.Createdby == user && EF.Functions.DateDiffDay(x.CreatedOn, DateTime.Now.Date)==0  ).ToArrayAsync();
+                var PymentInfo = await this._payment.Set<Payment>()
+                    .Where(x => x.Createdby == user && x.CreatedOn.Value.Date== DateTime.Now.Date)
+                    .ToArrayAsync();
                 if (PymentInfo.Length <= 0)
                     return NoContent();
 
@@ -171,27 +204,58 @@ namespace MoH_Microservice.Controllers
             catch(Exception ex)
             {
                    return BadRequest(ex.Message);
-            }
-
-            
+            }  
         }
 
-
         [HttpPut("payment-by-cardNumber")]
-
         public async Task<IActionResult> GetPaymentInfoByCardNumber([FromBody] PaymentDetailByCardNo payment)
         {
             var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
             if (username == null)
                 return NotFound("User not found");
 
-            var PymentInfo = await this._payment.Set<Payment>().Where(x => x.CardNumber == payment.code).ToArrayAsync();
+            var PymentInfo = await this._payment.Set<Payment>().Where(x => x.MRN == payment.code).ToArrayAsync();
 
             if (PymentInfo.Length <= 0)
                 return NoContent();
 
             return Ok(new JsonResult(PymentInfo).Value);
         }
+
+        [HttpPut("payment-by-phonenumber")]
+        public async Task<IActionResult> getPaymentByPphone([FromBody] PaymentDetailByPhone payment)
+        {
+            var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this.PaymentQuery()
+                            .Where(e=>e.PatientPhone==payment.phone)
+                            .ToArrayAsync();
+
+            if (PymentInfo.Length <= 0)
+                return NoContent();
+
+            return Ok(new JsonResult(PymentInfo).Value);
+        }
+        [HttpPut("payment-by-patientname")]
+        public async Task<IActionResult> getPaymentByPname([FromBody] PaymentDetailByName payment)
+        {
+            var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
+            if (username == null)
+                return NotFound("User not found");
+
+            var PymentInfo = await this.PaymentQuery()
+                            .Where(e => e.PatientName == payment.patient)
+                            .ToArrayAsync();
+
+            if (PymentInfo.Length <= 0)
+                return NoContent();
+
+            return Ok(new JsonResult(PymentInfo).Value);
+
+        }
+        
         [HttpPost("add-payment")]
        // [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
@@ -201,69 +265,86 @@ namespace MoH_Microservice.Controllers
                 return NotFound("User not found");
 
             if (user.UserType.ToLower() != "cashier")
-                return Unauthorized("You are unautorized to perform payment registration!");
-            
-            var MaxCardDate = await this._payment.Payments.Where(e => e.CardNumber == payment.CardNumber && e.Purpose.ToLower() == "card")
-                    .GroupBy(e => new { e.CardNumber })
+                return Unauthorized("You are unautorized to perform payment!");
+
+            // fetch the max card payment date
+            var MaxCardDate = await this._payment.Payments.Where(e => e.MRN == payment.CardNumber && e.Purpose.ToLower() == "card")
+                    .GroupBy(e => new { e.MRN })
                     .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
                     .ToArrayAsync();
+
             if (MaxCardDate.Length <= 0 && !payment.Amount.Any(e=>e.Purpose.ToLower()=="card"))
             {
-                return BadRequest("No Payment has been done for a card.");
+                // check if payment for card has been paid for.
+                return BadRequest("No Payment has been done for a card./ የካርድ ክፍያ አልተከናወነም!");
             }
 
-            if (payment.PaymentType.ToLower() == "credit")
+            var doesPatientExisit = await this._payment.Patients.Where(e => e.MRN == payment.CardNumber).ToArrayAsync();
+            if (doesPatientExisit.Length <= 0)
             {
-                var worker =await this._payment.OrganiztionalUsers
-                    .Where(e => 
-                               e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower() 
-                            && e.AssignedHospital.ToLower() == user.Hospital.ToLower() 
-                            && e.WorkPlace.ToLower()==payment.PatientWorkingPlace.ToLower())
-                    .ToArrayAsync();
-                if (worker.Length <=0)
-                {
-                       return NotFound($"Patient <br/>" +
-                           $"EmployeeID: {payment.PatientWorkID} <br/>" +
-                           $"Working Place:{payment.PatientWorkingPlace} <br/> " +
-                           $"is not assigned to this hospital");
-                }   
+                // check if the patient has been registed!
+                return BadRequest("Patient has't been registered! / ታካሚው አልተመዘገበም !");
+
+            }
+            
+            var worker = await this._payment.OrganiztionalUsers
+                .Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower()
+                         && e.AssignedHospital.ToLower() == user.Hospital.ToLower()).ToArrayAsync();
+
+            if (payment.PaymentType.ToLower() == "credit" && worker.Length <= 0)
+            {
+                // check for the worker if credit payment issued
+              return NotFound($"Credit user with [ EmployeeID : {payment.PatientWorkID} ] is not assigned to this hospital");  
             }
 
-            var RefNo = $"TS_{payment.Hospital.Trim().Substring(0, 2).ToUpper()}-{payment.PaymentType}{DateTime.Now.Microsecond + new Random().Next()}";
-            
+            // get the current valid CBHI info
+            var CurrentCBHID = await this._payment.ProvidersMapPatient
+                .Where(e => e.MRN == payment.CardNumber)
+                .GroupBy(g => new { g.MRN })
+                .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                .ToArrayAsync();
+
+            if (payment.PaymentType.ToLower() == "cbhi" && CurrentCBHID.Length <= 0)
+            {
+                 return BadRequest("Please register the patient CBHI information");
+            }
+
+            var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper()}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}";
+  
             try
             {
                 foreach (var items in payment.Amount)
                 {
 
-                    if (MaxCardDate.Length>0 && (DateTime.Now-MaxCardDate[0].maxregdate).Value.Days <= 15
+                    if (MaxCardDate.Length > 0
+                        && (DateTime.Now - MaxCardDate[0].maxregdate).Value.Days <= 15
                         && items.Purpose.ToLower() == "card")
                     {
                         throw new Exception($"Card usage has't yet expired! {(DateTime.Now - MaxCardDate[0].maxregdate).Value.Days}. Days Passed since registration, Last Registration Date : {MaxCardDate[0].maxregdate}");
                     }
-                    
 
                     Payment data = new Payment()
                     {
                         RefNo = RefNo,
-                        Purpose = items.Purpose,
-                        Type = payment.PaymentType,
-                        HospitalName = payment.Hospital,
-                        CardNumber = payment.CardNumber,
-                        Createdby = payment.Createdby,
-                        Amount = items.Amount,
-                        PatientLoaction = payment.PatientLocation,
-                        PatientWorkingPlace = payment.PatientWorkingPlace,
-                        PatientWorkID = payment.PatientWorkID,
-                        PaymentVerifingID = payment.PaymentVerifingID,
-                        Department = payment.Department,
+                        HospitalName = user.Hospital,
+                        Createdby = user.UserName,
+                        Department = user.Departement,
+                        MRN = payment.CardNumber,
+                        Type = payment.PaymentType.ToUpper(),
+                        PaymentVerifingID = payment.PaymentVerifingID, //  digital payment id
                         Channel = payment.Channel,
                         Description = payment.Description,
+                        PatientWorkID = worker.Length >0 ? worker[0]?.WorkPlace: null, // creadit users
+                        CBHIID = CurrentCBHID.Length>0? CurrentCBHID[0]?.currentRecordID:null, // cbhi users
+                        Purpose = items.Purpose.ToUpper(), //
+                        Amount = items.Amount,
                     };
 
                     await this._payment.AddAsync<Payment>(data);
                     await this._payment.SaveChangesAsync();
                 }
+
+
                 return Created("/", new { RefNo = RefNo, data = payment });
             }
             catch (Exception ex)
@@ -271,58 +352,9 @@ namespace MoH_Microservice.Controllers
                 // Error [Pay0000] = "Insert Failed"
                 return BadRequest($"Error [Pay0000] Insert Failed Reason: {ex.Message}");
             }
-                       
-           
         }
 
-        [HttpPost("add-patient-info")]
 
-        public async Task<IActionResult> addGetPatientInfo([FromBody] PatientReg patient)
-        {
-            var user = await this._userManager.FindByNameAsync(patient.CreatedBy);
-            if (user == null)
-                return NotFound("User not found");
-            try
-            {
-                Patient Patient = new Patient
-                {
-                    PatientCardNumber = patient.PatientCardNumber,
-                    PatientAge = patient.PatientAge,
-                    PatientAddress = patient.PatientAddress,
-                    PatientGender = patient.PatientGender,
-                    PatientName = patient.PatientName,
-                    PatientPhoneNumber = patient.PatientPhoneNumber,
-                    CreatedOn = DateTime.Now,
-                    CreatedBy = patient.CreatedBy,
-                    UpdatedBy = "",
-                    UpdatedOn = null // change today
-                };
-                await this._payment.AddAsync<Patient>(Patient);
-                await this._payment.SaveChangesAsync();
-
-                return Created("/", patient);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
-            }
-        }
-        [HttpPut("patient-info")]
-
-        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient)
-        {
-            var user = await this._userManager.FindByNameAsync(patient.Cashier);
-            if (user == null)
-                return NotFound("User not found");
-
-            var patientInfo = await this._payment.Set<Patient>()
-                               .Where(e => e.PatientCardNumber == patient.PatientCardNumber)
-                             .ToArrayAsync(); // add Hospital name later
-            if (patientInfo == null)
-                return Ok("No patient with this card number!");
-
-            return Ok(patientInfo);
-        }
         [HttpPost("add-service-provider")]
         public async Task<IActionResult> addGetProviderInfo([FromBody] ProvidersMapReg providers)
         {
@@ -333,7 +365,7 @@ namespace MoH_Microservice.Controllers
             {
                 ProvidersMapUsers provider = new ProvidersMapUsers
                 {
-                    CardNumber = providers.CardNumber,
+                    MRN = providers.CardNumber,
                     provider = providers.provider,
                     Kebele = providers.Kebele,
                     Goth = providers.Goth,
@@ -362,19 +394,109 @@ namespace MoH_Microservice.Controllers
             var user = await this._userManager.FindByNameAsync(providers.user);
             if (user == null)
                 return NotFound("User not found");
-
-            var patientInfo = await this._payment.Set<ProvidersMapUsers>()
-                              .Where(e => e.CardNumber == providers.cardnumber) // changed on 2025-22-03 req: breket
+            var CurrentCBHID = await this._payment.ProvidersMapPatient
+                .Where(e => e.MRN == providers.cardnumber)
+                .GroupBy(g => new { g.MRN })
+                .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                .ToArrayAsync();
+            if(CurrentCBHID.Length > 0)
+            {
+                var patientInfo = await this._payment.Set<ProvidersMapUsers>()
+                            .Where(e => e.MRN == providers.cardnumber && e.Id == CurrentCBHID[0].currentRecordID)
                             .ToArrayAsync();
-
-            return Ok(patientInfo);
+                return Ok(patientInfo);
+            }   
+            return NoContent();
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IQueryable<PaymentReportDTO> PaymentQuery()
+        {
+            var query = from payments in this._payment.Payments
+                        join patients in this._payment.Patients on payments.MRN equals patients.MRN into rpt_patient
+                        from report in rpt_patient.DefaultIfEmpty()
+                        join cbhiInfo in this._payment.ProvidersMapPatient on payments.CBHIID equals cbhiInfo.Id into rpt_cbhiinfo
+                        from cbhiusers in rpt_cbhiinfo.DefaultIfEmpty()
+                        join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
+                        from report_workers in rpt_worker.DefaultIfEmpty()
+
+                        select new PaymentReportDTO
+                        {
+                            ReferenceNo = payments.RefNo,
+                            PatientCardNumber = payments.MRN,
+                            HospitalName = payments.HospitalName,
+                            Department = payments.Department,
+                            PaymentChannel = payments.Channel,
+                            PaymentType=payments.Type,
+                            PatientName = report.firstName == null ? report_workers.EmployeeName ?? "" : report.firstName +" "+ report.middleName+" "+ report.lastName,
+                            PatientPhone = report.phonenumber ?? report_workers.EmployeePhone ?? "",
+                            PatientAge = report.age.ToString() ?? "",
+                            PatientAddress = report.address ?? "",
+                            PatientGender = report.gender ?? "",
+                            PatientVisiting = report.visitDate,
+                            PatientType = report.type ?? "",
+                            PaymentVerifingID = payments.PaymentVerifingID,
+                            PatientLoaction = report.address,
+                            PatientWorkingPlace = report_workers.WorkPlace,
+                            PatientWorkID = payments.PatientWorkID,
+                            PatientWoreda = cbhiusers.provider,
+                            PatientCBHI_ID=cbhiusers.IDNo,
+                            PatientKebele=cbhiusers.Kebele,
+                            PatientExamination=cbhiusers.Examination,
+                            PatientLetterNo=cbhiusers.letterNo,
+                            PatientReferalNo=cbhiusers.ReferalNo,
+                            PatientsGoth=cbhiusers.Goth,
+                            PaymentReason = payments.Purpose,
+                            PaymentAmount = payments.Amount,
+                            PaymentDescription = payments.Description,
+                            PaymentIsCollected = payments.IsCollected,
+                            RegisteredBy = payments.Createdby,
+                            RegisteredOn = payments.CreatedOn,
+                            
+                        };
+            return query;
+        }
+
+
+        
         private class BankLinkList
         {
             
             public string? Institution { get; set; }
             public string? QRLink { get; set; }
+        }
+        public class PaymentReportDTO
+        {
+            public string? ReferenceNo { get; set; }
+            public string? PatientCardNumber { get; set; }
+            public string? HospitalName { get; set; }
+            public string? Department { get; set; }
+            public string? PaymentChannel { get; set; }
+            public string? PaymentType { get; set; }
+            public string? PatientName { get; set; }
+            public string? PatientPhone { get; set; }
+            public string? PatientAge { get; set; }
+            public string? PatientAddress { get; set; }
+            public string? PatientGender { get; set; }
+            public DateTime? PatientVisiting { get; set; }
+            public string? PatientType { get; set; }
+            public string? PaymentVerifingID { get; set; }
+            public string? PatientLoaction { get; set; }
+            public string? PatientWorkingPlace { get; set; }
+            public string? PatientWorkID { get; set; }
+            public string? PatientWoreda { get; set; }
+            public string? PatientKebele{ get; set; }
+            public string? PatientsGoth { get; set; }
+            public string? PatientCBHI_ID { get; set; }
+            public string? PatientReferalNo { get; set; }
+            public string? PatientLetterNo { get; set; }
+            public string? PatientExamination { get; set; }
+            public string? PaymentReason { get; set; }
+            public decimal? PaymentAmount { get; set; } // Use decimal for currency
+            public string? PaymentDescription { get; set; }
+            public int? PaymentIsCollected { get; set; }
+            public string? RegisteredBy { get; set; }
+            public DateTime? RegisteredOn { get; set; }
         }
 
     }

@@ -5,7 +5,7 @@ namespace MoH_Microservice.Models
 {
     public class ProvidersMapUsers
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required]
         [MaxLength(100)]
         public string? provider { get; set; }
@@ -14,7 +14,7 @@ namespace MoH_Microservice.Models
         public string service { get; set; } // link to payment puposes
         [Required]
         [MaxLength(100)]
-        public string CardNumber { get; set; } // link to payment puposes
+        public string MRN { get; set; } // link to payment puposes
         [MaxLength(100)]
         [AllowNull]
         public string? Kebele { get; set; }
@@ -44,7 +44,7 @@ namespace MoH_Microservice.Models
     }
     public class Providers
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required]
         [MaxLength(100)]
         public string? provider { get; set; }
@@ -63,7 +63,7 @@ namespace MoH_Microservice.Models
         [Required]
         public string? provider { get; set; }
         [Required]
-        public string service { get; set; } // link to payment puposes
+        public string? service { get; set; } // link to payment puposes
 
         [AllowNull]
         public string? Kebele { get; set; }
@@ -99,7 +99,7 @@ namespace MoH_Microservice.Models
 
     {
         [Required]
-        public int id {  get; set; }
+        public long id {  get; set; }
         [Required, MaxLength(100)]
         public string? provider { get; set; }
         [Required, MaxLength(100)]
@@ -109,7 +109,7 @@ namespace MoH_Microservice.Models
     }
     public class ProvidersDelete
     {
-        public int id {  get; set; }
+        public long id {  get; set; }
         [Required]
         public string DeletedBy { get; set; }
     }
