@@ -8,7 +8,7 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage ="Payment RefNo is required!")]
         public string? paymentId { get; set; }
         [Required(ErrorMessage = "User Filed is required!")]
-        public string? user { get; set; }
+        public string user { get; set; }
     }
 
     public class PaymentbyDate
@@ -22,21 +22,34 @@ namespace MoH_Microservice.Models
         public string? user { get; set; }
     }
 
-
-
     public class PaymentDetailByCardNo
     {
-        [Required(ErrorMessage ="Patient Card Number is Required")]
+        [Required(ErrorMessage = "Patient Card Number is Required")]
         public string? code { get; set; }
         [Required(ErrorMessage = "User name is Required")]
-        public string? name { get; set; }
+        public string name { get; set; }
+    }
+    public class PaymentDetailByPhone
+    {
+        [Required(ErrorMessage = "Patient Card Number is Required")]
+        public string? phone { get; set; }
+        [Required(ErrorMessage = "User name is Required")]
+        public string name { get; set; }
+    }
+
+    public class PaymentDetailByName
+    {
+        [Required(ErrorMessage = "Patient Card Number is Required")]
+        public string? patient { get; set; }
+        [Required(ErrorMessage = "User name is Required")]
+        public string name { get; set; }
     }
     public class PaymentDetailByInstitution
     {
         [Required(ErrorMessage = "Payment RefNo is required!")]
         public string? paymentId { get; set; }
         [Required(ErrorMessage = "User Filed is required!")]
-        public string? user { get; set; }
+        public string user { get; set; }
         [Required(ErrorMessage = "Hospital is required!")]
         public string? hospital {  get; set; }
     }
@@ -48,14 +61,8 @@ namespace MoH_Microservice.Models
         public string? PaymentType { get; set; }
 
         [MaxLength(200)]
-        [Required(ErrorMessage = "Payment Type is required / የታማሚ ካርድ ቁጥር ያስፈልጋል!")]
+        [Required(ErrorMessage = "Patient Cardnumber is required / የታማሚ ካርድ ቁጥር ያስፈልጋል!")]
         public string? CardNumber { get; set; }
-
-        [MaxLength(100)]
-        [MinLength(5)]
-        [DataType(DataType.Text)]
-        public string? Hospital { get; set; } = string.Empty;
-
 
         [Required(ErrorMessage = "Payment Amount is required / የክፍያ መጠን ያስፈልጋል !")]
         [DataType(DataType.Currency)]
@@ -65,58 +72,42 @@ namespace MoH_Microservice.Models
         public string? Description { get; set; }
 
         [MaxLength(200)]
-        [Required(ErrorMessage = "UserName Is required / ሂሳብ ያዥ ስም !")]
-        public string? Createdby { get; set; }
-
-        [DataType(DataType.Date)]
-        public DateTime? CreatedOn { get; set; } = DateTime.Now;
+        [Required(ErrorMessage = "Cashier Is required / ሂሳብ ያዥ ስም !")]
+        public string Createdby { get; set; }
 
         [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Channel is required !")]
         public string? Channel { get; set; }
 
         [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Users Department is required !")]
-        public string? Department { get; set; }
-
-        [DataType(DataType.Text)]
         [Required(ErrorMessage = "Payment Verifiation ID is required !")]
         public string? PaymentVerifingID { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
-        public string? PatientLocation { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
-        public string? PatientWorkingPlace { get; set; }
-        public string? PatientWorkID{ get; set; }
-        public string? UserType { get; set; }
+        public string? PatientWorkID { get; set; }
     }
 
     public class PaymentTypeReg
     {
         public string? type { get; set; }
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
 
     public class PaymentTypeUpdate
     {
         public int id { get; set; }
         public string? type { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
     public class PaymentChannelReg
     {
         public string? Channel { get; set; }
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
     public class PaymentChannelUpdate
     {
         public int id { get; set; }
         public string? Channel { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; }=DateTime.Now;
     }
     public class PaymentPurposeReg
@@ -129,14 +120,14 @@ namespace MoH_Microservice.Models
     {
         public int id { get; set; }
         public string? Purpose { get; set; }
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedOn { get; set; } = DateTime.Now;
     }
 
     public class PaymentCollection
     {
         public string? Hospital { get; set; }
-        public string? Casher { get; set; }
+        public string Casher { get; set; }
         public string? Type { get; set; }
         public string? Purpose { get; set; }
         public decimal? Amount { get; set; }
@@ -145,17 +136,17 @@ namespace MoH_Microservice.Models
     public class PaymentTypeDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PaymentChannelDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PaymentPurposeDelete
     {
         public int id { get; set; }
-        public string? deletedBy { get; set; }
+        public string deletedBy { get; set; }
     }
     public class PurposeAmountMap
     {

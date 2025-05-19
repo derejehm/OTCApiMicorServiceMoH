@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class initalmigration : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,7 +79,7 @@ namespace MoH_Microservice.Migrations
                 name: "OrganiztionalUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeID = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     EmployeeName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -88,7 +88,9 @@ namespace MoH_Microservice.Migrations
                     AssignedHospital = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     WorkPlace = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     UploadedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UploadedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UploadedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -99,7 +101,7 @@ namespace MoH_Microservice.Migrations
                 name: "Organiztions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Organization = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -114,21 +116,65 @@ namespace MoH_Microservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PatientAddress",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MRN = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    REFMRN = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Region = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Woreda = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Kebele = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddressDetail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    isNextOfKin = table.Column<int>(type: "int", nullable: true),
+                    createdBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    createdOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    updatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PatientAddress", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Patients",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PatientCardNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PatientName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PatientGender = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    PatientAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PatientPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PatientAge = table.Column<int>(type: "int", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    MRN = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    firstName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    middleName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    lastName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    motherName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    age = table.Column<int>(type: "int", nullable: false),
+                    PatientDOB = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    religion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    placeofbirth = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    multiplebirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    appointment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    kinAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    phonenumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    iscreadituser = table.Column<int>(type: "int", nullable: true),
+                    iscbhiuser = table.Column<int>(type: "int", nullable: true),
+                    type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployementID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    department = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    educationlevel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    maritalstatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    spouseFirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    spouselastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    visitDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    createdBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    createdOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    updatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -177,7 +223,7 @@ namespace MoH_Microservice.Migrations
                 name: "PaymentCollectors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeID = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     EmployeeName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -201,6 +247,7 @@ namespace MoH_Microservice.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Purpose = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -215,24 +262,23 @@ namespace MoH_Microservice.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RefNo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CardNumber = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    MRN = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     HospitalName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Department = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Channel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PaymentVerifingID = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PatientLoaction = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PatientWorkingPlace = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PatientWorkID = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Channel = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PaymentVerifingID = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PatientWorkID = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CBHIID = table.Column<long>(type: "bigint", maxLength: 100, nullable: true),
                     Purpose = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Createdby = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     IsCollected = table.Column<int>(type: "int", nullable: true),
-                    CollectionID = table.Column<int>(type: "int", nullable: false),
+                    CollectionID = table.Column<int>(type: "int", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -261,7 +307,7 @@ namespace MoH_Microservice.Migrations
                 name: "Providers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     provider = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     service = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -279,11 +325,11 @@ namespace MoH_Microservice.Migrations
                 name: "ProvidersMapPatient",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     provider = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     service = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CardNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MRN = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Kebele = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Goth = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IDNo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -416,32 +462,33 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "Hospital", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { "7b36a8a8-f293-41ec-be54-ded00dcd4979", 0, "a0cb0b32-cf59-49f4-8679-f841d7d9788e", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEPCtBN7R63ZACUfIBbKXevBfO+v8NoX7RHVgisTBX8LluSe4cqwMfuNR2awo3fdT0Q==", "+251912657147", true, "becdc453-6beb-4cab-a420-77d635a95fc9", false, "DerejeH", "Admin" });
+                values: new object[] { "f5f1ae89-611a-495e-bea6-b3e4605bb4d5", 0, "4db1ca0f-d880-4019-8dd2-6b2527554417", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEENtoQNoCJIarImNnytz+2UW/r16dcghL8NVNuf//fEE7n3hIrTDwphP1fak0N01HQ==", "+251912657147", true, "a72b1252-2a2b-4134-9cdb-b89e029e3428", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "PaymentChannels",
                 columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "TeleBirr", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(952), null, null },
-                    { 2, "Mobile Banking", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(956), null, null },
-                    { 3, "Awash Bank", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(958), null, null },
-                    { 4, "Bank of Abyssinia", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(960), null, null },
-                    { 5, "Amhara Bank", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(962), null, null },
-                    { 6, "Tsedey Bank", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(964), null, null },
-                    { 7, "Other", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(966), null, null },
-                    { 8, "Chapa", "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(969), null, null }
+                    { 1, "TeleBirr", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(395), null, null },
+                    { 2, "CBE Mobile Banking", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(397), null, null },
+                    { 3, "Awash Bank", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(398), null, null },
+                    { 4, "Bank of Abyssinia", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(399), null, null },
+                    { 5, "Amhara Bank", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(400), null, null },
+                    { 6, "Tsedey Bank", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(402), null, null },
+                    { 7, "Other", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(403), null, null },
+                    { 8, "Chapa", "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(404), null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "PaymentPurposes",
-                columns: new[] { "Id", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
+                columns: new[] { "Id", "Amount", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(906), "Card", null, null },
-                    { 2, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(909), "Medicine/Drug", null, null },
-                    { 3, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(912), "Labratory", null, null },
-                    { 4, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(914), "X-RAY", null, null }
+                    { 1, null, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(368), "Card/ካርድ", null, null },
+                    { 2, null, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(370), "Medicne/መድሃኒት", null, null },
+                    { 3, null, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(371), "Laboratory/ላብራቶሪ", null, null },
+                    { 4, null, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(372), "Rag/X-RAY/ራጅ፣አልትራሳውንድ", null, null },
+                    { 5, null, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(374), "Others/ሌሎች", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -449,18 +496,18 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn", "type" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(781), null, null, "ALL" },
-                    { 2, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(788), null, null, "CASH" },
-                    { 3, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(790), null, null, "CBHI" },
-                    { 4, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(792), null, null, "Credit" },
-                    { 5, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(795), null, null, "Free of Charge" },
-                    { 6, "SYS", new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(798), null, null, "Digital" }
+                    { 1, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(302), null, null, "ALL" },
+                    { 2, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(303), null, null, "CASH" },
+                    { 3, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(305), null, null, "CBHI" },
+                    { 4, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(306), null, null, "Credit" },
+                    { 5, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(307), null, null, "Free of Charge" },
+                    { 6, "SYS", new DateTime(2025, 5, 17, 8, 30, 49, 328, DateTimeKind.Local).AddTicks(308), null, null, "Digital" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "7b36a8a8-f293-41ec-be54-ded00dcd4979" });
+                values: new object[] { "1", "f5f1ae89-611a-495e-bea6-b3e4605bb4d5" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -500,6 +547,42 @@ namespace MoH_Microservice.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PatientAddress_MRN",
+                table: "PatientAddress",
+                column: "MRN");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PatientAddress_REFMRN",
+                table: "PatientAddress",
+                column: "REFMRN");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_firstName",
+                table: "Patients",
+                column: "firstName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_lastName",
+                table: "Patients",
+                column: "lastName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_middleName",
+                table: "Patients",
+                column: "middleName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_MRN",
+                table: "Patients",
+                column: "MRN",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_phonenumber",
+                table: "Patients",
+                column: "phonenumber");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_Createdby",
@@ -543,6 +626,9 @@ namespace MoH_Microservice.Migrations
 
             migrationBuilder.DropTable(
                 name: "Organiztions");
+
+            migrationBuilder.DropTable(
+                name: "PatientAddress");
 
             migrationBuilder.DropTable(
                 name: "Patients");
