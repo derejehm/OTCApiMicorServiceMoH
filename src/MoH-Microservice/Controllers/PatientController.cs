@@ -69,7 +69,7 @@ namespace MoH_Microservice.Controllers
                     spouselastName = patient?.PatientSpouselastName,
                     createdBy = patient?.PatientRegisteredBy,
                     type = patient?.PatientType,
-                    visitDate = patient?.PatientVisitingDate,
+                    visitDate =  Convert.ToDateTime(patient.PatientVisitingDate),
                     createdOn = DateTime.Now.Date,
                     updatedBy = null,
                     updatedOn = null

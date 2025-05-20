@@ -128,7 +128,7 @@ namespace MoH_Microservice.Models
             public string? PatientSpouselastName { get; set; }
             [Required(ErrorMessage = "PatientRegisteredBy missing")]
             public string? PatientRegisteredBy { get; set; }
-            public DateTime? PatientVisitingDate { get; set; }
+            public string? PatientVisitingDate { get; set; }
             public string? PatientType { get; set; }
 
             [Required(ErrorMessage = "PatientRegion missing")]

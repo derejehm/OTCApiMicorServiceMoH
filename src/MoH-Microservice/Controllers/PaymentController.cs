@@ -379,9 +379,10 @@ namespace MoH_Microservice.Controllers
                             Amount = items.Amount,
                         };
 
-                    if (!items.groupID.IsNullOrEmpty() && items.isPaid)
+                    if (items.groupID.IsNullOrEmpty() 
+                        || (!items.groupID.IsNullOrEmpty() && !items.isPaid))
                     { 
-                        
+                        // 
                     }
 
                         await this._payment.AddAsync(data);
