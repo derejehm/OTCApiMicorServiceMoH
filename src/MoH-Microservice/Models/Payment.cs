@@ -41,13 +41,13 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
-        public string? PatientWorkID { get; set; } = string.Empty; // WorkPlace such as MOH
+        public string? PatientWorkID { get; set; } = string.Empty; 
 
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
         public long? CBHIID { get; set; }
-
+        public string? groupId { get; set; } // patient requested services
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
         public string? Purpose { get; set; } = string.Empty; // CARD, CBHI, MEDICEN, LAB [ Could be as services provided by the hospital] 

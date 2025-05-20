@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
 using System.Drawing;
+using System.Net.NetworkInformation;
 using static MoH_Microservice.Models.PatientAddress;
 
 namespace MoH_Microservice.Controllers
@@ -43,84 +46,82 @@ namespace MoH_Microservice.Controllers
             
                 Patient Patient = new Patient
                 {
-                    MRN = patient.PatientCardNumber,
+                    MRN = patient?.PatientCardNumber,
                     firstName = patient.PatientFirstName,
                     middleName = patient.PatientMiddleName,
-                    lastName = patient.PatientLastName,
-                    motherName = patient.PatientMotherName,
-                    age = patient.PatientAge,
-                    PatientDOB = patient.PatientDOB,
-                    gender = patient.PatientGender,
-                    religion = patient.PatientReligion,
-                    placeofbirth = patient.PatientPlaceofbirth,
-                    multiplebirth = patient.Multiplebirth,
-                    appointment = patient.Appointment,
-                    address = patient.PatientAddress,
-                    kinAddress = patient.PatientkinAddress,
-                    phonenumber = patient.PatientPhoneNumber,
-                    iscreadituser = patient.iscreadituser,
-                    iscbhiuser = patient.iscbhiuser,
-                    EmployementID = patient.iscreadituser == 1 ? patient.PatientEmployementID : null,
-                    occupation = patient.PatientOccupation,
-                    department = patient.Department,
-                    educationlevel = patient.PatientEducationlevel,
-                    maritalstatus = patient.PatientMaritalstatus,
-                    spouseFirstName = patient.PatientSpouseFirstName,
-                    spouselastName = patient.PatientSpouselastName,
-                    createdBy = patient.PatientRegisteredBy,
-                    type = patient.PatientType,
-                    visitDate = patient.PatientVisitingDate,
+                    lastName = patient?.PatientLastName,
+                    motherName = patient?.PatientMotherName,
+                    PatientDOB = Convert.ToDateTime(patient.PatientDOB),// DateTime.ParseExact(patient.PatientDOB.ToString(), "yyyy-MMM-dd  HH:mm:ss 'GMT'K", null),
+                    gender = patient?.PatientGender,
+                    religion = patient?.PatientReligion,
+                    placeofbirth = patient?.PatientPlaceofbirth,
+                    multiplebirth = patient?.Multiplebirth,
+                    appointment = patient?.Appointment,
+                    phonenumber = patient?.PatientPhoneNumber,
+                    iscreadituser = patient?.iscreadituser,
+                    iscbhiuser = patient?.iscbhiuser,
+                    EmployementID = patient?.iscreadituser == 1 ? patient?.PatientEmployementID : null,
+                    occupation = patient?.PatientOccupation,
+                    department = patient?.Department,
+                    educationlevel = patient?.PatientEducationlevel,
+                    maritalstatus = patient?.PatientMaritalstatus,
+                    spouseFirstName = patient?.PatientSpouseFirstName,
+                    spouselastName = patient?.PatientSpouselastName,
+                    createdBy = patient?.PatientRegisteredBy,
+                    type = patient?.PatientType,
+                    visitDate = patient?.PatientVisitingDate,
                     createdOn = DateTime.Now.Date,
                     updatedBy = null,
                     updatedOn = null
                 };
                 PatientAddress patientAddress = new PatientAddress
                 {
-                    MRN = patient.PatientCardNumber,
-                    Region = patient.PatientRegion,
-                    Woreda = patient.PatientWoreda,
-                    Kebele = patient.PatientKebele,
-                    HouseNo=patient.PatientHouseNo,
-                    Mobile=patient.PatientPhoneNumber,
-                    AddressDetail = patient.PatientAddressDetail,
-                    Phone = patient.PatientPhone,
-                    createdBy = patient.PatientRegisteredBy,
+                    MRN = patient?.PatientCardNumber,
+                    Region = patient?.PatientRegion,
+                    Woreda = patient?.PatientWoreda,
+                    Kebele = patient?.PatientKebele,
+                    HouseNo=patient?.PatientHouseNo,
+                    Mobile=patient?.PatientPhoneNumber,
+                    AddressDetail = patient?.PatientAddressDetail,
+                    Phone = patient?.PatientPhone,
+                    createdBy = patient?.PatientRegisteredBy,
                     createdOn = DateTime.Now.Date,
                 };
                 
                 PatientAddress patientKinAddress = new PatientAddress
                 {
-                    REFMRN = patient.PatientCardNumber,
-                    Region = patient.PatientKinRegion,
-                    Woreda = patient.PatientKinWoreda,
-                    Kebele = patient.PatientKinKebele,
-                    HouseNo= patient.PatientKinHouseNo,
-                    Mobile= patient.PatientKinMobile,
-                    AddressDetail = patient.PatientKinAddressDetail,
-                    Phone = patient.PatientKinPhone,
+                    REFMRN = patient?.PatientCardNumber,
+                    Region = patient?.PatientKinRegion,
+                    Woreda = patient?.PatientKinWoreda,
+                    Kebele = patient?.PatientKinKebele,
+                    HouseNo= patient?.PatientKinHouseNo,
+                    Mobile= patient?.PatientKinMobile,
+                    AddressDetail = patient?.PatientKinAddressDetail,
+                    Phone = patient?.PatientKinPhone,
                     isNextOfKin=1,
-                    createdBy=patient.PatientRegisteredBy,
+                    createdBy=patient?.PatientRegisteredBy,
                     createdOn=DateTime.Now.Date,
                 };
 
-                ProvidersMapUsers provider = new ProvidersMapUsers
-                {
-                    MRN = Patient.MRN,
-                    provider = patient.Woreda,
-                    Kebele = patient.Kebele,
-                    Goth = patient.Goth,
-                    IDNo = patient.IDNo,
-                    letterNo = patient.letterNo,
-                    Examination = patient.Examination,
-                    service = "CBHI",
-                    Createdby = patient.PatientRegisteredBy,
-                    CreatedOn = DateTime.Now,
-                    ReferalNo = patient.ReferalNo,
-
-                };
+                
 
                 if (patient.iscbhiuser == 1)
                 {
+                    ProvidersMapUsers provider = new ProvidersMapUsers
+                    {
+                        MRN = Patient.MRN,
+                        provider = patient.Woreda,
+                        Kebele = patient.Kebele,
+                        Goth = patient.Goth,
+                        IDNo = patient.IDNo,
+                        letterNo = patient.letterNo,
+                        Examination = patient.Examination,
+                        service = "CBHI",
+                        Createdby = patient.PatientRegisteredBy,
+                        CreatedOn = DateTime.Now,
+                        ReferalNo = patient.ReferalNo,
+
+                    };
                     // if the user is a CBHI User
                     await this._dbContext.AddAsync<ProvidersMapUsers>(provider);
                     await this._dbContext.SaveChangesAsync();
@@ -138,7 +139,207 @@ namespace MoH_Microservice.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
+                return BadRequest(new { msg=$"Error: Insert PatientData failed! Reason: {ex.Message}" });
+            }
+        }
+        [HttpPost("add-patient-request")]
+        public async Task<IActionResult> addPatientRequestInfo([FromBody] PatientRequestedServicesReg PatientRequest)
+        {
+            try
+            {
+                var user = await this._userManager.FindByNameAsync(PatientRequest.createdBy);
+                if (user == null)
+                    return NotFound("User not found");
+                var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == PatientRequest.PatientCardNumber)
+                    .AsNoTracking().ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                {
+                    return BadRequest(new { msg = "Patient information does not exisits." });
+                }
+                
+                var groupid =  $"{user.UserType.ToLower()}-{Guid.NewGuid()}"; // groupid for identification purposes
+
+                foreach (var service in PatientRequest.RequestedServices)
+                {
+                    PatientRequestedServices services = new PatientRequestedServices
+                    {
+                        groupId = groupid,
+                        MRN = PatientRequest.PatientCardNumber,
+                        service = service,
+                        purpose = PatientRequest.purpose,
+                        createdBy = PatientRequest.createdBy,
+                        createdOn = DateTime.Now,
+                        isPaid = 0,
+                        isComplete=0,
+                        updatedBy = null,
+                        updatedOn = null
+                    };
+                    await this._dbContext.PatientRequestedServices.AddAsync(services);
+                }
+                await this._dbContext.SaveChangesAsync();
+
+                return Ok(new { data= PatientRequest ,groupid=groupid});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($" Requesting services to patient failed : {ex.StackTrace}");
+            }
+        }
+        [HttpPut("get-patient-request")]
+        public async Task<IActionResult> getOnePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient)
+        {
+            try
+            {
+                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
+                if (user == null)
+                    return NotFound("User not found");
+
+                var patientServ = this
+                                .PatientServiceQuery()
+                                .Where(e => e.Complete == patient.isComplete)
+                                .GroupBy(e => new
+                                {
+                                    e.PatientCardNumber,
+                                    e.RequestGroup,
+                                    e.Paid,
+                                    e.Complete,
+                                    e.PatientFirstName,
+                                    e.PatientLastName,
+                                    e.PatientMiddleName,
+                                    e.PatientAge,
+                                    e.PatientGender,
+                                    e.RequestedReason,
+                                    e.RequestedBy,
+                                    e.createdOn.Date
+                                }).Select(s => new PatientReuestServicesDisplayDTO
+                                {
+                                    RequestGroup = s.FirstOrDefault().RequestGroup,
+                                    PatientCardNumber = s.FirstOrDefault().PatientCardNumber,
+                                    PatientFirstName = s.FirstOrDefault().PatientFirstName,
+                                    PatientLastName = s.FirstOrDefault().PatientLastName,
+                                    PatientMiddleName = s.FirstOrDefault().PatientMiddleName,
+                                    PatientAge = s.FirstOrDefault().PatientAge,
+                                    PatientGender = s.FirstOrDefault().PatientGender,
+                                    Paid = s.FirstOrDefault().Paid,
+                                    IsCompleted = s.FirstOrDefault().Complete,
+                                    TotalPrice = s.Sum(s => s.Price),
+                                    NoRequestedServices = s.Select(s => s.RquestedServices).Count(),
+                                    RquestedServices = s.Select(s => new patientRequestServiceOut { service = s.RquestedServices, amount = s.Price }).ToList(),
+                                    RequestedReason = s.FirstOrDefault().RequestedReason,
+                                    RequestedBy = s.FirstOrDefault().RequestedBy,
+                                    createdOn = s.FirstOrDefault().createdOn.Date
+
+                                })
+                .OrderByDescending(o => o.Paid);
+
+                var result = await patientServ.Where(e => e.IsCompleted == patient.isComplete).ToArrayAsync();
+
+                if (patient.PatientCardNumber != null && patient.groupID != null)
+                {
+                    result = await patientServ
+                    .Where(e => e.PatientCardNumber.ToLower() == patient.PatientCardNumber.ToLower()
+                                && e.IsCompleted == patient.isComplete
+                                && e.RequestGroup == patient.groupID).ToArrayAsync();
+                }
+
+                if (result.Length <= 0)
+                    return NoContent();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($" fetching services to patient failed : {ex.StackTrace}");
+            }
+        }
+
+        [HttpPut("get-patient-request-cashier")]
+        public async Task<IActionResult> getPatientRequestInfoCashier([FromBody] PatientRequestedServicesViewOne patient)
+        {
+            try
+            {
+                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
+                if (user == null)
+                    return NotFound("User not found");
+
+                var patientServ = await this
+                    .PatientServiceQuery()
+                    .Where(e => e.Paid==false)
+                    .GroupBy(e => new {
+                        e.PatientCardNumber,
+                        e.Paid,
+                        e.Complete,
+                        e.PatientFirstName,
+                        e.PatientLastName,
+                        e.PatientMiddleName,
+                        e.PatientAge,
+                        e.PatientGender,
+                        e.RequestedBy,
+                        e.createdOn.Date
+                    }).Select(s => new PatientReuestServicesDisplayDTO
+                    {
+                        PatientCardNumber = s.FirstOrDefault().PatientCardNumber,
+                        PatientFirstName = s.FirstOrDefault().PatientFirstName,
+                        PatientLastName = s.FirstOrDefault().PatientLastName,
+                        PatientMiddleName = s.FirstOrDefault().PatientMiddleName,
+                        PatientAge = s.FirstOrDefault().PatientAge,
+                        PatientGender = s.FirstOrDefault().PatientGender,
+                        Paid = s.FirstOrDefault().Paid,
+                        IsCompleted = s.FirstOrDefault().Complete,
+                        RequestedCatagories = s.GroupBy(g=> new { RequestGroup=g.RequestGroup, RequestedReason=g.RequestedReason, Paid=g.Paid})
+                        .Select(c => new patientRequestOut {
+                                groupID=c.FirstOrDefault().RequestGroup,
+                                amount=c.Sum(s=>s.Price),
+                                purpose= c.FirstOrDefault().RequestedReason,
+                                isPaid= c.FirstOrDefault().Paid,
+                        }).ToList(),
+                        TotalPrice = s.Sum(s => s.Price),
+                        NoRequestedServices = s.Select(s => s.RquestedServices).Count(),
+                        RquestedServices = s.Select(s => new patientRequestServiceOut { service = s.RquestedServices, amount = s.Price,catagory=s.RequestedReason }).ToList(),
+                        RequestedBy = s.FirstOrDefault().RequestedBy,
+                        createdOn = s.FirstOrDefault().createdOn.Date
+                    }).OrderByDescending(o => o.Paid)
+                      
+                      .ToArrayAsync();
+
+                if (patientServ.Length <= 0)
+                    return NoContent();
+
+                return Ok(patientServ);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($" fetching services to patient failed : {ex.StackTrace}");
+            }
+        }
+
+        [HttpPut("complete-patient-request")]
+        public async Task<IActionResult> updatePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient)
+        {
+            try
+            {
+                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
+                if (user == null)
+                    return NotFound("User not found");
+                var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
+                    .AsNoTracking().ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                {
+                    return BadRequest(new { msg = "Patient information does not exisits." });
+                }
+
+                var patientServ = await this._dbContext
+                        .PatientRequestedServices
+                        .Where(w=>w.isPaid==1 && w.isComplete==0 && w.MRN==patient.PatientCardNumber && w.groupId==patient.groupID)
+                        .ExecuteUpdateAsync(e=> e.SetProperty(p=>p.isComplete,1));
+                if (patientServ >0)
+                {
+                    return Ok(new { msg = "Action successfull!" });
+                }
+                return BadRequest(new { msg = "Request completion failed!"});
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg=$"[.ex.] failed to complete request.{ex}"});
             }
         }
 
@@ -159,14 +360,11 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(p => p.middleName, patient.PatientMiddleName)
                             .SetProperty(p => p.lastName, patient.PatientLastName)
                             .SetProperty(p => p.motherName, patient.PatientMotherName)
-                            .SetProperty(p => p.age, patient.PatientAge)
                             .SetProperty(p => p.gender, patient.PatientGender)
                             .SetProperty(p => p.religion, patient.PatientReligion)
                             .SetProperty(p => p.placeofbirth, patient.PatientPlaceofbirth)
                             .SetProperty(p => p.multiplebirth, patient.Multiplebirth)
                             .SetProperty(p => p.appointment, patient.Appointment)
-                            .SetProperty(p => p.address, patient.PatientAddress)
-                            .SetProperty(p => p.kinAddress, patient.PatientkinAddress)
                             .SetProperty(p => p.phonenumber, patient.PatientPhoneNumber)
                             .SetProperty(p => p.iscreadituser, patient.iscreadituser)
                             .SetProperty(p => p.iscbhiuser, patient.iscbhiuser)
@@ -248,47 +446,82 @@ namespace MoH_Microservice.Controllers
         [HttpPut("get-patient-info")]
         public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient)
         {
-            var user = await this._userManager.FindByNameAsync(patient.Cashier);
-            if (user == null)
-                return NotFound("User not found");
-
-            var patientInfo = await this.PatientQuery()
-                            .Where(e => 
-                                e.PatientCardNumber == patient.PatientCardNumber || 
-                                e.PatientFirstName == patient.PatientFirstName ||
-                                e.PatientMiddleName== patient.PatientMiddleName ||
-                                e.PatientLastName == patient.PatientLastName ||
-                                e.PatientPhoneNumber==patient.PatientPhone ||
-                                e.PatientPhone==patient.PatientPhone
-                                )
-                            .ToArrayAsync();
-
-            if (patientInfo == null)
-                return Ok("No patient with this card number!");
-
-            var CurrentCBHID = await this._dbContext.ProvidersMapPatient
-                    .Where(e => e.MRN == patient.PatientCardNumber)
-                    .GroupBy(g => new { g.MRN })
-                    .Select(s => new { currentRecordID = s.Max(id => id.Id) })
-                    .ToArrayAsync();
-
-            if (CurrentCBHID.Length > 0)
+            try
             {
-                patientInfo = await this.PatientQuery()
-                            .Where(e => (
-                                e.PatientCardNumber == patient.PatientCardNumber ||
-                                e.PatientFirstName == patient.PatientFirstName ||
-                                e.PatientMiddleName == patient.PatientMiddleName ||
-                                e.PatientLastName == patient.PatientLastName ||
-                                e.PatientPhoneNumber == patient.PatientPhone ||
-                                e.PatientPhone == patient.PatientPhone) &&
-                                e.Recoredid == CurrentCBHID[0].currentRecordID)
-                            .ToArrayAsync();             }
+                var user = await this._userManager.FindByNameAsync(patient.Cashier);
+                if (user == null)
+                    return NotFound("User not found");
 
-            return Ok(patientInfo);
+                var patientInfo = await this.PatientQuery()
+                                .Where(e =>
+                                    e.PatientCardNumber == patient.PatientCardNumber ||
+                                    e.PatientFirstName == patient.PatientFirstName ||
+                                    e.PatientMiddleName == patient.PatientMiddleName ||
+                                    e.PatientLastName == patient.PatientLastName ||
+                                    e.PatientPhoneNumber == patient.PatientPhone ||
+                                    e.PatientPhone == patient.PatientPhone
+                                    )
+                                .ToArrayAsync();
+
+                if (patientInfo == null)
+                    return BadRequest(new { msg = "No patient with this card number!" });
+
+                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
+                        .Where(e => e.MRN == patient.PatientCardNumber)
+                        .GroupBy(g => new { g.MRN })
+                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                        .ToArrayAsync();
+
+                if (CurrentCBHID.Length > 0)
+                {
+                    patientInfo = await this.PatientQuery()
+                                .Where(e => (
+                                    e.PatientCardNumber == patient.PatientCardNumber ||
+                                    e.PatientFirstName == patient.PatientFirstName ||
+                                    e.PatientMiddleName == patient.PatientMiddleName ||
+                                    e.PatientLastName == patient.PatientLastName ||
+                                    e.PatientPhoneNumber == patient.PatientPhone ||
+                                    e.PatientPhone == patient.PatientPhone) &&
+                                    e.Recoredid == CurrentCBHID[0].currentRecordID)
+                                .ToArrayAsync();
+                }
+
+                return Ok(patientInfo);
+            }catch(Exception e)
+            {
+                return BadRequest(new { message = "[.exp.] : Fetching patient information failed!" });
+            }   
         }
-
         [ApiExplorerSettings(IgnoreApi = true)]
+        public IQueryable<PatientReuestServicesViewDTO> PatientServiceQuery()
+        {
+            var query = (from patients in this._dbContext.Patients
+                         join patinetservices in this._dbContext.PatientRequestedServices on patients.MRN equals patinetservices.MRN into _serviceMap
+                         from serviceMap in _serviceMap.DefaultIfEmpty()
+                         join purposes in this._dbContext.PaymentPurposes on serviceMap.service equals purposes.Id into _purposeMap
+                         from purposeMap in _purposeMap.DefaultIfEmpty()
+                         select new PatientReuestServicesViewDTO
+                         {
+                             PatientCardNumber = patients.MRN,
+                             PatientFirstName = patients.firstName,
+                             PatientMiddleName = patients.middleName,
+                             PatientLastName = patients.lastName,
+                             PatientMotherName = patients.motherName,
+                             PatientAge = DateTime.Now.Year-patients.PatientDOB.Year,
+                             RequestGroup = serviceMap.groupId,
+                             PatientGender = patients.gender,
+                             RquestedServices = purposeMap.Purpose,
+                             RequestedReason = serviceMap.purpose,
+                             Price = purposeMap.Amount,
+                             RequestedBy = serviceMap.createdBy,
+                             createdOn= serviceMap.createdOn,
+                             Paid = serviceMap.isPaid == 0 ? false : serviceMap.isPaid == 1 ? true : null,
+                             Complete = serviceMap.isComplete == 0 ? false : serviceMap.isPaid == 1 ? true : null
+                         });
+
+            return query;
+        }
+            [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientViewDTO> PatientQuery()
         {
             var query = from patients in this._dbContext.Patients
@@ -307,14 +540,12 @@ namespace MoH_Microservice.Controllers
                             PatientMiddleName = patients.middleName,
                             PatientLastName = patients.lastName,
                             PatientMotherName = patients.motherName,
-                            PatientAge = patients.age,
                             PatientGender = patients.gender,
+                            PatientAge = DateTime.Now.Year - patients.PatientDOB.Year,
                             PatientReligion = patients.religion,
                             PatientPlaceofbirth = patients.placeofbirth,
                             Multiplebirth = patients.multiplebirth,
                             Appointment = patients.appointment,
-                            PatientAddress = patients.address,
-                            PatientkinAddress = patients.kinAddress,
                             PatientPhoneNumber = patients.phonenumber,
                             iscreadituser = patients.iscreadituser,
                             iscbhiuser = patients.iscbhiuser,

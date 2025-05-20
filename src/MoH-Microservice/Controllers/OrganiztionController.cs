@@ -139,9 +139,9 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpGet("get-workers/{LoggedInUser}")]
-        public async Task<IActionResult> GetWorkersAll([FromRoute] OrganizationalUserGet worker)
+        public async Task<IActionResult> GetWorkersAll([FromRoute] string LoggedInUser)
         {
-            var user = await this._userManager.FindByNameAsync(worker.LoggedInUser);
+            var user = await this._userManager.FindByNameAsync(LoggedInUser);
             if (user == null)
                 return NotFound("User not found");
 
@@ -153,9 +153,9 @@ namespace MoH_Microservice.Controllers
 
             if (workers.Length <= 0)
                  NoContent();
+
           return Ok(workers);
             
-
         }
 
         [HttpGet("get-workers/{LoggedInUser}/{EmployeeID}")]
