@@ -83,6 +83,7 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage = "Payment Verifiation ID is required !")]
         public string? PaymentVerifingID { get; set; }
         public string? PatientWorkID { get; set; }
+        public string? groupID { get; set; }
     }
 
     public class PaymentTypeReg
@@ -150,10 +151,11 @@ namespace MoH_Microservice.Models
     }
     public class PurposeAmountMap
     {
-        //public string? refno { get; set; }
         public decimal? Amount { get;set;}
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
         public string? Purpose { get; set;}
+        public string? groupID { get; set; }
+        public bool isPaid { get; set; }
     }
 }
