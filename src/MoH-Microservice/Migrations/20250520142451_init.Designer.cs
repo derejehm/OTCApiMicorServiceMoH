@@ -12,8 +12,13 @@ using MoH_Microservice.Data;
 namespace MoH_Microservice.Migrations
 {
     [DbContext(typeof(AppDbContext))]
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+    [Migration("20250519112555_New migration")]
+    partial class Newmigration
+========
     [Migration("20250520142451_init")]
     partial class init
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,7 +160,11 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            UserId = "5d670fdf-7976-4a5c-bed4-652ffc532b1b",
+========
                             UserId = "a33c5ed2-f9fe-4a4f-a45b-c2f17e50ca37",
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             RoleId = "1"
                         });
                 });
@@ -258,9 +267,15 @@ namespace MoH_Microservice.Migrations
                     b.HasData(
                         new
                         {
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            Id = "5d670fdf-7976-4a5c-bed4-652ffc532b1b",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "dfb5041c-f148-4df5-92ae-7cc1faa10429",
+========
                             Id = "a33c5ed2-f9fe-4a4f-a45b-c2f17e50ca37",
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "944a5b78-2b04-45d7-8c25-150b34fd3459",
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
@@ -268,10 +283,17 @@ namespace MoH_Microservice.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            PasswordHash = "AQAAAAIAAYagAAAAEJMBA0v6pOmED9MWu/AimKNMmJjlNzjQ6mvWUX4Wbt+eGFJs/5jooDkRB0IUWz74gA==",
+                            PhoneNumber = "+251912657147",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "0df292fc-16c3-4284-955f-22a92332707f",
+========
                             PasswordHash = "AQAAAAIAAYagAAAAEP2XDQUwwCJ8jqu9l4iuIUs0eMmaf7oHmr7yBtsu2lHegabFow5IzJjw9S3+wiX8Kw==",
                             PhoneNumber = "+251912657147",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "31d87e6d-bd6e-4f68-a4df-6e92292fadf8",
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
@@ -798,56 +820,88 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             Channel = "TeleBirr",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1229)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6016)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 2,
                             Channel = "CBE Mobile Banking",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1231)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6018)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 3,
                             Channel = "Awash Bank",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1234)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6019)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 4,
                             Channel = "Bank of Abyssinia",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1235)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6020)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 5,
                             Channel = "Amhara Bank",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1238)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6022)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 6,
                             Channel = "Tsedey Bank",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1239)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6023)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 7,
                             Channel = "Other",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1241)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6024)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         },
                         new
                         {
                             Id = 8,
                             Channel = "Chapa",
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1243)
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6026)
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                         });
                 });
 
@@ -947,35 +1001,55 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1183),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5990),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Purpose = "Card/ካርድ"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1187),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5991),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Purpose = "Medicne/መድሃኒት"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1189),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5993),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Purpose = "Laboratory/ላብራቶሪ"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1191),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5994),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Purpose = "Rag/X-RAY/ራጅ፣አልትራሳውንድ"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1193),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5996),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             Purpose = "Others/ሌሎች"
                         });
                 });
@@ -1017,42 +1091,66 @@ namespace MoH_Microservice.Migrations
                         {
                             Id = 1,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1099),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5874),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "ALL"
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1102),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5876),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "CASH"
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1105),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5878),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "CBHI"
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1107),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5879),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "Credit"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1109),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5954),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "Free of Charge"
                         },
                         new
                         {
                             Id = 6,
                             CreatedBy = "SYS",
+<<<<<<<< HEAD:src/MoH-Microservice/Migrations/20250519112555_New migration.Designer.cs
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1111),
+========
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5956),
+>>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8:src/MoH-Microservice/Migrations/20250520142451_init.Designer.cs
                             type = "Digital"
                         });
                 });

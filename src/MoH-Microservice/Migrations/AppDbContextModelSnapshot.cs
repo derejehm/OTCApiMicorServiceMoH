@@ -153,10 +153,14 @@ namespace MoH_Microservice.Migrations
                         new
                         {
 <<<<<<< HEAD
+                            UserId = "5d670fdf-7976-4a5c-bed4-652ffc532b1b",
+=======
+<<<<<<< HEAD
                             UserId = "a33c5ed2-f9fe-4a4f-a45b-c2f17e50ca37",
 =======
                             UserId = "7b36a8a8-f293-41ec-be54-ded00dcd4979",
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             RoleId = "1"
                         });
                 });
@@ -260,6 +264,11 @@ namespace MoH_Microservice.Migrations
                         new
                         {
 <<<<<<< HEAD
+                            Id = "5d670fdf-7976-4a5c-bed4-652ffc532b1b",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "dfb5041c-f148-4df5-92ae-7cc1faa10429",
+=======
+<<<<<<< HEAD
                             Id = "a33c5ed2-f9fe-4a4f-a45b-c2f17e50ca37",
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "944a5b78-2b04-45d7-8c25-150b34fd3459",
@@ -268,6 +277,7 @@ namespace MoH_Microservice.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "a0cb0b32-cf59-49f4-8679-f841d7d9788e",
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             Departement = "Tsedey Bank",
                             Email = "dereje.hmariam@tsedeybank.com.et",
                             EmailConfirmed = true,
@@ -275,6 +285,12 @@ namespace MoH_Microservice.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "DEREJE.HMARIAM@TSEDEYBANK.COM.ET",
                             NormalizedUserName = "DEREJEH",
+<<<<<<< HEAD
+                            PasswordHash = "AQAAAAIAAYagAAAAEJMBA0v6pOmED9MWu/AimKNMmJjlNzjQ6mvWUX4Wbt+eGFJs/5jooDkRB0IUWz74gA==",
+                            PhoneNumber = "+251912657147",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "0df292fc-16c3-4284-955f-22a92332707f",
+=======
 <<<<<<< HEAD
                             PasswordHash = "AQAAAAIAAYagAAAAEP2XDQUwwCJ8jqu9l4iuIUs0eMmaf7oHmr7yBtsu2lHegabFow5IzJjw9S3+wiX8Kw==",
                             PhoneNumber = "+251912657147",
@@ -286,6 +302,7 @@ namespace MoH_Microservice.Migrations
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "becdc453-6beb-4cab-a420-77d635a95fc9",
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             TwoFactorEnabled = false,
                             UserName = "DerejeH",
                             UserType = "Admin"
@@ -813,10 +830,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "TeleBirr",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1229)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6016)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(952)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -824,10 +845,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "CBE Mobile Banking",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1231)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6018)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(956)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -835,10 +860,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Awash Bank",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1234)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6019)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(958)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -846,10 +875,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Bank of Abyssinia",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1235)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6020)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(960)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -857,10 +890,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Amhara Bank",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1238)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6022)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(962)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -868,10 +905,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Tsedey Bank",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1239)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6023)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(964)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -879,10 +920,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Other",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1241)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6024)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(966)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
@@ -890,10 +935,14 @@ namespace MoH_Microservice.Migrations
                             Channel = "Chapa",
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1243)
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(6026)
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(969)
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         });
                 });
 
@@ -994,17 +1043,26 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1183),
+                            Purpose = "Card/ካርድ"
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5990),
                             Purpose = "Card/ካርድ"
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(906),
                             Purpose = "Card"
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "SYS",
+<<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1187),
+                            Purpose = "Medicne/መድሃኒት"
+=======
 <<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5991),
                             Purpose = "Medicne/መድሃኒት"
@@ -1012,11 +1070,16 @@ namespace MoH_Microservice.Migrations
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(909),
                             Purpose = "Medicine/Drug"
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
                             Id = 3,
                             CreatedBy = "SYS",
+<<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1189),
+                            Purpose = "Laboratory/ላብራቶሪ"
+=======
 <<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5993),
                             Purpose = "Laboratory/ላብራቶሪ"
@@ -1024,25 +1087,35 @@ namespace MoH_Microservice.Migrations
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(912),
                             Purpose = "Labratory"
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         },
                         new
                         {
                             Id = 4,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1191),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5994),
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             Purpose = "Rag/X-RAY/ራጅ፣አልትራሳውንድ"
                         },
                         new
                         {
                             Id = 5,
                             CreatedBy = "SYS",
+<<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1193),
+                            Purpose = "Others/ሌሎች"
+=======
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5996),
                             Purpose = "Others/ሌሎች"
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(914),
                             Purpose = "X-RAY"
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                         });
                 });
 
@@ -1084,10 +1157,14 @@ namespace MoH_Microservice.Migrations
                             Id = 1,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1099),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5874),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(781),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "ALL"
                         },
                         new
@@ -1095,10 +1172,14 @@ namespace MoH_Microservice.Migrations
                             Id = 2,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1102),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5876),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(788),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "CASH"
                         },
                         new
@@ -1106,10 +1187,14 @@ namespace MoH_Microservice.Migrations
                             Id = 3,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1105),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5878),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(790),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "CBHI"
                         },
                         new
@@ -1117,10 +1202,14 @@ namespace MoH_Microservice.Migrations
                             Id = 4,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1107),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5879),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(792),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "Credit"
                         },
                         new
@@ -1128,10 +1217,14 @@ namespace MoH_Microservice.Migrations
                             Id = 5,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1109),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5954),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(795),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "Free of Charge"
                         },
                         new
@@ -1139,10 +1232,14 @@ namespace MoH_Microservice.Migrations
                             Id = 6,
                             CreatedBy = "SYS",
 <<<<<<< HEAD
+                            CreatedOn = new DateTime(2025, 5, 19, 14, 25, 53, 891, DateTimeKind.Local).AddTicks(1111),
+=======
+<<<<<<< HEAD
                             CreatedOn = new DateTime(2025, 5, 20, 11, 24, 50, 418, DateTimeKind.Local).AddTicks(5956),
 =======
                             CreatedOn = new DateTime(2025, 4, 14, 9, 52, 6, 711, DateTimeKind.Local).AddTicks(798),
 >>>>>>> 7bc2bf98320c87ddcca45aa0da52c2c8ccb19b2b
+>>>>>>> a8282563e1e242b2fe9769dbf222f5a923e73ea8
                             type = "Digital"
                         });
                 });
