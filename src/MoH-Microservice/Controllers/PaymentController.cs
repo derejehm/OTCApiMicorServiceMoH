@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
 using MoH_Microservice.Models;
+using MoH_Microservice.Query;
 using System.Net;
 
 
@@ -19,7 +20,8 @@ namespace MoH_Microservice.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private AppDbContext _payment;
+        private readonly AppDbContext _payment;
+        private readonly AppQuery _query;
         public PaymentController(
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -28,6 +30,7 @@ namespace MoH_Microservice.Controllers
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._payment = payment;
+            this._query = new AppQuery(payment);
         }
 
         [HttpPut("Get-all-Payment")]
@@ -300,7 +303,7 @@ namespace MoH_Microservice.Controllers
         }
         
         [HttpPost("add-payment")]
-        [Authorize(Policy = "UserPolicy")]
+        //[Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
         {
 
@@ -325,12 +328,15 @@ namespace MoH_Microservice.Controllers
                         .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
                         .ToArrayAsync();
                 // check if payment for card has been paid for.
-                if (MaxCardDate.Length <= 0 && !payment.Amount.Any(e=>e.Purpose.ToLower()=="card"))
-                    throw new Exception("CARD PAYMENT REQUIRED / የካርድ ክፍያ አልተከናወነም!");
+                
+                //if (MaxCardDate.Length <= 0 && !payment.Amount.Any(e=>e.Purpose.ToLower()=="card"))
+                //    throw new Exception("CARD PAYMENT REQUIRED / የካርድ ክፍያ አልተከናወነም!");
+
                 // check if the credit patient has been registered.
                 var worker = await this._payment.OrganiztionalUsers
                     .Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower()
-                             && e.AssignedHospital.ToLower() == user.Hospital.ToLower()).ToArrayAsync();
+                             && e.AssignedHospital.ToLower() == user.Hospital.ToLower()  
+                             && e.WorkPlace.ToLower()==payment.organization).ToArrayAsync();
 
                 // check for the worker if credit payment issued 
                 if (payment.PaymentType.ToLower() == "credit")
@@ -349,8 +355,8 @@ namespace MoH_Microservice.Controllers
             
                 // generate a refno
 
-                var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper()}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}";
-            
+                var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper()}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Millisecond}{DateTime.Now.Microsecond}{new Random().Next(DateTime.Now.Microsecond,Int32.MaxValue)}";
+                List<PatientReuestServicesViewDTO[]> groupPayment = new List<PatientReuestServicesViewDTO[]>();
                     foreach (var items in payment.Amount)
                     {
 
@@ -378,33 +384,46 @@ namespace MoH_Microservice.Controllers
                             Purpose = items.Purpose.ToUpper(), //
                             Amount = items.Amount,
                         };
-
-                    if (items.groupID.IsNullOrEmpty() 
-                        || (!items.groupID.IsNullOrEmpty() && !items.isPaid))
-                    { 
-                        // 
-                    }
-
-                        await this._payment.AddAsync(data);
-
                         if (!items.groupID.IsNullOrEmpty()) {
 
-
-                        await this._payment.PatientRequestedServices
-                                .Where(e => e.isPaid == 0 
-                                    && e.groupId == items.groupID 
-                                    && e.MRN == payment.CardNumber 
+                        // check if the payment has aleardy been completed!
+                        var groupPaymentExists = await this._query.PatientServiceQuery()
+                             .Where(e =>  e.RequestGroup == items.groupID
+                                 && e.PatientCardNumber == payment.CardNumber
+                                 && e.RequestedReason == items.Purpose
+                                 && e.Paid==true
+                                 ).ToArrayAsync();
+                        groupPayment.Add(groupPaymentExists);
+                        if(groupPaymentExists.Length <=0)
+                        {
+                            await this._payment.PatientRequestedServices
+                                .Where(e => e.isPaid == 0
+                                    && e.groupId == items.groupID
+                                    && e.MRN == payment.CardNumber
                                     && e.purpose == items.Purpose)
                                 .ExecuteUpdateAsync(u => u.SetProperty(p => p.isPaid, items.isPaid == true ? 1 : null));
-                        
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
+                    if (!items.groupID.IsNullOrEmpty() && (items.isPaid == false || items.isPaid==null))
+                    {
+                        await this._payment.SaveChangesAsync();
+                        continue;
+                    }
+                    await this._payment.AddAsync(data);
                     await this._payment.SaveChangesAsync();
                 }
-                return Created("/", new { RefNo = RefNo, data = payment});
+                var PaymentDetails = await this.PaymentQuery().Where(e => e.ReferenceNo == RefNo).ToArrayAsync();
+                return Created("/", new {   RefNo = RefNo, 
+                                            data = PaymentDetails, 
+                                            grp_exisiting_payment=groupPayment});
             }
             catch (Exception ex)
             {
-                return BadRequest($"PAYMENT FAILED REASON : {ex.Message}");
+                return BadRequest(new { msg = $"PAYMENT FAILED !! :: {ex.Message}" });
             }
         }
 
@@ -485,6 +504,7 @@ namespace MoH_Microservice.Controllers
 
                         select new PaymentReportDTO
                         {
+                            RowId = payments.id,
                             ReferenceNo = payments.RefNo,
                             PatientCardNumber = payments.MRN,
                             HospitalName = payments.HospitalName,
@@ -525,6 +545,7 @@ namespace MoH_Microservice.Controllers
         }
         public class PaymentReportDTO
         {
+            public long RowId { get; set; }
             public string? ReferenceNo { get; set; }
             public string? PatientCardNumber { get; set; }
             public string? HospitalName { get; set; }

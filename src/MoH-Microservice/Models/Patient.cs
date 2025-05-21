@@ -236,6 +236,7 @@ namespace MoH_Microservice.Models
 
     public class PatientViewDTO
     {
+        public int? RowID { get; set; }
         public string? PatientCardNumber { get; set; } // medical registration number
         public string? PatientFirstName { get; set; }
         public string? PatientMiddleName { get; set; }

@@ -264,7 +264,7 @@ namespace MoH_Microservice.Controllers
 
                 var patientServ = await this
                     .PatientServiceQuery()
-                    .Where(e => e.Paid==false)
+                    .Where(e => e.Paid==false && e.Complete==false)
                     .GroupBy(e => new {
                         e.PatientCardNumber,
                         e.Paid,
@@ -291,7 +291,7 @@ namespace MoH_Microservice.Controllers
                                 groupID=c.FirstOrDefault().RequestGroup,
                                 amount=c.Sum(s=>s.Price),
                                 purpose= c.FirstOrDefault().RequestedReason,
-                                isPaid= c.FirstOrDefault().Paid,
+                                isPaid= !c.FirstOrDefault().Paid,
                         }).ToList(),
                         TotalPrice = s.Sum(s => s.Price),
                         NoRequestedServices = s.Select(s => s.RquestedServices).Count(),
@@ -378,7 +378,6 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date) 
                             .SetProperty(p => p.PatientDOB,Convert.ToDateTime(patient.PatientDOB))
-                            .SetProperty(p => p.
                            );
                 var PatientAddress = await this._dbContext
                            .PatientAddress
@@ -527,7 +526,7 @@ namespace MoH_Microservice.Controllers
 
             return query;
         }
-            [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientViewDTO> PatientQuery()
         {
             var query = (from patients in this._dbContext.Patients

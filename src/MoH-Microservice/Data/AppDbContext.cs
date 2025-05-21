@@ -77,6 +77,13 @@ namespace MoH_Microservice.Data
             builder.Entity<PatientAddress>().HasIndex("MRN").IsUnique(false);
             builder.Entity<PatientAddress>().HasIndex("REFMRN").IsUnique(false);
 
+
+            builder.Entity<PatientRequestedServices>().HasIndex("MRN").IsUnique(false);
+            builder.Entity<PatientRequestedServices>().HasIndex("groupId").IsUnique(false);
+            builder.Entity<PatientRequestedServices>().HasIndex("isPaid").IsUnique(false);
+            builder.Entity<PatientRequestedServices>().HasIndex("purpose").IsUnique(false);
+            builder.Entity<PatientRequestedServices>().HasIndex("isComplete").IsUnique(false);
+
             builder.Entity<Patient>().HasIndex("firstName").IsUnique(false);
             builder.Entity<Patient>().HasIndex("middleName").IsUnique(false);
             builder.Entity<Patient>().HasIndex("lastName").IsUnique(false);
