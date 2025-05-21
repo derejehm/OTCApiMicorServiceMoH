@@ -58,32 +58,23 @@ namespace MoH_Microservice.Models
 
         [MaxLength(100)]
         [Required(ErrorMessage = "Payment Type is required / የክፍያ አይነት ያስፈልጋል !")]
-        public string? PaymentType { get; set; }
+        public string PaymentType { get; set; } = string.Empty;
 
         [MaxLength(200)]
         [Required(ErrorMessage = "Patient Cardnumber is required / የታማሚ ካርድ ቁጥር ያስፈልጋል!")]
-        public string? CardNumber { get; set; }
+        public string CardNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Payment Amount is required / የክፍያ መጠን ያስፈልጋል !")]
         [DataType(DataType.Currency)]
         public List<PurposeAmountMap> Amount { get; set; }
-
-        [DataType(DataType.MultilineText)]
-        public string? Description { get; set; }
-
+        public string? Description { get; set; } = string.Empty;
         [MaxLength(200)]
         [Required(ErrorMessage = "Cashier Is required / ሂሳብ ያዥ ስም !")]
-        public string Createdby { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Channel is required !")]
-        public string? Channel { get; set; }
-
-        [DataType(DataType.Text)]
-        [Required(ErrorMessage = "Payment Verifiation ID is required !")]
-        public string? PaymentVerifingID { get; set; }
-        public string? PatientWorkID { get; set; }
-        public string? groupID { get; set; }
+        public string Createdby { get; set; } = string.Empty;
+        public string? Channel { get; set; }=string.Empty;
+        public string? organization { get; set; } = string.Empty;
+        public string? PaymentVerifingID { get; set; } = string.Empty;
+        public string? PatientWorkID { get; set; } = string.Empty;
     }
 
     public class PaymentTypeReg
@@ -156,6 +147,6 @@ namespace MoH_Microservice.Models
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]
         public string? Purpose { get; set;}
         public string? groupID { get; set; }
-        public bool isPaid { get; set; }
+        public bool? isPaid { get; set; }
     }
 }

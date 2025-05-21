@@ -128,7 +128,7 @@ namespace MoH_Microservice.Models
             public string? PatientSpouselastName { get; set; }
             [Required(ErrorMessage = "PatientRegisteredBy missing")]
             public string? PatientRegisteredBy { get; set; }
-            public DateTime? PatientVisitingDate { get; set; }
+            public string? PatientVisitingDate { get; set; }
             public string? PatientType { get; set; }
 
             [Required(ErrorMessage = "PatientRegion missing")]
@@ -161,52 +161,67 @@ namespace MoH_Microservice.Models
         }
         public class PatientUpdate
         {
-            public string? PatientCardNumber { get; set; } // medical registration number
-            public string? PatientFirstName { get; set; }
-            public string? PatientMiddleName { get; set; }
-            public string? PatientLastName { get; set; }
-            public string? PatientMotherName { get; set; }
-            public string? PatientGender { get; set; }
-            public string? PatientReligion { get; set; }
-            public string? PatientPlaceofbirth { get; set; }
-            public string? Multiplebirth { get; set; }
-            public string? Appointment { get; set; }
-            public string? PatientAddress { get; set; }
-            public string? PatientkinAddress { get; set; }
-            public string? PatientPhoneNumber { get; set; }
-            public int? iscreadituser { get; set; }
-            public bool? iscbhiuserUpdated { get; set; }
-            public int? iscbhiuser { get; set; }
-            public string? PatientEmployementID { get; set; }
-            public string? PatientOccupation { get; set; }
-            public string? Department { get; set; }
-            public string? PatientEducationlevel { get; set; }
-            public string? PatientMaritalstatus { get; set; }
-            public string? PatientSpouseFirstName { get; set; }
-            public string? PatientSpouselastName { get; set; }
-            public string PatientChangedBy { get; set; }
-            public DateTime? PatientVisitingDate { get; set; }
+        [Required(ErrorMessage = "PatientCardNumber missing")]
+        public string PatientCardNumber { get; set; } // medical registration number
+        [Required(ErrorMessage = "PatientFirstName missing")]
+        public string PatientFirstName { get; set; }
+        [Required(ErrorMessage = "PatientMiddleName missing")]
+        public string PatientMiddleName { get; set; }
+        public string? PatientLastName { get; set; }
+        public string? PatientMotherName { get; set; }
+        [Required(ErrorMessage = "PatientDOB missing")]
+        public string PatientDOB { get; set; }
+        [Required(ErrorMessage = "PatientGender missing")]
+        public string PatientGender { get; set; }
+        public string? PatientReligion { get; set; }
+        public string? PatientPlaceofbirth { get; set; }
+        public string? Multiplebirth { get; set; }
+        [Required(ErrorMessage = "Appointment missing")]
+        public string Appointment { get; set; }
+        public string? PatientPhoneNumber { get; set; }
+        public int? iscreadituser { get; set; }
+        public bool? iscbhiuserUpdated { get; set; }
+        public int? iscbhiuser { get; set; }
+        public string? PatientEmployementID { get; set; }
+        public string? PatientOccupation { get; set; }
+        [Required(ErrorMessage = "Department missing")]
+        public string Department { get; set; }
+        public string? PatientEducationlevel { get; set; }
+        public string? PatientMaritalstatus { get; set; }
+        public string? PatientSpouseFirstName { get; set; }
+        public string? PatientSpouselastName { get; set; }
+        [Required(ErrorMessage = "PatientRegisteredBy missing")]
+        public string? PatientChangedBy { get; set; }
+        public string? PatientVisitingDate { get; set; }
+        public string? PatientType { get; set; }
+        [Required(ErrorMessage = "PatientRegion missing")]
+        public string PatientRegion { get; set; }
+        [Required(ErrorMessage = "PatientWoreda missing")]
+        public string PatientWoreda { get; set; }
+        [Required(ErrorMessage = "PatientKebele missing")]
+        public string PatientKebele { get; set; }
+        public string? PatientHouseNo { get; set; }
+        public string? PatientAddressDetail { get; set; }
+        public string? PatientPhone { get; set; }
+        [Required(ErrorMessage = "PatientKinRegion missing")]
+        public string PatientKinRegion { get; set; }
+        [Required(ErrorMessage = "PatientKinWoreda missing")]
+        public string PatientKinWoreda { get; set; }
+        [Required(ErrorMessage = "PatientKinKebele missing")]
+        public string PatientKinKebele { get; set; }
+        public string? PatientKinHouseNo { get; set; }
+        public string? PatientKinAddressDetail { get; set; }
+        public string? PatientKinPhone { get; set; }
+        public string? PatientKinMobile { get; set; }
+        public string? Woreda { get; set; }
+        public string? Kebele { get; set; }
+        public string? Goth { get; set; }
+        public string? IDNo { get; set; }
+        public string? ReferalNo { get; set; }
+        public string? letterNo { get; set; }
+        public string? Examination { get; set; }
 
-            public string? PatientRegion { get; set; }
-            public string? PatientWoreda { get; set; }
-            public string? PatientKebele { get; set; }
-            public string? PatientAddressDetail { get; set; }
-            public string? PatientPhone { get; set; }
-
-            public string? PatientKinRegion { get; set; }
-            public string? PatientKinWoreda { get; set; }
-            public string? PatientKinKebele { get; set; }
-            public string? PatientKinAddressDetail { get; set; }
-            public string? PatientKinPhone { get; set; }
-            public string? Woreda { get; set; }
-            public string? Kebele { get; set; }
-            public string? Goth { get; set; }
-            public string? IDNo { get; set; }
-            public string? ReferalNo { get; set; }
-            public string? letterNo { get; set; }
-            public string? Examination { get; set; }
-
-        }
+    }
         public class PatientView
         {
             public string? PatientCardNumber { get; set; }
@@ -221,6 +236,7 @@ namespace MoH_Microservice.Models
 
     public class PatientViewDTO
     {
+        public int? RowID { get; set; }
         public string? PatientCardNumber { get; set; } // medical registration number
         public string? PatientFirstName { get; set; }
         public string? PatientMiddleName { get; set; }
@@ -228,6 +244,7 @@ namespace MoH_Microservice.Models
         public string? PatientMotherName { get; set; }
         public string? PatientGender { get; set; }
         public int? PatientAge { get; set; }
+        public DateTime PatientDOB { get; set; }
         public string? PatientReligion { get; set; }
         public string? PatientPlaceofbirth { get; set; }
         public string? Multiplebirth { get; set; }
@@ -252,12 +269,16 @@ namespace MoH_Microservice.Models
         public string? PatientKebele { get; set; }
         public string? PatientAddressDetail { get; set; }
         public string? PatientPhone { get; set; }
+        public string? PatientHouseNo { get; set; }
 
         public string? PatientKinRegion { get; set; }
         public string? PatientKinWoreda { get; set; }
         public string? PatientKinKebele { get; set; }
         public string? PatientKinAddressDetail { get; set; }
+        public string? PatientKinHouseNo { get; set; }
         public string? PatientKinPhone { get; set; }
+        public string? PatientKinMobile { get; set; }
+
         public long? Recoredid { get; set; }
         public string? Woreda { get; set; }
         public string? Kebele { get; set; }
@@ -271,7 +292,6 @@ namespace MoH_Microservice.Models
         public string? CreditUserPhone { get; set; }
         public string? CreditUserEmail { get; set; }
         public string? CreditUserOrganization { get; set; }
-
         public DateTime? RegisteredOn { get; set; }
         public string? RegistereddBy { get; set; }
     }

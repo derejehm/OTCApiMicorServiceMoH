@@ -69,7 +69,7 @@ namespace MoH_Microservice.Controllers
                     spouselastName = patient?.PatientSpouselastName,
                     createdBy = patient?.PatientRegisteredBy,
                     type = patient?.PatientType,
-                    visitDate = patient?.PatientVisitingDate,
+                    visitDate =  Convert.ToDateTime(patient.PatientVisitingDate),
                     createdOn = DateTime.Now.Date,
                     updatedBy = null,
                     updatedOn = null
@@ -149,12 +149,12 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._userManager.FindByNameAsync(PatientRequest.createdBy);
                 if (user == null)
-                    return NotFound("User not found");
+                    throw new Exception("User not found");
                 var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == PatientRequest.PatientCardNumber)
                     .AsNoTracking().ToArrayAsync();
                 if (doesPatientExisit.Length <= 0)
                 {
-                    return BadRequest(new { msg = "Patient information does not exisits." });
+                   throw new Exception( "PATIENT DOES NOT EXIST" );
                 }
                 
                 var groupid =  $"{user.UserType.ToLower()}-{Guid.NewGuid()}"; // groupid for identification purposes
@@ -182,7 +182,7 @@ namespace MoH_Microservice.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($" Requesting services to patient failed : {ex.StackTrace}");
+                return BadRequest(new { msg = $"FAILED TO ASSIGN SERVICES : {ex.Message}" });
             }
         }
         [HttpPut("get-patient-request")]
@@ -192,7 +192,7 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
                 if (user == null)
-                    return NotFound("User not found");
+                    throw new Exception("USER NOT FOUND");
 
                 var patientServ = this
                                 .PatientServiceQuery()
@@ -249,7 +249,7 @@ namespace MoH_Microservice.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($" fetching services to patient failed : {ex.StackTrace}");
+                return BadRequest( new { msg = $"FAILD TO FEATCH PATIENT INFORMATION: {ex.Message}" });
             }
         }
 
@@ -260,11 +260,11 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
                 if (user == null)
-                    return NotFound("User not found");
+                    throw new Exception("USER NOT FOUND");
 
                 var patientServ = await this
                     .PatientServiceQuery()
-                    .Where(e => e.Paid==false)
+                    .Where(e => e.Paid==false && e.Complete==false)
                     .GroupBy(e => new {
                         e.PatientCardNumber,
                         e.Paid,
@@ -291,7 +291,7 @@ namespace MoH_Microservice.Controllers
                                 groupID=c.FirstOrDefault().RequestGroup,
                                 amount=c.Sum(s=>s.Price),
                                 purpose= c.FirstOrDefault().RequestedReason,
-                                isPaid= c.FirstOrDefault().Paid,
+                                isPaid= !c.FirstOrDefault().Paid,
                         }).ToList(),
                         TotalPrice = s.Sum(s => s.Price),
                         NoRequestedServices = s.Select(s => s.RquestedServices).Count(),
@@ -309,7 +309,7 @@ namespace MoH_Microservice.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($" fetching services to patient failed : {ex.StackTrace}");
+                return BadRequest(new { msg = $" FETCHING PATIENT INFORMATION FAILD : {ex.Message}" });
             }
         }
 
@@ -320,38 +320,38 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
                 if (user == null)
-                    return NotFound("User not found");
+                    throw new Exception("USER NOT FOUND");
                 var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
                     .AsNoTracking().ToArrayAsync();
                 if (doesPatientExisit.Length <= 0)
                 {
-                    return BadRequest(new { msg = "Patient information does not exisits." });
+                    throw new Exception("PATIENT DOES NOT EXIST.");
                 }
-
                 var patientServ = await this._dbContext
                         .PatientRequestedServices
                         .Where(w=>w.isPaid==1 && w.isComplete==0 && w.MRN==patient.PatientCardNumber && w.groupId==patient.groupID)
                         .ExecuteUpdateAsync(e=> e.SetProperty(p=>p.isComplete,1));
                 if (patientServ >0)
-                {
-                    return Ok(new { msg = "Action successfull!" });
-                }
-                return BadRequest(new { msg = "Request completion failed!"});
+                    return Ok(new { msg = "ACTION SUCCESSFUL!" });
+                else
+                    throw new Exception("REQUEST FAILD TO UPDATE");
+
             }catch(Exception ex)
             {
-                return BadRequest(new { msg=$"[.ex.] failed to complete request.{ex}"});
+                return BadRequest(new { msg=$"[.ex.] FAILED TO COMLETE REQUEST : {ex.Message}"});
             }
         }
 
         [HttpPut("update-patient-info")]
         public async Task<IActionResult> ChangePatientInfo([FromBody] PatientUpdate patient)
         {
-            var user = await this._userManager.FindByNameAsync(patient.PatientChangedBy);
-            if (user == null)
-                return NotFound("User not found");
-
+            
             try
             {
+                var user = await this._userManager.FindByNameAsync(patient.PatientChangedBy);
+                if (user == null)
+                    throw new Exception("USER NOT FOUND");
+
                 var Patient = await this._dbContext
                            .Patients
                            .Where(e => e.MRN == patient.PatientCardNumber)
@@ -375,8 +375,9 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(p => p.maritalstatus, patient.PatientMaritalstatus)
                             .SetProperty(p => p.spouseFirstName, patient.PatientSpouseFirstName)
                             .SetProperty(p => p.spouselastName, patient.PatientSpouselastName)
-                            .SetProperty(p => p.updatedBy, patient.PatientChangedBy) // Corrected to updatedBy
-                            .SetProperty(p => p.updatedOn, DateTime.Now.Date) // Corrected to updatedOn
+                            .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
+                            .SetProperty(p => p.updatedOn, DateTime.Now.Date) 
+                            .SetProperty(p => p.PatientDOB,Convert.ToDateTime(patient.PatientDOB))
                            );
                 var PatientAddress = await this._dbContext
                            .PatientAddress
@@ -386,6 +387,7 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(e => e.Woreda, patient.PatientWoreda)
                             .SetProperty(e => e.Kebele, patient.PatientKebele)
                             .SetProperty(e => e.AddressDetail, patient.PatientAddressDetail)
+                            .SetProperty(e => e.HouseNo, patient.PatientHouseNo)
                             .SetProperty(e => e.Phone, patient.PatientPhone)
                             .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date)
@@ -399,11 +401,12 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(e => e.Woreda, patient.PatientKinWoreda)
                             .SetProperty(e => e.Kebele, patient.PatientKinKebele)
                             .SetProperty(e => e.AddressDetail, patient.PatientKinAddressDetail)
+                            .SetProperty(e => e.HouseNo, patient.PatientKinHouseNo)
                             .SetProperty(e => e.Phone, patient.PatientKinPhone)
+                            .SetProperty(e => e.Mobile, patient.PatientKinMobile)
                             .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date)
                            );
-
                 if (patient.iscbhiuser == 1 && patient.iscbhiuserUpdated == true)
                 {
                     // if the user is a CBHI User
@@ -440,7 +443,7 @@ namespace MoH_Microservice.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error: Insert PatientData failed! Reason: {ex.StackTrace}");
+                return BadRequest(new { msg = $"PATIENT REGISTRATION FAILED : {ex.Message}" });
             }
         }
         [HttpPut("get-patient-info")]
@@ -450,7 +453,7 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._userManager.FindByNameAsync(patient.Cashier);
                 if (user == null)
-                    return NotFound("User not found");
+                    throw new Exception ("USER NOT FOUND");
 
                 var patientInfo = await this.PatientQuery()
                                 .Where(e =>
@@ -459,12 +462,15 @@ namespace MoH_Microservice.Controllers
                                     e.PatientMiddleName == patient.PatientMiddleName ||
                                     e.PatientLastName == patient.PatientLastName ||
                                     e.PatientPhoneNumber == patient.PatientPhone ||
-                                    e.PatientPhone == patient.PatientPhone
-                                    )
+                                    e.PatientPhone == patient.PatientPhone ||
+                                    1 == 1)
+                                .OrderByDescending(e => e.PatientCardNumber)
+                                .Take(1000)
                                 .ToArrayAsync();
+                var TotalPaientCount = await this.PatientQuery().AsNoTracking().ToArrayAsync();
 
                 if (patientInfo == null)
-                    return BadRequest(new { msg = "No patient with this card number!" });
+                    throw new Exception("PATIENT DOES NOT EXIST");
 
                 var CurrentCBHID = await this._dbContext.ProvidersMapPatient
                         .Where(e => e.MRN == patient.PatientCardNumber)
@@ -482,14 +488,13 @@ namespace MoH_Microservice.Controllers
                                     e.PatientLastName == patient.PatientLastName ||
                                     e.PatientPhoneNumber == patient.PatientPhone ||
                                     e.PatientPhone == patient.PatientPhone) &&
-                                    e.Recoredid == CurrentCBHID[0].currentRecordID)
+                                    e.Recoredid == CurrentCBHID[0].currentRecordID )
                                 .ToArrayAsync();
                 }
-
-                return Ok(patientInfo);
+                return Ok(new { data=patientInfo,TotalPatient= TotalPaientCount.Length});
             }catch(Exception e)
             {
-                return BadRequest(new { message = "[.exp.] : Fetching patient information failed!" });
+                return BadRequest(new { msg = "[.exp.] : Fetching patient information failed!",reason=e.Message });
             }   
         }
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -517,14 +522,14 @@ namespace MoH_Microservice.Controllers
                              createdOn= serviceMap.createdOn,
                              Paid = serviceMap.isPaid == 0 ? false : serviceMap.isPaid == 1 ? true : null,
                              Complete = serviceMap.isComplete == 0 ? false : serviceMap.isPaid == 1 ? true : null
-                         });
+                         }).AsNoTracking();
 
             return query;
         }
-            [ApiExplorerSettings(IgnoreApi = true)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientViewDTO> PatientQuery()
         {
-            var query = from patients in this._dbContext.Patients
+            var query = (from patients in this._dbContext.Patients
                         join cbhiuser in this._dbContext.ProvidersMapPatient on patients.MRN equals cbhiuser.MRN into patientMap
                         from patientMapCbhi in patientMap.DefaultIfEmpty()
                         join workers in this._dbContext.OrganiztionalUsers on patients.EmployementID equals workers.EmployeeID into _creditUsers
@@ -542,6 +547,7 @@ namespace MoH_Microservice.Controllers
                             PatientMotherName = patients.motherName,
                             PatientGender = patients.gender,
                             PatientAge = DateTime.Now.Year - patients.PatientDOB.Year,
+                            PatientDOB= patients.PatientDOB,
                             PatientReligion = patients.religion,
                             PatientPlaceofbirth = patients.placeofbirth,
                             Multiplebirth = patients.multiplebirth,
@@ -563,13 +569,16 @@ namespace MoH_Microservice.Controllers
                             PatientWoreda = address.Woreda,
                             PatientKebele = address.Kebele,
                             PatientAddressDetail = address.AddressDetail,
+                            PatientHouseNo=address.HouseNo,
                             PatientPhone = address.Phone,
 
                             PatientKinRegion = kinAddress.Region,
                             PatientKinWoreda = kinAddress.Woreda,
                             PatientKinKebele = kinAddress.Kebele,
                             PatientKinAddressDetail = kinAddress.AddressDetail,
+                            PatientKinHouseNo = kinAddress.HouseNo,
                             PatientKinPhone = kinAddress.Phone,
+                            PatientKinMobile= kinAddress.Mobile,
 
                             Recoredid = patientMapCbhi.Id,
                             Woreda = patientMapCbhi.provider,
@@ -586,7 +595,7 @@ namespace MoH_Microservice.Controllers
                             CreditUserOrganization = creditUsers.WorkPlace,
                             RegisteredOn=patients.createdOn,
                             RegistereddBy=patients.createdBy
-                        };
+                        }).AsNoTracking();
             return query;
         }
     }
