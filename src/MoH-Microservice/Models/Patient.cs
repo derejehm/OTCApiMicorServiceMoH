@@ -93,6 +93,13 @@ namespace MoH_Microservice.Models
         public string? groupID { get; set; }
         public bool isComplete { get; set; }
     }
+
+    public class PatientRequestedServicesDelete
+    {
+        public string? PatientCardNumber { get; set; }
+        public string? groupID { get; set; }
+        public string? purpose { get; set; }
+    }
     public class PatientReg
         {
             [Required(ErrorMessage = "PatientCardNumber missing")]

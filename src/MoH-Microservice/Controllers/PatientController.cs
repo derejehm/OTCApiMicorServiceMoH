@@ -143,6 +143,211 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { msg=$"Error: Insert PatientData failed! Reason: {ex.Message}" });
             }
         }
+        [HttpPut("update-patient-info")]
+        public async Task<IActionResult> ChangePatientInfo([FromBody] PatientUpdate patient, [FromHeader] string Authorization)
+        {
+
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                var Patient = await this._dbContext
+                           .Patients
+                           .Where(e => e.MRN == patient.PatientCardNumber)
+                           .ExecuteUpdateAsync(e =>
+                           e.SetProperty(p => p.firstName, patient.PatientFirstName)
+                            .SetProperty(p => p.middleName, patient.PatientMiddleName)
+                            .SetProperty(p => p.lastName, patient.PatientLastName)
+                            .SetProperty(p => p.motherName, patient.PatientMotherName)
+                            .SetProperty(p => p.gender, patient.PatientGender)
+                            .SetProperty(p => p.religion, patient.PatientReligion)
+                            .SetProperty(p => p.placeofbirth, patient.PatientPlaceofbirth)
+                            .SetProperty(p => p.multiplebirth, patient.Multiplebirth)
+                            .SetProperty(p => p.appointment, patient.Appointment)
+                            .SetProperty(p => p.phonenumber, patient.PatientPhoneNumber)
+                            .SetProperty(p => p.iscreadituser, patient.iscreadituser)
+                            .SetProperty(p => p.iscbhiuser, patient.iscbhiuser)
+                            .SetProperty(p => p.EmployementID, patient.iscreadituser == 1 ? patient.PatientEmployementID : null)
+                            .SetProperty(p => p.occupation, patient.PatientOccupation)
+                            .SetProperty(p => p.department, patient.Department)
+                            .SetProperty(p => p.educationlevel, patient.PatientEducationlevel)
+                            .SetProperty(p => p.maritalstatus, patient.PatientMaritalstatus)
+                            .SetProperty(p => p.spouseFirstName, patient.PatientSpouseFirstName)
+                            .SetProperty(p => p.spouselastName, patient.PatientSpouselastName)
+                            .SetProperty(p => p.updatedBy, user.UserName)
+                            .SetProperty(p => p.updatedOn, DateTime.Now.Date)
+                            .SetProperty(p => p.PatientDOB, Convert.ToDateTime(patient.PatientDOB))
+                            .SetProperty(p => p.visitDate, Convert.ToDateTime(patient.PatientVisitingDate))
+                           );
+                var PatientAddress = await this._dbContext
+                           .PatientAddress
+                           .Where(e => e.MRN == patient.PatientCardNumber)
+                           .ExecuteUpdateAsync(e =>
+                           e.SetProperty(e => e.Region, patient.PatientRegion)
+                            .SetProperty(e => e.Woreda, patient.PatientWoreda)
+                            .SetProperty(e => e.Kebele, patient.PatientKebele)
+                            .SetProperty(e => e.AddressDetail, patient.PatientAddressDetail)
+                            .SetProperty(e => e.HouseNo, patient.PatientHouseNo)
+                            .SetProperty(e => e.Phone, patient.PatientPhone)
+                            .SetProperty(p => p.updatedBy, user.UserName)
+                            .SetProperty(p => p.updatedOn, DateTime.Now.Date)
+                           );
+
+                var PatientKinAddress = await this._dbContext
+                           .PatientAddress
+                           .Where(e => e.REFMRN == patient.PatientCardNumber && e.isNextOfKin == 1)
+                           .ExecuteUpdateAsync(e =>
+                           e.SetProperty(e => e.Region, patient.PatientKinRegion)
+                            .SetProperty(e => e.Woreda, patient.PatientKinWoreda)
+                            .SetProperty(e => e.Kebele, patient.PatientKinKebele)
+                            .SetProperty(e => e.AddressDetail, patient.PatientKinAddressDetail)
+                            .SetProperty(e => e.HouseNo, patient.PatientKinHouseNo)
+                            .SetProperty(e => e.Phone, patient.PatientKinPhone)
+                            .SetProperty(e => e.Mobile, patient.PatientKinMobile)
+                            .SetProperty(p => p.updatedBy, user.UserName)
+                            .SetProperty(p => p.updatedOn, DateTime.Now.Date)
+                           );
+                if (patient.iscbhiuser == 1 && patient.iscbhiuserUpdated == true)
+                {
+                    // if the user is a CBHI User
+                    ProvidersMapUsers provider = new ProvidersMapUsers
+                    {
+                        MRN = patient.PatientCardNumber,
+                        provider = patient.Woreda,
+                        Kebele = patient.Kebele,
+                        Goth = patient.Goth,
+                        IDNo = patient.IDNo,
+                        letterNo = patient.letterNo,
+                        Examination = patient.Examination,
+                        service = "CBHI",
+                        Createdby = user.UserName,
+                        CreatedOn = DateTime.Now,
+                        ReferalNo = patient.ReferalNo,
+                    };
+                    await this._dbContext.AddAsync<ProvidersMapUsers>(provider);
+                    await this._dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    patient.Woreda = null;
+                    patient.Kebele = null;
+                    patient.Goth = null;
+                    patient.IDNo = null;
+                    patient.letterNo = null;
+                    patient.Examination = null;
+                    patient.Woreda = null;
+                    patient.ReferalNo = null;
+                }
+                await this._dbContext.SaveChangesAsync();
+                return Ok(patient);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"PATIENT REGISTRATION FAILED : {ex.Message}" });
+            }
+        }
+        [HttpPut("get-patient-info")]
+        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var patientInfo = this.PatientQuery();
+                if (!(patient.PatientLastName.IsNullOrEmpty() ||
+                    patient.PatientMiddleName.IsNullOrEmpty() ||
+                    patient.PatientFirstName.IsNullOrEmpty() ||
+                    patient.PatientCardNumber.IsNullOrEmpty() ||
+                    patient.PatientPhone.IsNullOrEmpty()))
+                {
+                    Console.WriteLine(">>..", !(patient.PatientLastName.IsNullOrEmpty() ||
+                    patient.PatientMiddleName.IsNullOrEmpty() ||
+                    patient.PatientFirstName.IsNullOrEmpty() ||
+                    patient.PatientCardNumber.IsNullOrEmpty() ||
+                    patient.PatientPhone.IsNullOrEmpty()));
+                    await patientInfo.OrderByDescending(e => e.RowID)
+                                  .Take(1000)
+                                  .ToArrayAsync();
+                }
+                else
+                {
+
+                    await patientInfo.Where(e =>
+                                           e.PatientCardNumber == patient.PatientCardNumber ||
+                                           e.PatientFirstName == patient.PatientFirstName ||
+                                           e.PatientMiddleName == patient.PatientMiddleName ||
+                                           e.PatientLastName == patient.PatientLastName ||
+                                           e.PatientPhoneNumber == patient.PatientPhone ||
+                                           e.PatientPhone == patient.PatientPhone)
+                            .OrderByDescending(e => e.RowID).Take(3000)
+                            .ToArrayAsync();
+                }
+
+                var TotalPaientCount = await this.PatientQuery().AsNoTracking().ToArrayAsync();
+
+                if (patientInfo == null)
+                    throw new Exception("PATIENT DOES NOT EXIST");
+
+                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
+                        .Where(e => e.MRN == patient.PatientCardNumber)
+                        .GroupBy(g => new { g.MRN })
+                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                        .ToArrayAsync();
+
+                if (CurrentCBHID.Length > 0)
+                {
+                    await patientInfo.Where(e => (
+                                      e.PatientCardNumber == patient.PatientCardNumber ||
+                                      e.PatientFirstName == patient.PatientFirstName ||
+                                      e.PatientMiddleName == patient.PatientMiddleName ||
+                                      e.PatientLastName == patient.PatientLastName ||
+                                      e.PatientPhoneNumber == patient.PatientPhone ||
+                                      e.PatientPhone == patient.PatientPhone) &&
+                                      e.Recoredid == CurrentCBHID[0].currentRecordID)
+                                  .ToArrayAsync();
+                }
+                return Ok(new { data = patientInfo, TotalPatient = TotalPaientCount.Length });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
+            }
+        }
+        [HttpPut("get-one-patient-info")]
+        public async Task<IActionResult> GetOnePatientInfo([FromBody] PatientViewGetOne patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var patientInfo = await this.PatientQuery()
+                                .Where(e => e.PatientCardNumber == patient.PatientCardNumber)
+                                .OrderByDescending(e => e.PatientCardNumber)
+                                .Take(1000)
+                                .ToArrayAsync();
+
+                if (patientInfo.Length <= 0)
+                    throw new Exception("PATIENT DOES NOT EXIST");
+
+                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
+                        .Where(e => e.MRN == patient.PatientCardNumber)
+                        .GroupBy(g => new { g.MRN })
+                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                        .ToArrayAsync();
+
+                if (CurrentCBHID.Length > 0)
+                {
+                    patientInfo = await this.PatientQuery()
+                                .Where(e => (
+                                    e.PatientCardNumber == patient.PatientCardNumber &&
+                                    e.Recoredid == CurrentCBHID[0].currentRecordID))
+                                .ToArrayAsync();
+                }
+                return Ok(patientInfo[0]);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
+            }
+        }
         [HttpPost("add-patient-request")]
         public async Task<IActionResult> addPatientRequestInfo([FromBody] PatientRequestedServicesReg PatientRequest, [FromHeader] string Authorization)
         {
@@ -185,6 +390,7 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { msg = $"FAILED TO ASSIGN SERVICES : {ex.Message}" });
             }
         }
+
         [HttpPut("get-patient-request")]
         public async Task<IActionResult> getOnePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient, [FromHeader] string Authorization)
         {
@@ -330,7 +536,7 @@ namespace MoH_Microservice.Controllers
                          .SetProperty(p => p.updatedOn,DateTime.Now)
                         );
                 if (patientServ >0)
-                    return Ok(new { msg = "ACTION SUCCESSFUL!" });
+                    return Ok(new { msg = "REQUEST COMPLETED SUCCESSFUL!" });
                 else
                     throw new Exception("REQUEST FAILD TO UPDATE  :: REQUEST IS YET TO BE PAID");
 
@@ -339,211 +545,40 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { msg=$"FAILED TO COMLETE REQUEST : {ex.Message}"});
             }
         }
-
-        [HttpPut("update-patient-info")]
-        public async Task<IActionResult> ChangePatientInfo([FromBody] PatientUpdate patient,[FromHeader] string Authorization)
+        [HttpDelete("cancel-patient-request")]
+        public async Task<IActionResult> deletePatientRequestInfo([FromBody] PatientRequestedServicesDelete patient, [FromHeader] string Authorization)
         {
-            
             try
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
-                var Patient = await this._dbContext
-                           .Patients
-                           .Where(e => e.MRN == patient.PatientCardNumber)
-                           .ExecuteUpdateAsync(e =>
-                           e.SetProperty(p => p.firstName, patient.PatientFirstName)
-                            .SetProperty(p => p.middleName, patient.PatientMiddleName)
-                            .SetProperty(p => p.lastName, patient.PatientLastName)
-                            .SetProperty(p => p.motherName, patient.PatientMotherName)
-                            .SetProperty(p => p.gender, patient.PatientGender)
-                            .SetProperty(p => p.religion, patient.PatientReligion)
-                            .SetProperty(p => p.placeofbirth, patient.PatientPlaceofbirth)
-                            .SetProperty(p => p.multiplebirth, patient.Multiplebirth)
-                            .SetProperty(p => p.appointment, patient.Appointment)
-                            .SetProperty(p => p.phonenumber, patient.PatientPhoneNumber)
-                            .SetProperty(p => p.iscreadituser, patient.iscreadituser)
-                            .SetProperty(p => p.iscbhiuser, patient.iscbhiuser)
-                            .SetProperty(p => p.EmployementID, patient.iscreadituser == 1 ? patient.PatientEmployementID : null)
-                            .SetProperty(p => p.occupation, patient.PatientOccupation)
-                            .SetProperty(p => p.department, patient.Department)
-                            .SetProperty(p => p.educationlevel, patient.PatientEducationlevel)
-                            .SetProperty(p => p.maritalstatus, patient.PatientMaritalstatus)
-                            .SetProperty(p => p.spouseFirstName, patient.PatientSpouseFirstName)
-                            .SetProperty(p => p.spouselastName, patient.PatientSpouselastName)
-                            .SetProperty(p => p.updatedBy, user.UserName)
-                            .SetProperty(p => p.updatedOn, DateTime.Now.Date) 
-                            .SetProperty(p => p.PatientDOB,Convert.ToDateTime(patient.PatientDOB))
-                            .SetProperty(p => p.visitDate, Convert.ToDateTime(patient.PatientVisitingDate))
-                           );
-                var PatientAddress = await this._dbContext
-                           .PatientAddress
-                           .Where(e => e.MRN == patient.PatientCardNumber)
-                           .ExecuteUpdateAsync(e =>
-                           e.SetProperty(e => e.Region, patient.PatientRegion)
-                            .SetProperty(e => e.Woreda, patient.PatientWoreda)
-                            .SetProperty(e => e.Kebele, patient.PatientKebele)
-                            .SetProperty(e => e.AddressDetail, patient.PatientAddressDetail)
-                            .SetProperty(e => e.HouseNo, patient.PatientHouseNo)
-                            .SetProperty(e => e.Phone, patient.PatientPhone)
-                            .SetProperty(p => p.updatedBy, user.UserName)
-                            .SetProperty(p => p.updatedOn, DateTime.Now.Date)
-                           );
+                var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
+                    .AsNoTracking().ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                {
+                    throw new Exception("PATIENT DOES NOT EXIST.");
+                }
+                var patientServ = await this._dbContext
+                        .PatientRequestedServices
+                        .Where(w => (w.isPaid == 0 || w.isPaid==null) && 
+                        w.isComplete == 0 && 
+                        w.MRN == patient.PatientCardNumber && 
+                        w.groupId == patient.groupID &&
+                        w.purpose == patient.purpose).ExecuteDeleteAsync();
 
-                var PatientKinAddress = await this._dbContext
-                           .PatientAddress
-                           .Where(e => e.REFMRN == patient.PatientCardNumber && e.isNextOfKin==1)
-                           .ExecuteUpdateAsync(e =>
-                           e.SetProperty(e => e.Region, patient.PatientKinRegion)
-                            .SetProperty(e => e.Woreda, patient.PatientKinWoreda)
-                            .SetProperty(e => e.Kebele, patient.PatientKinKebele)
-                            .SetProperty(e => e.AddressDetail, patient.PatientKinAddressDetail)
-                            .SetProperty(e => e.HouseNo, patient.PatientKinHouseNo)
-                            .SetProperty(e => e.Phone, patient.PatientKinPhone)
-                            .SetProperty(e => e.Mobile, patient.PatientKinMobile)
-                            .SetProperty(p => p.updatedBy, user.UserName)
-                            .SetProperty(p => p.updatedOn, DateTime.Now.Date)
-                           );
-                if (patient.iscbhiuser == 1 && patient.iscbhiuserUpdated == true)
-                {
-                    // if the user is a CBHI User
-                    ProvidersMapUsers provider = new ProvidersMapUsers
-                    {
-                        MRN = patient.PatientCardNumber,
-                        provider = patient.Woreda,
-                        Kebele = patient.Kebele,
-                        Goth = patient.Goth,
-                        IDNo = patient.IDNo,
-                        letterNo = patient.letterNo,
-                        Examination = patient.Examination,
-                        service = "CBHI",
-                        Createdby = user.UserName,
-                        CreatedOn = DateTime.Now,
-                        ReferalNo = patient.ReferalNo,
-                    };
-                    await this._dbContext.AddAsync<ProvidersMapUsers>(provider);
-                    await this._dbContext.SaveChangesAsync();
-                }
+                if (patientServ > 0)
+                    return Ok(new { msg = "REQUEST CANCELED" });
                 else
-                {
-                    patient.Woreda = null;
-                    patient.Kebele = null;
-                    patient.Goth = null;
-                    patient.IDNo = null;
-                    patient.letterNo = null;
-                    patient.Examination = null;
-                    patient.Woreda = null;
-                    patient.ReferalNo = null;
-                }
-                await this._dbContext.SaveChangesAsync();
-                return Ok(patient);
+                    // the reqiest can only be canceled if it is not paid.
+                    throw new Exception("REQUEST FAILD TO CANCEL  :: REQUEST NOT FOUND");
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new { msg = $"PATIENT REGISTRATION FAILED : {ex.Message}" });
+                return BadRequest(new { msg = $"FAILED TO COMLETE REQUEST : {ex.Message}" });
             }
         }
-        [HttpPut("get-patient-info")]
-        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient, [FromHeader] string Authorization)
-        {
-            try
-            {
-                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
-                var patientInfo = this.PatientQuery();
-                if (!(patient.PatientLastName.IsNullOrEmpty()  || 
-                    patient.PatientMiddleName.IsNullOrEmpty() || 
-                    patient.PatientFirstName.IsNullOrEmpty()  ||
-                    patient.PatientCardNumber.IsNullOrEmpty() || 
-                    patient.PatientPhone.IsNullOrEmpty()))
-                {
-                    Console.WriteLine(">>..", !(patient.PatientLastName.IsNullOrEmpty() ||
-                    patient.PatientMiddleName.IsNullOrEmpty() ||
-                    patient.PatientFirstName.IsNullOrEmpty() ||
-                    patient.PatientCardNumber.IsNullOrEmpty() ||
-                    patient.PatientPhone.IsNullOrEmpty()));
-                  await patientInfo.OrderByDescending(e => e.RowID)
-                                .Take(1000)
-                                .ToArrayAsync();
-                }
-                else
-                {
-                   
-                    await   patientInfo.Where(e => 
-                                           e.PatientCardNumber == patient.PatientCardNumber ||
-                                           e.PatientFirstName == patient.PatientFirstName ||
-                                           e.PatientMiddleName == patient.PatientMiddleName ||
-                                           e.PatientLastName == patient.PatientLastName ||
-                                           e.PatientPhoneNumber == patient.PatientPhone ||
-                                           e.PatientPhone == patient.PatientPhone)
-                            .OrderByDescending(e => e.RowID).Take(3000)
-                            .ToArrayAsync();
-                }
 
-                var TotalPaientCount = await this.PatientQuery().AsNoTracking().ToArrayAsync();
-
-                if (patientInfo == null)
-                    throw new Exception("PATIENT DOES NOT EXIST");
-
-                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
-                        .Where(e => e.MRN == patient.PatientCardNumber)
-                        .GroupBy(g => new { g.MRN })
-                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
-                        .ToArrayAsync();
-
-                if (CurrentCBHID.Length > 0)
-                {
-                  await  patientInfo.Where(e => (
-                                    e.PatientCardNumber == patient.PatientCardNumber ||
-                                    e.PatientFirstName == patient.PatientFirstName ||
-                                    e.PatientMiddleName == patient.PatientMiddleName ||
-                                    e.PatientLastName == patient.PatientLastName ||
-                                    e.PatientPhoneNumber == patient.PatientPhone ||
-                                    e.PatientPhone == patient.PatientPhone) &&
-                                    e.Recoredid == CurrentCBHID[0].currentRecordID )
-                                .ToArrayAsync();
-                }
-                return Ok(new { data=patientInfo,TotalPatient= TotalPaientCount.Length});
-            }catch(Exception e)
-            {
-                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
-            }   
-        }
-        [HttpPut("get-one-patient-info")]
-        public async Task<IActionResult> GetOnePatientInfo([FromBody] PatientViewGetOne patient, [FromHeader] string Authorization)
-        {
-            try
-            {
-                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
-                var patientInfo = await this.PatientQuery()
-                                .Where(e => e.PatientCardNumber == patient.PatientCardNumber )
-                                .OrderByDescending(e => e.PatientCardNumber)
-                                .Take(1000)
-                                .ToArrayAsync();
-
-                if (patientInfo.Length<=0)
-                    throw new Exception("PATIENT DOES NOT EXIST");
-
-                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
-                        .Where(e => e.MRN == patient.PatientCardNumber)
-                        .GroupBy(g => new { g.MRN })
-                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
-                        .ToArrayAsync();
-
-                if (CurrentCBHID.Length > 0)
-                {
-                    patientInfo = await this.PatientQuery()
-                                .Where(e => (
-                                    e.PatientCardNumber == patient.PatientCardNumber &&
-                                    e.Recoredid == CurrentCBHID[0].currentRecordID))
-                                .ToArrayAsync();
-                }
-                return Ok(patientInfo[0]);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
-            }
-        }
         [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientReuestServicesViewDTO> PatientServiceQuery()
         {

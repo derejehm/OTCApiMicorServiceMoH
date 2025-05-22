@@ -34,7 +34,7 @@ namespace MoH_Microservice.Misc
         public string getToken()
         {
             if (this._token == null)
-                throw new NullReferenceException("token : user is invalid");
+                throw new NullReferenceException("token: user is invalid");
             return this._token;
         }
         public string getUserName()
