@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
+using MoH_Microservice.Misc;
 using MoH_Microservice.Models;
 using MoH_Microservice.Query;
 using System.Net;
@@ -22,6 +23,8 @@ namespace MoH_Microservice.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly AppDbContext _payment;
         private readonly AppQuery _query;
+        private TokenValidate _tokenValidate;
+
         public PaymentController(
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -31,17 +34,16 @@ namespace MoH_Microservice.Controllers
             this._roleManager = roleManager;
             this._payment = payment;
             this._query = new AppQuery(payment);
+            this._tokenValidate = new TokenValidate(userManager);
         }
 
         [HttpPut("Get-all-Payment")]
-        public async Task<IActionResult> GetPaymentByDate([FromBody] PaymentbyDate payment)
+        public async Task<IActionResult> GetPaymentByDate([FromBody] PaymentbyDate payment, [FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
-            //var usersHttp = HttpContext.GetTokenAsync
-            if (user == null)
-                return NotFound("User not found");
+            
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 if (user.UserType != "Supervisor")
                 {
 
@@ -69,14 +71,12 @@ namespace MoH_Microservice.Controllers
             
         }
         [HttpPut("rpt-all-Payment")]
-        public async Task<IActionResult> RptPaymentByDate([FromBody] PaymentbyDate payment)
+        public async Task<IActionResult> RptPaymentByDate([FromBody] PaymentbyDate payment, [FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
-            //var usersHttp = HttpContext.GetTokenAsync
-            if (user == null)
-                return NotFound("User not found");
+
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 if (user.UserType.ToLower() != "supervisor")
                 {
 
@@ -173,13 +173,11 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("payment-by-refno")]
-        public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment)
+        public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentInfo payment, [FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
-            if (user == null)
-                return NotFound("User not found");
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery().Where(x => x.ReferenceNo == payment.paymentId).ToArrayAsync();
 
                 if (PymentInfo.Length <= 0)
@@ -195,13 +193,11 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("payment-by-RefNoInstitution")]
-        public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentDetailByInstitution payment)
+        public async Task<IActionResult> GetPaymentInfoByRefNo([FromBody] PaymentDetailByInstitution payment, [FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(payment.user); // Check if the user exists
-            if (user == null)
-                return NotFound("User not found");
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery()
                     .Where(x => x.ReferenceNo == payment.paymentId && x.HospitalName == payment.hospital)
                     .ToArrayAsync();
@@ -218,15 +214,13 @@ namespace MoH_Microservice.Controllers
         }
         [HttpPut("payment-by-cashier")]
 
-        public async Task<IActionResult> GetPaymentInfoByCashier([FromBody] string user)
-        {
-            var username = await this._userManager.FindByNameAsync(user); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+        public async Task<IActionResult> GetPaymentInfoByCashier([FromHeader] string Authorization)
+        { 
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery()
-                    .Where(x => x.RegisteredBy == user && x.RegisteredOn.Value.Date== DateTime.Now.Date)
+                    .Where(x => x.RegisteredBy == user.UserName && x.RegisteredOn.Value.Date== DateTime.Now.Date)
                     .ToArrayAsync();
                 if (PymentInfo.Length <= 0)
                     return NoContent();
@@ -240,14 +234,12 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("payment-by-cardNumber")]
-        public async Task<IActionResult> GetPaymentInfoByCardNumber([FromBody] PaymentDetailByCardNo payment)
+        public async Task<IActionResult> GetPaymentInfoByCardNumber([FromBody] PaymentDetailByCardNo payment, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
             try
             {
-                var PymentInfo = await this._payment.Set<Payment>().Where(x => x.MRN == payment.code).ToArrayAsync();
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this.PaymentQuery().Where(x => x.PatientCardNumber == payment.PatientCardNumber).ToArrayAsync();
 
                 if (PymentInfo.Length <= 0)
                     return NoContent();
@@ -260,13 +252,11 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("payment-by-phonenumber")]
-        public async Task<IActionResult> getPaymentByPphone([FromBody] PaymentDetailByPhone payment)
+        public async Task<IActionResult> getPaymentByPphone([FromBody] PaymentDetailByPhone payment, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery()
                                             .Where(e => e.PatientPhone == payment.phone)
                                             .ToArrayAsync();
@@ -283,13 +273,12 @@ namespace MoH_Microservice.Controllers
 
         }
         [HttpPut("payment-by-patientname")]
-        public async Task<IActionResult> getPaymentByPname([FromBody] PaymentDetailByName payment)
+        public async Task<IActionResult> getPaymentByPname([FromBody] PaymentDetailByName payment, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(payment.name); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery().Where(e => e.PatientName == payment.patient).ToArrayAsync();
                 if (PymentInfo.Length <= 0)
                     return NoContent();
@@ -304,14 +293,13 @@ namespace MoH_Microservice.Controllers
         
         [HttpPost("add-payment")]
         //[Authorize(Policy = "UserPolicy")]
-        public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment)
+        public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment,[FromHeader] string Authorization)
         {
 
-                var user = await this._userManager.FindByNameAsync(payment.Createdby);
-                if (user == null)
-                    return NotFound("USER NOT FOUND");
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
                 if (user.UserType.ToLower() != "cashier")
                     throw new Exception("YOU CAN'T PERFORM PAYMENT");
 
@@ -339,7 +327,7 @@ namespace MoH_Microservice.Controllers
                              && e.WorkPlace.ToLower()==payment.organization).ToArrayAsync();
 
                 // check for the worker if credit payment issued 
-                if (payment.PaymentType.ToLower() == "credit")
+                if (payment.PaymentType.ToLower() == "credit" && worker.Length <=0)
                     throw new Exception($" CREADIT USER  [ EmployeeID : {payment.PatientWorkID} ] IS NOT ASSIGNED TO THIS HOSPITAL");  
 
                 // get the current valid CBHI info
@@ -357,6 +345,9 @@ namespace MoH_Microservice.Controllers
 
                 var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper()}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Millisecond}{DateTime.Now.Microsecond}{new Random().Next(DateTime.Now.Microsecond,Int32.MaxValue)}";
                 List<PatientReuestServicesViewDTO[]> groupPayment = new List<PatientReuestServicesViewDTO[]>();
+                if (payment.Amount.Count() <= 0)
+                    throw new Exception("THERE IS NO PAYMENT : AMOUNT IS EMPTY");
+
                     foreach (var items in payment.Amount)
                     {
 
@@ -429,13 +420,16 @@ namespace MoH_Microservice.Controllers
 
 
         [HttpPost("add-service-provider")]
-        public async Task<IActionResult> addGetProviderInfo([FromBody] ProvidersMapReg providers)
+        public async Task<IActionResult> addGetProviderInfo([FromBody] ProvidersMapReg providers, [FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(providers.Cashier);
-            if (user == null)
-                return NotFound("USER NOT FOUND");
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                var doesPatientExisit = await this._payment.Patients.Where(e => e.MRN == providers.CardNumber).ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                    throw new Exception("PATIENT IS NOT REGISTEED / ታካሚው አልተመዘገበም !");
+
                 ProvidersMapUsers provider = new ProvidersMapUsers
                 {
                     MRN = providers.CardNumber,
@@ -446,9 +440,10 @@ namespace MoH_Microservice.Controllers
                     letterNo = providers.letterNo,
                     Examination = providers.Examination,
                     service = providers.service,
-                    Createdby = providers.Cashier,
+                    Createdby = user.UserName,
                     CreatedOn = DateTime.Now,
                     ReferalNo = providers.ReferalNo,
+                    ExpDate=Convert.ToDateTime(providers.ExpDate.ToString()),
                 };
                 await this._payment.AddAsync<ProvidersMapUsers>(provider);
                 await this._payment.SaveChangesAsync();
@@ -461,14 +456,37 @@ namespace MoH_Microservice.Controllers
             }
         }
 
-        [HttpPut("get-service-provider")]
-        public async Task<IActionResult> GetProviderInfo([FromBody] ProvidersParam providers)
+        [HttpGet("get-service-provider")]
+        public async Task<IActionResult> GetAllProviderInfo([FromHeader] string Authorization)
         {
-            var user = await this._userManager.FindByNameAsync(providers.user);
-            if (user == null)
-                return NotFound("USER NOT FOUND");
+
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                var patientInfo = await this._payment.Set<ProvidersMapUsers>().ToArrayAsync();
+                
+                if (patientInfo.Length <= 0)
+                {
+                    return NoContent();
+                }
+                return Ok(patientInfo);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = ex.Message });
+            }
+
+
+        }
+
+        [HttpPut("get-service-provider")]
+        public async Task<IActionResult> GetOneProviderInfo([FromBody] ProvidersParam providers, [FromHeader] string Authorization)
+        {
+
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var CurrentCBHID = await this._payment.ProvidersMapPatient
                                 .Where(e => e.MRN == providers.cardnumber)
                                 .GroupBy(g => new { g.MRN })
@@ -483,12 +501,12 @@ namespace MoH_Microservice.Controllers
                 }
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(new {msg=ex.Message});
+                return BadRequest(new { msg = ex.Message });
             }
-             
-            
+
+
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]

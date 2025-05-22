@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
+using MoH_Microservice.Misc;
 using MoH_Microservice.Models;
 using System.Drawing;
 using System.Net.NetworkInformation;
@@ -21,22 +22,24 @@ namespace MoH_Microservice.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private AppDbContext _dbContext;
+        private TokenValidate _tokenValidate;
 
         public PatientController(UserManager<AppUser> userManager,RoleManager<IdentityRole> roleManager,AppDbContext payment)
         {
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._dbContext = payment;
+            this._tokenValidate = new TokenValidate(userManager);
         }
 
         [HttpPost("add-patient-info")]
-        public async Task<IActionResult> addGetPatientInfo([FromBody] PatientReg patient)
+        public async Task<IActionResult> addGetPatientInfo([FromBody] PatientReg patient, [FromHeader] string Authorization)
         {
             try
             {
-                    var user = await this._userManager.FindByNameAsync(patient.PatientRegisteredBy);
-                if (user == null)
-                    return NotFound("User not found");
+               
+               var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+       
                 var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
                     .AsNoTracking().ToArrayAsync();
                 if (doesPatientExisit.Length > 0)
@@ -103,8 +106,6 @@ namespace MoH_Microservice.Controllers
                     createdOn=DateTime.Now.Date,
                 };
 
-                
-
                 if (patient.iscbhiuser == 1)
                 {
                     ProvidersMapUsers provider = new ProvidersMapUsers
@@ -143,13 +144,12 @@ namespace MoH_Microservice.Controllers
             }
         }
         [HttpPost("add-patient-request")]
-        public async Task<IActionResult> addPatientRequestInfo([FromBody] PatientRequestedServicesReg PatientRequest)
+        public async Task<IActionResult> addPatientRequestInfo([FromBody] PatientRequestedServicesReg PatientRequest, [FromHeader] string Authorization)
         {
             try
             {
-                var user = await this._userManager.FindByNameAsync(PatientRequest.createdBy);
-                if (user == null)
-                    throw new Exception("User not found");
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
                 var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == PatientRequest.PatientCardNumber)
                     .AsNoTracking().ToArrayAsync();
                 if (doesPatientExisit.Length <= 0)
@@ -167,7 +167,7 @@ namespace MoH_Microservice.Controllers
                         MRN = PatientRequest.PatientCardNumber,
                         service = service,
                         purpose = PatientRequest.purpose,
-                        createdBy = PatientRequest.createdBy,
+                        createdBy = user.UserName,
                         createdOn = DateTime.Now,
                         isPaid = 0,
                         isComplete=0,
@@ -186,13 +186,12 @@ namespace MoH_Microservice.Controllers
             }
         }
         [HttpPut("get-patient-request")]
-        public async Task<IActionResult> getOnePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient)
+        public async Task<IActionResult> getOnePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient, [FromHeader] string Authorization)
         {
             try
             {
-                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
-                if (user == null)
-                    throw new Exception("USER NOT FOUND");
+                // check the user form token and verify its eistnce in db
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
                 var patientServ = this
                                 .PatientServiceQuery()
@@ -224,13 +223,13 @@ namespace MoH_Microservice.Controllers
                                     IsCompleted = s.FirstOrDefault().Complete,
                                     TotalPrice = s.Sum(s => s.Price),
                                     NoRequestedServices = s.Select(s => s.RquestedServices).Count(),
-                                    RquestedServices = s.Select(s => new patientRequestServiceOut { service = s.RquestedServices, amount = s.Price }).ToList(),
+                                    RquestedServices = s.Select(s => new patientRequestServiceOut { service = s.RquestedServices, amount = s.Price,catagory=s.RequestedReason }).ToList(),
                                     RequestedReason = s.FirstOrDefault().RequestedReason,
                                     RequestedBy = s.FirstOrDefault().RequestedBy,
                                     createdOn = s.FirstOrDefault().createdOn.Date
 
                                 })
-                .OrderByDescending(o => o.Paid);
+                .OrderByDescending(o => o.Paid); ;
 
                 var result = await patientServ.Where(e => e.IsCompleted == patient.isComplete).ToArrayAsync();
 
@@ -254,17 +253,15 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("get-patient-request-cashier")]
-        public async Task<IActionResult> getPatientRequestInfoCashier([FromBody] PatientRequestedServicesViewOne patient)
+        public async Task<IActionResult> getPatientRequestInfoCashier([FromBody] PatientRequestedServicesViewOne patient, [FromHeader] string Authorization)
         {
             try
             {
-                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
-                if (user == null)
-                    throw new Exception("USER NOT FOUND");
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
                 var patientServ = await this
                     .PatientServiceQuery()
-                    .Where(e => e.Paid==false && e.Complete==false)
+                    .Where(e => (e.Paid==false || e.Paid == null) && e.Complete==false)
                     .GroupBy(e => new {
                         e.PatientCardNumber,
                         e.Paid,
@@ -298,9 +295,7 @@ namespace MoH_Microservice.Controllers
                         RquestedServices = s.Select(s => new patientRequestServiceOut { service = s.RquestedServices, amount = s.Price,catagory=s.RequestedReason }).ToList(),
                         RequestedBy = s.FirstOrDefault().RequestedBy,
                         createdOn = s.FirstOrDefault().createdOn.Date
-                    }).OrderByDescending(o => o.Paid)
-                      
-                      .ToArrayAsync();
+                    }).OrderByDescending(o => o.Paid).ToArrayAsync();
 
                 if (patientServ.Length <= 0)
                     return NoContent();
@@ -314,13 +309,12 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("complete-patient-request")]
-        public async Task<IActionResult> updatePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient)
+        public async Task<IActionResult> updatePatientRequestInfo([FromBody] PatientRequestedServicesViewOne patient, [FromHeader] string Authorization)
         {
             try
             {
-                var user = await this._userManager.FindByNameAsync(patient.loggedInUser);
-                if (user == null)
-                    throw new Exception("USER NOT FOUND");
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
                 var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
                     .AsNoTracking().ToArrayAsync();
                 if (doesPatientExisit.Length <= 0)
@@ -330,27 +324,29 @@ namespace MoH_Microservice.Controllers
                 var patientServ = await this._dbContext
                         .PatientRequestedServices
                         .Where(w=>w.isPaid==1 && w.isComplete==0 && w.MRN==patient.PatientCardNumber && w.groupId==patient.groupID)
-                        .ExecuteUpdateAsync(e=> e.SetProperty(p=>p.isComplete,1));
+                        .ExecuteUpdateAsync(e=> 
+                        e.SetProperty(p => p.isComplete,1)
+                         .SetProperty(p => p.updatedBy,user.UserName)
+                         .SetProperty(p => p.updatedOn,DateTime.Now)
+                        );
                 if (patientServ >0)
                     return Ok(new { msg = "ACTION SUCCESSFUL!" });
                 else
-                    throw new Exception("REQUEST FAILD TO UPDATE");
+                    throw new Exception("REQUEST FAILD TO UPDATE  :: REQUEST IS YET TO BE PAID");
 
             }catch(Exception ex)
             {
-                return BadRequest(new { msg=$"[.ex.] FAILED TO COMLETE REQUEST : {ex.Message}"});
+                return BadRequest(new { msg=$"FAILED TO COMLETE REQUEST : {ex.Message}"});
             }
         }
 
         [HttpPut("update-patient-info")]
-        public async Task<IActionResult> ChangePatientInfo([FromBody] PatientUpdate patient)
+        public async Task<IActionResult> ChangePatientInfo([FromBody] PatientUpdate patient,[FromHeader] string Authorization)
         {
             
             try
             {
-                var user = await this._userManager.FindByNameAsync(patient.PatientChangedBy);
-                if (user == null)
-                    throw new Exception("USER NOT FOUND");
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
                 var Patient = await this._dbContext
                            .Patients
@@ -375,9 +371,10 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(p => p.maritalstatus, patient.PatientMaritalstatus)
                             .SetProperty(p => p.spouseFirstName, patient.PatientSpouseFirstName)
                             .SetProperty(p => p.spouselastName, patient.PatientSpouselastName)
-                            .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
+                            .SetProperty(p => p.updatedBy, user.UserName)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date) 
                             .SetProperty(p => p.PatientDOB,Convert.ToDateTime(patient.PatientDOB))
+                            .SetProperty(p => p.visitDate, Convert.ToDateTime(patient.PatientVisitingDate))
                            );
                 var PatientAddress = await this._dbContext
                            .PatientAddress
@@ -389,7 +386,7 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(e => e.AddressDetail, patient.PatientAddressDetail)
                             .SetProperty(e => e.HouseNo, patient.PatientHouseNo)
                             .SetProperty(e => e.Phone, patient.PatientPhone)
-                            .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
+                            .SetProperty(p => p.updatedBy, user.UserName)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date)
                            );
 
@@ -404,7 +401,7 @@ namespace MoH_Microservice.Controllers
                             .SetProperty(e => e.HouseNo, patient.PatientKinHouseNo)
                             .SetProperty(e => e.Phone, patient.PatientKinPhone)
                             .SetProperty(e => e.Mobile, patient.PatientKinMobile)
-                            .SetProperty(p => p.updatedBy, patient.PatientChangedBy)
+                            .SetProperty(p => p.updatedBy, user.UserName)
                             .SetProperty(p => p.updatedOn, DateTime.Now.Date)
                            );
                 if (patient.iscbhiuser == 1 && patient.iscbhiuserUpdated == true)
@@ -420,7 +417,7 @@ namespace MoH_Microservice.Controllers
                         letterNo = patient.letterNo,
                         Examination = patient.Examination,
                         service = "CBHI",
-                        Createdby = patient.PatientChangedBy,
+                        Createdby = user.UserName,
                         CreatedOn = DateTime.Now,
                         ReferalNo = patient.ReferalNo,
                     };
@@ -447,26 +444,41 @@ namespace MoH_Microservice.Controllers
             }
         }
         [HttpPut("get-patient-info")]
-        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient)
+        public async Task<IActionResult> GetPatientInfo([FromBody] PatientView patient, [FromHeader] string Authorization)
         {
             try
             {
-                var user = await this._userManager.FindByNameAsync(patient.Cashier);
-                if (user == null)
-                    throw new Exception ("USER NOT FOUND");
-
-                var patientInfo = await this.PatientQuery()
-                                .Where(e =>
-                                    e.PatientCardNumber == patient.PatientCardNumber ||
-                                    e.PatientFirstName == patient.PatientFirstName ||
-                                    e.PatientMiddleName == patient.PatientMiddleName ||
-                                    e.PatientLastName == patient.PatientLastName ||
-                                    e.PatientPhoneNumber == patient.PatientPhone ||
-                                    e.PatientPhone == patient.PatientPhone ||
-                                    1 == 1)
-                                .OrderByDescending(e => e.PatientCardNumber)
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var patientInfo = this.PatientQuery();
+                if (!(patient.PatientLastName.IsNullOrEmpty()  || 
+                    patient.PatientMiddleName.IsNullOrEmpty() || 
+                    patient.PatientFirstName.IsNullOrEmpty()  ||
+                    patient.PatientCardNumber.IsNullOrEmpty() || 
+                    patient.PatientPhone.IsNullOrEmpty()))
+                {
+                    Console.WriteLine(">>..", !(patient.PatientLastName.IsNullOrEmpty() ||
+                    patient.PatientMiddleName.IsNullOrEmpty() ||
+                    patient.PatientFirstName.IsNullOrEmpty() ||
+                    patient.PatientCardNumber.IsNullOrEmpty() ||
+                    patient.PatientPhone.IsNullOrEmpty()));
+                  await patientInfo.OrderByDescending(e => e.RowID)
                                 .Take(1000)
                                 .ToArrayAsync();
+                }
+                else
+                {
+                   
+                    await   patientInfo.Where(e => 
+                                           e.PatientCardNumber == patient.PatientCardNumber ||
+                                           e.PatientFirstName == patient.PatientFirstName ||
+                                           e.PatientMiddleName == patient.PatientMiddleName ||
+                                           e.PatientLastName == patient.PatientLastName ||
+                                           e.PatientPhoneNumber == patient.PatientPhone ||
+                                           e.PatientPhone == patient.PatientPhone)
+                            .OrderByDescending(e => e.RowID).Take(3000)
+                            .ToArrayAsync();
+                }
+
                 var TotalPaientCount = await this.PatientQuery().AsNoTracking().ToArrayAsync();
 
                 if (patientInfo == null)
@@ -480,8 +492,7 @@ namespace MoH_Microservice.Controllers
 
                 if (CurrentCBHID.Length > 0)
                 {
-                    patientInfo = await this.PatientQuery()
-                                .Where(e => (
+                  await  patientInfo.Where(e => (
                                     e.PatientCardNumber == patient.PatientCardNumber ||
                                     e.PatientFirstName == patient.PatientFirstName ||
                                     e.PatientMiddleName == patient.PatientMiddleName ||
@@ -494,8 +505,44 @@ namespace MoH_Microservice.Controllers
                 return Ok(new { data=patientInfo,TotalPatient= TotalPaientCount.Length});
             }catch(Exception e)
             {
-                return BadRequest(new { msg = "[.exp.] : Fetching patient information failed!",reason=e.Message });
+                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
             }   
+        }
+        [HttpPut("get-one-patient-info")]
+        public async Task<IActionResult> GetOnePatientInfo([FromBody] PatientViewGetOne patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var patientInfo = await this.PatientQuery()
+                                .Where(e => e.PatientCardNumber == patient.PatientCardNumber )
+                                .OrderByDescending(e => e.PatientCardNumber)
+                                .Take(1000)
+                                .ToArrayAsync();
+
+                if (patientInfo.Length<=0)
+                    throw new Exception("PATIENT DOES NOT EXIST");
+
+                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
+                        .Where(e => e.MRN == patient.PatientCardNumber)
+                        .GroupBy(g => new { g.MRN })
+                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
+                        .ToArrayAsync();
+
+                if (CurrentCBHID.Length > 0)
+                {
+                    patientInfo = await this.PatientQuery()
+                                .Where(e => (
+                                    e.PatientCardNumber == patient.PatientCardNumber &&
+                                    e.Recoredid == CurrentCBHID[0].currentRecordID))
+                                .ToArrayAsync();
+                }
+                return Ok(patientInfo[0]);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { msg = $"FETCHING PATIENT FAILED : {e.Message}" });
+            }
         }
         [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientReuestServicesViewDTO> PatientServiceQuery()
@@ -540,6 +587,7 @@ namespace MoH_Microservice.Controllers
                         from kinAddress in _patientKinAddresses.DefaultIfEmpty()
                         select new PatientViewDTO
                         {
+                            RowID=patients.Id,
                             PatientCardNumber = patients.MRN,
                             PatientFirstName = patients.firstName,
                             PatientMiddleName = patients.middleName,

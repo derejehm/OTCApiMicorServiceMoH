@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MoH_Microservice.Data;
+using MoH_Microservice.Misc;
 using MoH_Microservice.Models;
+using NuGet.Protocol;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -20,6 +23,7 @@ namespace MoH_Microservice.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private AppDbContext _payment;
+        private TokenValidate _tokenvalidate;
         
 
         public LookupController(
@@ -32,7 +36,9 @@ namespace MoH_Microservice.Controllers
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._payment = payment;
-           
+            this._tokenvalidate = new TokenValidate(userManager);
+
+
         }
 
 
@@ -111,9 +117,9 @@ namespace MoH_Microservice.Controllers
         }
         [HttpGet("payment-info")]
         [Authorize(Policy = "AdminPolicy")] // 
-        public async Task<IActionResult> GetAllPaymentInfo([FromBody] string department)
+        public async Task<IActionResult> GetAllPaymentInfo([FromBody] string department, [FromHeader] string Authorization)
         {
-            if (department != "Tsedey Bank") return NoContent();
+            if (department.ToLower() != "tsedey bank") return NoContent();
 
             var PymentInfo = await this._payment.Set<Payment>()
                             .GroupBy((col) => new { Hospital = col.HospitalName, Casher = col.Createdby, Type = col.Type, Purpose = col.Purpose })
@@ -134,7 +140,7 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpGet("payment-channel")]
-        public async Task<IActionResult> GetAllPaymentChannel()
+        public async Task<IActionResult> GetAllPaymentChannel([FromHeader] string Authorization)
         {
             var PymentInfo = await this._payment.Set<PaymentChannel>().ToArrayAsync();
 
@@ -144,8 +150,9 @@ namespace MoH_Microservice.Controllers
             return Ok(new JsonResult(PymentInfo).Value);
         }
         [HttpGet("payment-type")]
-        public async Task<IActionResult> GetAllPaymentType()
+        public async Task<IActionResult> GetAllPaymentType([FromHeader] string Authorization)
         {
+            
             var PymentInfo = await this._payment.Set<PaymentType>().ToArrayAsync();
 
             if (PymentInfo.Length <= 0)
@@ -155,19 +162,20 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpGet("payment-purpose")]
-        public async Task<IActionResult> GetAllPaymentPurpose()
+        public async Task<IActionResult> GetAllPaymentPurpose([FromHeader] string Authorization)
         {
             var PymentInfo = await this._payment.Set<PaymentPurpose>().ToArrayAsync();
 
             if (PymentInfo.Length <= 0)
                 return NoContent();
+            var user = this._tokenvalidate.setToken(Authorization.Split(" ")[1]).getUserName();
 
             return Ok(new JsonResult(PymentInfo).Value);
         }
 
         [HttpPost("payment-type")]
         // admin / supervisors
-        public async Task<IActionResult> SetPaymentType([FromBody] PaymentTypeReg paymentType)
+        public async Task<IActionResult> SetPaymentType([FromBody] PaymentTypeReg paymentType, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentType.CreatedBy); // Check if the user exists
             if (username == null)
@@ -194,7 +202,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpPost("payment-channel")]
         // admin / supervisors
-        public async Task<IActionResult> SetPaymentChannels([FromBody] PaymentChannelReg paymentChannel)
+        public async Task<IActionResult> SetPaymentChannels([FromBody] PaymentChannelReg paymentChannel, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentChannel.CreatedBy); // Check if the user exists
             if (username == null)
@@ -222,37 +230,48 @@ namespace MoH_Microservice.Controllers
 
         [HttpPost("payment-purpose")]
         // admin / supervisors
-        public async Task<IActionResult> SetPaymentPurpose([FromBody] PaymentPurposeReg paymentPurpose)
+        public async Task<IActionResult> SetPaymentPurpose([FromBody] PaymentPurposeReg paymentPurpose,[FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentPurpose.CreatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
-
-            for(var i =0; i<paymentPurpose.Purpose.Length;i++)
+            try
             {
-                var PymentInfo = await this._payment.Set<PaymentPurpose>().Where<PaymentPurpose>((e) => e.Purpose == paymentPurpose.Purpose[i]).ToArrayAsync();
+                var username = await this._userManager.FindByNameAsync(paymentPurpose.CreatedBy); // Check if the user exists
+                if (username == null)
+                    throw new Exception("USER NOT FOUND.");
+                if (paymentPurpose.Purpose.Count()<=0)
+                    throw new Exception("EMPTY FEILD.");
 
-                PaymentPurpose purpose = new PaymentPurpose
+                for (var i = 0; i < paymentPurpose.Purpose.Count(); i++)
                 {
-                    Purpose = paymentPurpose.Purpose[i],
-                    Amount = paymentPurpose.Amount[i],
-                    CreatedBy = paymentPurpose.CreatedBy,
-                    CreatedOn = DateTime.Now,
-                    UpdatedOn = null,
-                    UpdatedBy = "",
-                };
-                if (PymentInfo.Length <= 0)
-                    await this._payment.AddAsync<PaymentPurpose>(purpose);
+                    var PymentInfo = await this._payment.PaymentPurposes.Where((e) => e.Purpose == paymentPurpose.Purpose[i]).ToArrayAsync();
 
-                await this._payment.SaveChangesAsync();
+                    PaymentPurpose purpose = new PaymentPurpose
+                    {
+                        Purpose = paymentPurpose.Purpose[i],
+                        Amount = paymentPurpose.Amount[i],
+                        CreatedBy = paymentPurpose.CreatedBy,
+                        CreatedOn = DateTime.Now,
+                        UpdatedOn = null,
+                        UpdatedBy = null,
+                    };
+
+                    if (PymentInfo.Length <= 0)
+                        await this._payment.AddAsync(purpose);
+
+                    await this._payment.SaveChangesAsync();
+                }
+
+                return Created("/", new JsonResult(paymentPurpose).Value);
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg=$"PAYMENT PURPOSE UPLOAD FAILED! :: {ex.Message}"});
             }
-            return Created("/", new JsonResult(paymentPurpose).Value);
         }
         //Update
 
         [HttpPut("payment-type")]
         // admin / supervisors
-        public async Task<IActionResult> updatePaymentType([FromBody] PaymentTypeUpdate paymentType)
+        public async Task<IActionResult> updatePaymentType([FromBody] PaymentTypeUpdate paymentType, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentType.UpdatedBy); // Check if the user exists
             if (username == null)
@@ -268,7 +287,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpPut("payment-channel")]
         // admin / supervisors
-        public async Task<IActionResult> updatePaymentChannels([FromBody] PaymentChannelUpdate paymentChannel)
+        public async Task<IActionResult> updatePaymentChannels([FromBody] PaymentChannelUpdate paymentChannel, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentChannel.UpdatedBy); // Check if the user exists
             if (username == null)
@@ -285,7 +304,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpPut("payment-purpose")]
         // admin / supervisors
-        public async Task<IActionResult> updatePaymentPurpose([FromBody] PaymentPurposeUpdate paymentPurpose)
+        public async Task<IActionResult> updatePaymentPurpose([FromBody] PaymentPurposeUpdate paymentPurpose, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentPurpose.UpdatedBy); // Check if the user exists
             if (username == null)
@@ -304,7 +323,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpDelete("payment-type")]
         // admin / supervisors
-        public async Task<IActionResult> deletePaymentType([FromBody] PaymentTypeDelete paymentType)
+        public async Task<IActionResult> deletePaymentType([FromBody] PaymentTypeDelete paymentType, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentType.deletedBy); // Check if the user exists
             if (username == null)
@@ -320,7 +339,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpDelete("payment-channel")]
         // admin / supervisors
-        public async Task<IActionResult> deletePaymentChannels([FromBody] PaymentChannelDelete paymentChannel)
+        public async Task<IActionResult> deletePaymentChannels([FromBody] PaymentChannelDelete paymentChannel, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentChannel.deletedBy); // Check if the user exists
             if (username == null)
@@ -337,7 +356,7 @@ namespace MoH_Microservice.Controllers
 
         [HttpDelete("payment-purpose")]
         // admin / supervisors
-        public async Task<IActionResult> deletePaymentPurpose([FromBody] PaymentPurposeDelete paymentPurpose)
+        public async Task<IActionResult> deletePaymentPurpose([FromBody] PaymentPurposeDelete paymentPurpose, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(paymentPurpose.deletedBy); // Check if the user exists
             if (username == null)
@@ -396,7 +415,7 @@ namespace MoH_Microservice.Controllers
 
         // register hospitals
         [HttpGet("hospitals")]
-        public async Task<IActionResult> GetHospitals()
+        public async Task<IActionResult> GetHospitals([FromHeader] string Authorization)
         {
             var PymentInfo = await this._payment.Set<Hospital>().ToArrayAsync();
             if (PymentInfo.Length <= 0)
@@ -406,7 +425,7 @@ namespace MoH_Microservice.Controllers
             return Ok(new JsonResult(PymentInfo).Value);
         }
         [HttpPost("hospital")]
-        public async Task<IActionResult> InsertHospitals([FromBody] HospitalReg hospital)
+        public async Task<IActionResult> InsertHospitals([FromBody] HospitalReg hospital, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(hospital.RegisteredBy);
             if (username == null)
@@ -434,7 +453,7 @@ namespace MoH_Microservice.Controllers
             }
         }
         [HttpDelete("hospital")]
-        public async Task<IActionResult> DeleteHospitals([FromBody] HospitalDelete hospitalDelete)
+        public async Task<IActionResult> DeleteHospitals([FromBody] HospitalDelete hospitalDelete, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(hospitalDelete.user);
             if (username == null)
@@ -444,7 +463,7 @@ namespace MoH_Microservice.Controllers
         }
 
         [HttpPut("hospital")]
-        public async Task<IActionResult> UpdateHospitals([FromBody] HospitalUpdate hospitalUpdate)
+        public async Task<IActionResult> UpdateHospitals([FromBody] HospitalUpdate hospitalUpdate, [FromHeader] string Authorization)
         {
             var username = await this._userManager.FindByNameAsync(hospitalUpdate.user);
             if (username == null)

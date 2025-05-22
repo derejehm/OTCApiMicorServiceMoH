@@ -36,6 +36,7 @@ namespace MoH_Microservice.Models
         [AllowNull]
         [DataType(DataType.MultilineText)]
         public string? Examination { get; set; }
+        public DateTime ExpDate { get; set; } // cbhi expire date
 
         [MaxLength(100)]
         [Required]
@@ -80,8 +81,7 @@ namespace MoH_Microservice.Models
         [AllowNull]
         [DataType(DataType.MultilineText)]
         public string? Examination { get; set; }
-        [Required]
-        public string Cashier { get; set; }
+        public string ExpDate { get; set; } // cbhi expire date
         [Required]
         public string CardNumber { get; set; }
     }
@@ -121,8 +121,6 @@ namespace MoH_Microservice.Models
         public string cardnumber {get; set; }
         //[Required]
         //public string provider { get; set; }
-        [Required]
-        public string user { get; set; }
     }
 
 }
