@@ -65,39 +65,33 @@ namespace MoH_Microservice.Models
         public class PaymentTypeReg
         {
             public string? type { get; set; }
-            public string CreatedBy { get; set; }
         }
 
         public class PaymentTypeUpdate
         {
             public int id { get; set; }
             public string? type { get; set; }
-            public string UpdatedBy { get; set; }
             public DateTime UpdatedOn { get; set; } = DateTime.Now;
         }
         public class PaymentChannelReg
         {
             public string? Channel { get; set; }
-            public string CreatedBy { get; set; }
         }
         public class PaymentChannelUpdate
         {
             public int id { get; set; }
             public string? Channel { get; set; }
-            public string UpdatedBy { get; set; }
             public DateTime UpdatedOn { get; set; } = DateTime.Now;
         }
         public class PaymentPurposeReg
         {
             public List<string>? Purpose { get; set; }
             public List<decimal>? Amount { get; set; }
-            public string CreatedBy { get; set; }
         }
         public class PaymentPurposeUpdate
         {
             public int id { get; set; }
             public string? Purpose { get; set; }
-            public string UpdatedBy { get; set; }
             public DateTime UpdatedOn { get; set; } = DateTime.Now;
         }
 
@@ -113,17 +107,14 @@ namespace MoH_Microservice.Models
         public class PaymentTypeDelete
         {
             public int id { get; set; }
-            public string deletedBy { get; set; }
         }
         public class PaymentChannelDelete
         {
             public int id { get; set; }
-            public string deletedBy { get; set; }
         }
         public class PaymentPurposeDelete
         {
             public int id { get; set; }
-            public string deletedBy { get; set; }
         }
         public class PurposeAmountMap
         {

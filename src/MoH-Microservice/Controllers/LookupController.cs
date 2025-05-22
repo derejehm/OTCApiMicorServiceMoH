@@ -23,7 +23,7 @@ namespace MoH_Microservice.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private AppDbContext _payment;
-        private TokenValidate _tokenvalidate;
+        private TokenValidate _tokenValidate;
         
 
         public LookupController(
@@ -36,7 +36,7 @@ namespace MoH_Microservice.Controllers
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._payment = payment;
-            this._tokenvalidate = new TokenValidate(userManager);
+            this._tokenValidate = new TokenValidate(userManager);
 
 
         }
@@ -117,115 +117,155 @@ namespace MoH_Microservice.Controllers
         }
         [HttpGet("payment-info")]
         [Authorize(Policy = "AdminPolicy")] // 
-        public async Task<IActionResult> GetAllPaymentInfo([FromBody] string department, [FromHeader] string Authorization)
+        public async Task<IActionResult> GetAllPaymentInfo([FromHeader] string Authorization)
         {
-            if (department.ToLower() != "tsedey bank") return NoContent();
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                if (user.Departement.ToLower() != "tsedey bank") return NoContent();
 
-            var PymentInfo = await this._payment.Set<Payment>()
-                            .GroupBy((col) => new { Hospital = col.HospitalName, Casher = col.Createdby, Type = col.Type, Purpose = col.Purpose })
-                            .Select((select) =>
-                                new {
-                                    Hospital = select.Key.Hospital,
-                                    Casher = select.Key.Casher,
-                                    Type = select.Key.Type,
-                                    Purpose = select.Key.Purpose,
-                                    Amount = select.Sum((payment) => payment.Amount)
-                                }
-                            ).ToArrayAsync();
+                var PymentInfo = await this._payment.Set<Payment>()
+                                .GroupBy((col) => new { Hospital = col.HospitalName, Casher = col.Createdby, Type = col.Type, Purpose = col.Purpose })
+                                .Select((select) =>
+                                    new {
+                                        Hospital = select.Key.Hospital,
+                                        Casher = select.Key.Casher,
+                                        Type = select.Key.Type,
+                                        Purpose = select.Key.Purpose,
+                                        Amount = select.Sum((payment) => payment.Amount)
+                                    }
+                                ).ToArrayAsync();
 
-            if (PymentInfo.Length <= 0)
-                return NoContent();
+                if (PymentInfo.Length <= 0)
+                    return NoContent();
 
-            return Ok(new JsonResult(PymentInfo).Value);
+                return Ok(new JsonResult(PymentInfo).Value);
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: fetch payment failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpGet("payment-channel")]
         public async Task<IActionResult> GetAllPaymentChannel([FromHeader] string Authorization)
         {
-            var PymentInfo = await this._payment.Set<PaymentChannel>().ToArrayAsync();
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentChannel>().ToArrayAsync();
 
-            if (PymentInfo.Length <= 0)
-                return NoContent();
+                if (PymentInfo.Length <= 0)
+                    return NoContent();
+                return Ok(new JsonResult(PymentInfo).Value);
 
-            return Ok(new JsonResult(PymentInfo).Value);
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Insert Providers failed! Reason: {ex.Message}" });
+            }
         }
         [HttpGet("payment-type")]
         public async Task<IActionResult> GetAllPaymentType([FromHeader] string Authorization)
         {
-            
-            var PymentInfo = await this._payment.Set<PaymentType>().ToArrayAsync();
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentType>().ToArrayAsync();
 
-            if (PymentInfo.Length <= 0)
-                return NoContent();
+                if (PymentInfo.Length <= 0)
+                    return NoContent();
 
-            return Ok(new JsonResult(PymentInfo).Value);
+                return Ok(new JsonResult(PymentInfo).Value);
+
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: fetch payment-type failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpGet("payment-purpose")]
         public async Task<IActionResult> GetAllPaymentPurpose([FromHeader] string Authorization)
         {
-            var PymentInfo = await this._payment.Set<PaymentPurpose>().ToArrayAsync();
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentPurpose>().ToArrayAsync();
 
-            if (PymentInfo.Length <= 0)
-                return NoContent();
-            var user = this._tokenvalidate.setToken(Authorization.Split(" ")[1]).getUserName();
+                if (PymentInfo.Length <= 0)
+                    return NoContent();
 
-            return Ok(new JsonResult(PymentInfo).Value);
+                return Ok(new JsonResult(PymentInfo).Value);
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: fetch payment-purpose failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpPost("payment-type")]
         // admin / supervisors
         public async Task<IActionResult> SetPaymentType([FromBody] PaymentTypeReg paymentType, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentType.CreatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
-            var PymentInfo = await this._payment.Set<PaymentType>().Where<PaymentType>((type) => type.type == paymentType.type).ToArrayAsync();
-
-            if (PymentInfo.Length > 0)
-                return BadRequest("Payment type aleady exist");
-
-            PaymentType type = new PaymentType
+            try
             {
-                type = paymentType.type,
-                CreatedBy = paymentType.CreatedBy,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = null,
-                UpdatedBy = "",
-            };
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentType>().Where<PaymentType>((type) => type.type == paymentType.type).ToArrayAsync();
 
-            await this._payment.AddAsync<PaymentType>(type);
-            await this._payment.SaveChangesAsync();
+                if (PymentInfo.Length > 0)
+                    return BadRequest("Payment type aleady exist");
 
-            return Created("/", new JsonResult(type).Value);
+                PaymentType type = new PaymentType
+                {
+                    type = paymentType.type,
+                    CreatedBy = user.UserName,
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = null,
+                    UpdatedBy = "",
+                };
+
+                await this._payment.AddAsync<PaymentType>(type);
+                await this._payment.SaveChangesAsync();
+
+                return Created("/", new JsonResult(type).Value);
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Insert payment-type failed! Reason: {ex.Message}" });
+            }
+
+
         }
 
         [HttpPost("payment-channel")]
         // admin / supervisors
         public async Task<IActionResult> SetPaymentChannels([FromBody] PaymentChannelReg paymentChannel, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentChannel.CreatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
-
-            var PymentInfo = await this._payment.Set<PaymentChannel>().Where<PaymentChannel>((type) => type.Channel == paymentChannel.Channel).ToArrayAsync();
-
-            if (PymentInfo.Length > 0)
-                return BadRequest("Payment channel aleady exist");
-
-            PaymentChannel Channel = new PaymentChannel
+            try
             {
-                Channel = paymentChannel.Channel,
-                CreatedBy = paymentChannel.CreatedBy,
-                CreatedOn = DateTime.Now,
-                UpdatedOn = null,
-                UpdatedBy = "",
-            };
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.PaymentChannels.Where((type) => type.Channel == paymentChannel.Channel).ToArrayAsync();
 
-            await this._payment.AddAsync<PaymentChannel>(Channel);
-            await this._payment.SaveChangesAsync();
+                if (PymentInfo.Length > 0)
+                    throw new Exception("Payment channel aleady exist");
 
-            return Created("/", new JsonResult(Channel).Value);
+                PaymentChannel Channel = new PaymentChannel
+                {
+                    Channel = paymentChannel.Channel,
+                    CreatedBy = user.UserName,
+                    CreatedOn = DateTime.Now,
+                    UpdatedOn = null,
+                    UpdatedBy = "",
+                };
+
+                await this._payment.AddAsync<PaymentChannel>(Channel);
+                await this._payment.SaveChangesAsync();
+
+                return Created("/", new JsonResult(Channel).Value);
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Insert payment-channel failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpPost("payment-purpose")]
@@ -234,9 +274,8 @@ namespace MoH_Microservice.Controllers
         {
             try
             {
-                var username = await this._userManager.FindByNameAsync(paymentPurpose.CreatedBy); // Check if the user exists
-                if (username == null)
-                    throw new Exception("USER NOT FOUND.");
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                
                 if (paymentPurpose.Purpose.Count()<=0)
                     throw new Exception("EMPTY FEILD.");
 
@@ -248,7 +287,7 @@ namespace MoH_Microservice.Controllers
                     {
                         Purpose = paymentPurpose.Purpose[i],
                         Amount = paymentPurpose.Amount[i],
-                        CreatedBy = paymentPurpose.CreatedBy,
+                        CreatedBy = user.UserName,
                         CreatedOn = DateTime.Now,
                         UpdatedOn = null,
                         UpdatedBy = null,
@@ -273,50 +312,66 @@ namespace MoH_Microservice.Controllers
         // admin / supervisors
         public async Task<IActionResult> updatePaymentType([FromBody] PaymentTypeUpdate paymentType, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentType.UpdatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentType>()
+                                      .Where<PaymentType>((type) => type.Id == paymentType.id)
+                                      .ExecuteUpdateAsync(e => e.SetProperty(e => e.type, paymentType.type));
 
-            var PymentInfo = await this._payment.Set<PaymentType>()
-                                  .Where<PaymentType>((type) => type.Id == paymentType.id)
-                                  .ExecuteUpdateAsync(e => e.SetProperty(e => e.type, paymentType.type));
+                await this._payment.SaveChangesAsync();
+                return Ok($"Updated - payment channel to {paymentType.type}");
 
-            await this._payment.SaveChangesAsync();
-            return Ok($"Updated - payment channel to {paymentType.type}");
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: update payment-type failed! Reason: {ex.Message}" });
+            }
+
+
         }
 
         [HttpPut("payment-channel")]
         // admin / supervisors
         public async Task<IActionResult> updatePaymentChannels([FromBody] PaymentChannelUpdate paymentChannel, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentChannel.UpdatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
-            var PymentInfo = await this._payment.Set<PaymentChannel>()
-                .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
-                .ExecuteUpdateAsync(e => e.SetProperty(e => e.Channel, paymentChannel.Channel));
+                var PymentInfo = await this._payment.Set<PaymentChannel>()
+                    .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
+                    .ExecuteUpdateAsync(e => e.SetProperty(e => e.Channel, paymentChannel.Channel));
 
-            await this._payment.SaveChangesAsync();
+                await this._payment.SaveChangesAsync();
 
-            return Ok($"Updated - payment channel to {paymentChannel.Channel}");
+                return Ok($"Updated - payment channel to {paymentChannel.Channel}");
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: update payment-channel failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpPut("payment-purpose")]
         // admin / supervisors
         public async Task<IActionResult> updatePaymentPurpose([FromBody] PaymentPurposeUpdate paymentPurpose, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentPurpose.UpdatedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.PaymentPurposes
+                    .Where((e) => e.Id == paymentPurpose.id)
+                    .ExecuteUpdateAsync(e => e.SetProperty(e => e.Purpose, paymentPurpose.Purpose));
 
-            var PymentInfo = await this._payment.Set<PaymentPurpose>()
-                .Where<PaymentPurpose>((e) => e.Id == paymentPurpose.id)
-                .ExecuteUpdateAsync(e => e.SetProperty(e => e.Purpose, paymentPurpose.Purpose));
+                await this._payment.SaveChangesAsync();
 
-            await this._payment.SaveChangesAsync();
+                return Ok($"Updated - payment purpose to {paymentPurpose.Purpose}");
+            }catch(Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: update payment-purpose failed! Reason: {ex.Message}" });
+            }
 
-            return Ok($"Updated - payment purpose to {paymentPurpose.Purpose}");
+
         }
 
         // delete
@@ -325,50 +380,64 @@ namespace MoH_Microservice.Controllers
         // admin / supervisors
         public async Task<IActionResult> deletePaymentType([FromBody] PaymentTypeDelete paymentType, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentType.deletedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
-            var PymentInfo = await this._payment.Set<PaymentType>()
-                                  .Where<PaymentType>((type) => type.Id == paymentType.id)
-                                  .ExecuteDeleteAsync();
+                var PymentInfo = await this._payment.Set<PaymentType>()
+                                      .Where<PaymentType>((type) => type.Id == paymentType.id)
+                                      .ExecuteDeleteAsync();
 
-            await this._payment.SaveChangesAsync();
-            return Ok($"Deleted - payment type");
+                await this._payment.SaveChangesAsync();
+                return Ok($"Deleted - payment type");
+
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Delete payment-type failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpDelete("payment-channel")]
         // admin / supervisors
         public async Task<IActionResult> deletePaymentChannels([FromBody] PaymentChannelDelete paymentChannel, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentChannel.deletedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentChannel>()
+                    .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
+                    .ExecuteDeleteAsync();
 
-            var PymentInfo = await this._payment.Set<PaymentChannel>()
-                .Where<PaymentChannel>((type) => type.Id == paymentChannel.id)
-                .ExecuteDeleteAsync();
+                await this._payment.SaveChangesAsync();
 
-            await this._payment.SaveChangesAsync();
+                return Ok($"Deleted - payment Channel");
 
-            return Ok($"Deleted - payment Channel");
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"payment-channel Providers failed! Reason: {ex.Message}" });
+            }
+
         }
 
         [HttpDelete("payment-purpose")]
         // admin / supervisors
         public async Task<IActionResult> deletePaymentPurpose([FromBody] PaymentPurposeDelete paymentPurpose, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(paymentPurpose.deletedBy); // Check if the user exists
-            if (username == null)
-                return NotFound("User not found");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<PaymentPurpose>()
+                    .Where<PaymentPurpose>((e) => e.Id == paymentPurpose.id)
+                    .ExecuteDeleteAsync();
 
-            var PymentInfo = await this._payment.Set<PaymentPurpose>()
-                .Where<PaymentPurpose>((e) => e.Id == paymentPurpose.id)
-                .ExecuteDeleteAsync();
+                await this._payment.SaveChangesAsync();
 
-            await this._payment.SaveChangesAsync();
-
-            return Ok($"Deleted - payment Purpose");
+                return Ok($"Deleted - payment Purpose");
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Delete payment-purpose failed! Reason: {ex.Message}" });
+            }
         }
         [HttpGet("redirecttoboa")]
         public IActionResult RedirectToSlip(string transactionId)
@@ -417,22 +486,27 @@ namespace MoH_Microservice.Controllers
         [HttpGet("hospitals")]
         public async Task<IActionResult> GetHospitals([FromHeader] string Authorization)
         {
-            var PymentInfo = await this._payment.Set<Hospital>().ToArrayAsync();
-            if (PymentInfo.Length <= 0)
+            try
             {
-                return NoContent();
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.Set<Hospital>().ToArrayAsync();
+                if (PymentInfo.Length <= 0)
+                {
+                    return NoContent();
+                }
+                return Ok(new JsonResult(PymentInfo).Value);
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: fetch hospitals failed! Reason: {ex.Message}" });
             }
-            return Ok(new JsonResult(PymentInfo).Value);
         }
+
         [HttpPost("hospital")]
         public async Task<IActionResult> InsertHospitals([FromBody] HospitalReg hospital, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(hospital.RegisteredBy);
-            if (username == null)
-                return NotFound("User not found");
-
             try
             {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 Hospital hospital_reg = new Hospital
                 {
                     HospitalName = hospital.HospitalName,
@@ -442,7 +516,7 @@ namespace MoH_Microservice.Controllers
                     Location = hospital.Location,
                     ContactMethod = hospital.ContactMethod,
                     RegisteredOn = DateTime.UtcNow,
-                    RegisteredBy = hospital.RegisteredBy
+                    RegisteredBy = user.UserName
                 };
                 await this._payment.AddAsync(hospital_reg);
                 await this._payment.SaveChangesAsync();
@@ -455,32 +529,41 @@ namespace MoH_Microservice.Controllers
         [HttpDelete("hospital")]
         public async Task<IActionResult> DeleteHospitals([FromBody] HospitalDelete hospitalDelete, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(hospitalDelete.user);
-            if (username == null)
-                return NotFound("User not found");
-            var delete = await this._payment.Set<Hospital>().Where(e=> e.Id==hospitalDelete.id).ExecuteDeleteAsync();
-            return Ok("Hospital information deleted Deleted!");
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var delete = await this._payment.Set<Hospital>().Where(e=> e.Id==hospitalDelete.id).ExecuteDeleteAsync();
+                return Ok(new { msg = "Hospital information deleted Deleted!" });
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Delete hospital failed! Reason: {ex.Message}" });
+            }
         }
 
         [HttpPut("hospital")]
         public async Task<IActionResult> UpdateHospitals([FromBody] HospitalUpdate hospitalUpdate, [FromHeader] string Authorization)
         {
-            var username = await this._userManager.FindByNameAsync(hospitalUpdate.user);
-            if (username == null)
-                return NotFound("User not found");
-            var hospital = await this._payment.Set<Hospital>()
-                .Where((e) => e.Id == hospitalUpdate.id)
-                .ExecuteUpdateAsync(e => 
-                        e.SetProperty(e => e.HospitalManager, hospitalUpdate.HospitalManager)
-                        .SetProperty(e => e.ContactMethod, hospitalUpdate.ContactMethod)
-                        .SetProperty(e => e.Email, hospitalUpdate.Email)
-                        .SetProperty(e => e.Phone, hospitalUpdate.Phone)
-                        .SetProperty(e => e.Location, hospitalUpdate.Location)
-                );
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var hospital = await this._payment.Set<Hospital>()
+                    .Where((e) => e.Id == hospitalUpdate.id)
+                    .ExecuteUpdateAsync(e =>
+                            e.SetProperty(e => e.HospitalManager, hospitalUpdate.HospitalManager)
+                            .SetProperty(e => e.ContactMethod, hospitalUpdate.ContactMethod)
+                            .SetProperty(e => e.Email, hospitalUpdate.Email)
+                            .SetProperty(e => e.Phone, hospitalUpdate.Phone)
+                            .SetProperty(e => e.Location, hospitalUpdate.Location)
+                    );
 
-            await this._payment.SaveChangesAsync();
-            return Ok($"Updated - Hospital information");
+                await this._payment.SaveChangesAsync();
+                return Ok($"Updated - Hospital information");
+            }catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: update hospital failed! Reason: {ex.Message}" });
+            }
         }
+
         private class BankLinkList
         {
 
