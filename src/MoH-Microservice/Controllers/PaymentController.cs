@@ -456,8 +456,32 @@ namespace MoH_Microservice.Controllers
             }
         }
 
+        [HttpGet("get-service-provider")]
+        public async Task<IActionResult> GetAllProviderInfo([FromHeader] string Authorization)
+        {
+
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                var patientInfo = await this._payment.Set<ProvidersMapUsers>().ToArrayAsync();
+                
+                if (patientInfo.Length <= 0)
+                {
+                    return NoContent();
+                }
+                return Ok(patientInfo);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = ex.Message });
+            }
+
+
+        }
+
         [HttpPut("get-service-provider")]
-        public async Task<IActionResult> GetProviderInfo([FromBody] ProvidersParam providers, [FromHeader] string Authorization)
+        public async Task<IActionResult> GetOneProviderInfo([FromBody] ProvidersParam providers, [FromHeader] string Authorization)
         {
 
             try
@@ -477,12 +501,12 @@ namespace MoH_Microservice.Controllers
                 }
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(new {msg=ex.Message});
+                return BadRequest(new { msg = ex.Message });
             }
-             
-            
+
+
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]

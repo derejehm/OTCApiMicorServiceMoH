@@ -43,7 +43,7 @@ namespace MoH_Microservice.Controllers
                 {
                     provider = providers.provider,
                     service = providers.service,
-                    Createdby = providers.CreatedBy,
+                    Createdby = user.UserName,
                     CreatedOn = DateTime.Now,
                     Updatedby = null,
                     UpdateOn = null,
