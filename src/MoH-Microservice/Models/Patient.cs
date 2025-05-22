@@ -77,7 +77,6 @@ namespace MoH_Microservice.Models
         public string? PatientCardNumber { get; set; }
         public List<int>? RequestedServices { get; set; }
         public string? purpose { get; set; }
-        public string? createdBy { get; set; }
 
     }
 
@@ -93,8 +92,6 @@ namespace MoH_Microservice.Models
         public string? PatientCardNumber { get; set; }
         public string? groupID { get; set; }
         public bool isComplete { get; set; }
-        public string loggedInUser { get; set; }
-
     }
     public class PatientReg
         {
@@ -190,8 +187,6 @@ namespace MoH_Microservice.Models
         public string? PatientMaritalstatus { get; set; }
         public string? PatientSpouseFirstName { get; set; }
         public string? PatientSpouselastName { get; set; }
-        [Required(ErrorMessage = "PatientRegisteredBy missing")]
-        public string? PatientChangedBy { get; set; }
         public string? PatientVisitingDate { get; set; }
         public string? PatientType { get; set; }
         [Required(ErrorMessage = "PatientRegion missing")]
@@ -230,13 +225,16 @@ namespace MoH_Microservice.Models
             public string? PatientMiddleName { get; set; }
             public string? PatientPhone { get; set; }
             public DateTime? currentTime { get; set; }
-            public string Cashier { get; set; }
 
         }
+    public class PatientViewGetOne
+    {
+        public string PatientCardNumber { get; set; }
+    }
 
     public class PatientViewDTO
     {
-        public int? RowID { get; set; }
+        public long? RowID { get; set; }
         public string? PatientCardNumber { get; set; } // medical registration number
         public string? PatientFirstName { get; set; }
         public string? PatientMiddleName { get; set; }
@@ -323,7 +321,7 @@ namespace MoH_Microservice.Models
         public string? PatientMotherName { get; set; }
         public int? PatientAge { get; set; }
         public string? PatientGender { get; set; }
-        public string RequestGroup { get; set; }
+        public string? RequestGroup { get; set; } = string.Empty;
         public int? NoRequestedServices { get; set; }
         public List<patientRequestServiceOut>? RquestedServices { get; set; }
         public List<patientRequestOut>? RequestedCatagories { get; set; }
