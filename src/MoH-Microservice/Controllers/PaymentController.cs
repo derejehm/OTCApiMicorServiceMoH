@@ -104,7 +104,8 @@ namespace MoH_Microservice.Controllers
                                              g.policeName,
                                              g.policePhone,
                                              g.CarPlateNumber,
-                                            
+                                             g.RegisteredBy
+
                                          })
                                          .Select(s => new
                                          {
@@ -126,7 +127,7 @@ namespace MoH_Microservice.Controllers
 
                                              AccedentDate = s.FirstOrDefault().accedentDate,
                                              policeName = s.FirstOrDefault().policeName,
-                                             policePhone = s.FirstOrDefault().policePhone,
+                                             PolicePhone = s.FirstOrDefault().policePhone,
                                              CarPlateNumber = s.FirstOrDefault().CarPlateNumber,
 
                                              CardPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("card") ? s.PaymentAmount : 0),
@@ -150,7 +151,7 @@ namespace MoH_Microservice.Controllers
                 else
                 {
                     var data = await this.PaymentQuery()
-                                         .Where(e=>e.accedentDate == null)
+
                                          .GroupBy(g => new {
                                              g.PatientCardNumber,
                                              g.PatientName,
@@ -162,22 +163,53 @@ namespace MoH_Microservice.Controllers
                                              g.PatientReferalNo,
                                              g.PatientCBHI_ID,
                                              g.PatientType,
-                                             g.PaymentReason
+                                             g.PaymentReason,
+                                             g.PaymentType,
+                                             g.PatientWorkingPlace,
+                                             g.PatientWorkID,
+                                             g.PatientWoreda,
+                                             g.accedentDate,
+                                             g.policeName,
+                                             g.policePhone,
+                                             g.CarPlateNumber,
+                                             g.RegisteredBy
+
                                          })
                                          .Select(s => new
                                          {
-                                             CardNumber = s.Select(s => s.PatientCardNumber),
-                                             Name = s.Select(s => s.PatientName),
-                                             VisitingDate = s.Select(s => s.PatientVisiting),
-                                             Age = s.Select(s => s.PatientAge),
-                                             Gender = s.Select(s => s.PatientGender),
-                                             Kebele = s.Select(s => s.PatientKebele),
-                                             Goth = s.Select(s => s.PatientsGoth),
-                                             ReferalNo = s.Select(s => s.PatientReferalNo),
-                                             IDNo = s.Select(s => s.PatientCBHI_ID),
-                                             PatientType = s.Select(s => s.PatientType),
-                                             PaymentReason = s.Select(s => s.PaymentReason),
-                                             TotalPaid = s.Sum(s => s.PaymentAmount)
+                                             CardNumber = s.FirstOrDefault().PatientCardNumber,
+                                             Name = s.FirstOrDefault().PatientName,
+                                             VisitingDate = s.FirstOrDefault().PatientVisiting,
+                                             Age = s.FirstOrDefault().PatientAge,
+                                             Gender = s.FirstOrDefault().PatientGender,
+                                             Kebele = s.FirstOrDefault().PatientKebele,
+                                             Goth = s.FirstOrDefault().PatientsGoth,
+                                             ReferalNo = s.FirstOrDefault().PatientReferalNo,
+                                             IDNo = s.FirstOrDefault().PatientCBHI_ID,
+                                             PatientType = s.FirstOrDefault().PatientType,
+                                             PaymentType = s.FirstOrDefault().PaymentType,
+
+                                             PatientWorkingPlace = s.FirstOrDefault().PatientWorkingPlace,
+                                             PatientWorkID = s.FirstOrDefault().PatientWorkID,
+                                             CBHIProvider = s.FirstOrDefault().PatientWoreda,
+
+                                             AccedentDate = s.FirstOrDefault().accedentDate,
+                                             policeName = s.FirstOrDefault().policeName,
+                                             PolicePhone = s.FirstOrDefault().policePhone,
+                                             CarPlateNumber = s.FirstOrDefault().CarPlateNumber,
+
+                                             CardPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("card") ? s.PaymentAmount : 0),
+                                             UnltrasoundPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("ultrasound") ? s.PaymentAmount : 0),
+                                             ExaminationPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("exam") ? s.PaymentAmount : 0),
+                                             MedicinePaid = s.Sum(s => s.PaymentReason.ToLower().Contains("medi") ? s.PaymentAmount : 0),
+                                             LaboratoryPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("lab") ? s.PaymentAmount : 0),
+                                             BedPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("bed") ? s.PaymentAmount : 0),
+                                             SurgeryPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("Surgery") ? s.PaymentAmount : 0),
+                                             Foodpaid = s.Sum(s => s.PaymentReason.ToLower().Contains("food") ? s.PaymentAmount : 0),
+                                             OtherPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("other") ? s.PaymentAmount : 0),
+
+                                             TotalPaid = s.Sum(s => s.PaymentAmount),
+
                                          }).ToArrayAsync();
 
                     if (data.Length <= 0)
