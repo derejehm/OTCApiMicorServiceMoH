@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
 using MoH_Microservice.Misc;
 using MoH_Microservice.Models;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using static MoH_Microservice.Models.PatientAddress;
@@ -252,60 +253,52 @@ namespace MoH_Microservice.Controllers
             try
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
-                var patientInfo = this.PatientQuery();
-                if (!(patient.PatientLastName.IsNullOrEmpty() ||
-                    patient.PatientMiddleName.IsNullOrEmpty() ||
-                    patient.PatientFirstName.IsNullOrEmpty() ||
-                    patient.PatientCardNumber.IsNullOrEmpty() ||
-                    patient.PatientPhone.IsNullOrEmpty()))
-                {
-                    Console.WriteLine(">>..", !(patient.PatientLastName.IsNullOrEmpty() ||
-                    patient.PatientMiddleName.IsNullOrEmpty() ||
-                    patient.PatientFirstName.IsNullOrEmpty() ||
-                    patient.PatientCardNumber.IsNullOrEmpty() ||
-                    patient.PatientPhone.IsNullOrEmpty()));
-                    await patientInfo.OrderByDescending(e => e.RowID)
-                                  .Take(1000)
-                                  .ToArrayAsync();
-                }
-                else
-                {
+                var la = await this._dbContext.ProvidersMapPatient
+                    .GroupBy(p => p.MRN)
+                    .Select(s => new { latestRecord = s.Max(s => s.Id) }).ToArrayAsync();
 
-                    await patientInfo.Where(e =>
-                                           e.PatientCardNumber == patient.PatientCardNumber ||
-                                           e.PatientFirstName == patient.PatientFirstName ||
-                                           e.PatientMiddleName == patient.PatientMiddleName ||
-                                           e.PatientLastName == patient.PatientLastName ||
-                                           e.PatientPhoneNumber == patient.PatientPhone ||
-                                           e.PatientPhone == patient.PatientPhone)
-                            .OrderByDescending(e => e.RowID).Take(3000)
-                            .ToArrayAsync();
+                var patientInfo = la.Join(this.PatientQuery().ToArray(), 
+                            maxid => maxid.latestRecord, 
+                            p => p.Recoredid, 
+                            (maxid, p) => p);
+
+                IEnumerable<PatientViewDTO> SearchResult = patientInfo;
+
+                if (patient.PatientLastName.IsNullOrEmpty() &
+                    patient.PatientMiddleName.IsNullOrEmpty() &
+                    patient.PatientFirstName.IsNullOrEmpty() &
+                    patient.PatientCardNumber.IsNullOrEmpty() &
+                    patient.PatientPhone.IsNullOrEmpty())
+                {
+                    SearchResult.OrderByDescending(o=>o.Recoredid).Take(1000).ToList();
                 }
 
-                var TotalPaientCount = await this.PatientQuery().AsNoTracking().ToArrayAsync();
+                if (!patient.PatientCardNumber.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e =>e.PatientCardNumber == patient.PatientCardNumber);
+                }
+                if (!patient.PatientFirstName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientFirstName == patient.PatientFirstName);
+                }
+                if (!patient.PatientMiddleName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientMiddleName == patient.PatientMiddleName);
+                }
+                if (!patient.PatientLastName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientLastName == patient.PatientLastName);
+                }
+                if (!patient.PatientPhone.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientPhone == patient.PatientPhone);
+                }
 
                 if (patientInfo == null)
                     throw new Exception("PATIENT DOES NOT EXIST");
 
-                var CurrentCBHID = await this._dbContext.ProvidersMapPatient
-                        .Where(e => e.MRN == patient.PatientCardNumber)
-                        .GroupBy(g => new { g.MRN })
-                        .Select(s => new { currentRecordID = s.Max(id => id.Id) })
-                        .ToArrayAsync();
 
-                if (CurrentCBHID.Length > 0)
-                {
-                    await patientInfo.Where(e => (
-                                      e.PatientCardNumber == patient.PatientCardNumber ||
-                                      e.PatientFirstName == patient.PatientFirstName ||
-                                      e.PatientMiddleName == patient.PatientMiddleName ||
-                                      e.PatientLastName == patient.PatientLastName ||
-                                      e.PatientPhoneNumber == patient.PatientPhone ||
-                                      e.PatientPhone == patient.PatientPhone) &&
-                                      e.Recoredid == CurrentCBHID[0].currentRecordID)
-                                  .ToArrayAsync();
-                }
-                return Ok(new { data = patientInfo, TotalPatient = TotalPaientCount.Length });
+                return Ok(new { data = SearchResult, TotalPatient = patientInfo.Count() });
             }
             catch (Exception e)
             {
@@ -571,7 +564,41 @@ namespace MoH_Microservice.Controllers
                 else
                     // the reqiest can only be canceled if it is not paid.
                     throw new Exception("REQUEST FAILD TO CANCEL  :: REQUEST NOT FOUND");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"FAILED TO COMLETE REQUEST : {ex.Message}" });
+            }
+        }
+        [HttpPost("add-patient-accedent")]
+        public async Task<IActionResult> addPatientAccedent([FromBody] PatientAccedentsReg patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
+                var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
+                    .AsNoTracking().ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                {
+                    throw new Exception("PATIENT DOES NOT EXIST.");
+                }
+
+                PatientAccedent accedents = new PatientAccedent
+                {
+                    MRN = patient.PatientCardNumber,
+                    accedentAddress = patient.accAddress,
+                    accedentDate = Convert.ToDateTime(patient.accDate),
+                    policeName = patient.policeName,
+                    policePhone = patient.policePhone,
+                    plateNumber = patient.plateNumber,
+                    certificate = patient.certificate,
+                    createdOn = DateTime.Now,
+                    createdBy = user.UserName
+                };
+                await this._dbContext.AddAsync(accedents);
+                await this._dbContext.SaveChangesAsync();
+                return Ok(accedents);
             }
             catch (Exception ex)
             {
@@ -579,6 +606,47 @@ namespace MoH_Microservice.Controllers
             }
         }
 
+        [HttpPut("change-patient-accedent")]
+        public async Task<IActionResult> UpdatePatientAccedent([FromBody] PatientAccedentsReg patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                var doesPatientExisit = await this._dbContext.Patients.Where(e => e.MRN == patient.PatientCardNumber)
+                    .AsNoTracking().ToArrayAsync();
+                if (doesPatientExisit.Length <= 0)
+                {
+                    throw new Exception("PATIENT DOES NOT EXIST.");
+                }
+                var accedents = await this._dbContext.PatientAccedents
+                    .Where(w => w.id == patient.id)
+                    .ExecuteUpdateAsync(u => u
+                     .SetProperty(p => p.MRN, patient.PatientCardNumber)
+                     .SetProperty(p => p.accedentAddress, patient.accAddress)
+                     .SetProperty(p => p.accedentDate, Convert.ToDateTime(patient.accDate))
+                     .SetProperty(p => p.policeName, patient.policeName)
+                     .SetProperty(p => p.policePhone, patient.policePhone)
+                     .SetProperty(p => p.plateNumber, patient.plateNumber)
+                     .SetProperty(p => p.certificate, patient.certificate)
+                     .SetProperty(p => p.updatedOn, DateTime.Now)
+                     .SetProperty(p => p.updatedBy, user.UserName)
+                    );
+
+                if (accedents > 0)
+                {
+                    await this._dbContext.SaveChangesAsync();
+                    return Ok(new { msg = "ACCEDENT CHANGED SUCCESSFULY!" });
+                }
+                else
+                    throw new Exception("COULDN'T FIND THE ACCEDENT REGISTRATION.");
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"FAILED TO COMLETE ACTION : {ex.Message}" });
+            }
+        }
         [ApiExplorerSettings(IgnoreApi = true)]
         public IQueryable<PatientReuestServicesViewDTO> PatientServiceQuery()
         {

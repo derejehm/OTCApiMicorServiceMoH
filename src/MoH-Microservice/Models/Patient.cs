@@ -71,6 +71,33 @@ namespace MoH_Microservice.Models
         public DateTime? updatedOn { get; set; }
 
     }
+    public class PatientAccedent
+    {
+        public long id { get; set; }
+        public string? MRN { get; set; }
+        public string? accedentAddress { get; set; }
+        public DateTime accedentDate { get; set; }
+        public string? policeName { get; set; }
+        public string? policePhone { get; set; }
+        public string? plateNumber { get; set; }
+        public string? certificate { get; set; }
+        public string createdBy { get; set; }
+        public DateTime createdOn { get; set; }
+        public string? updatedBy { get; set; }
+        public DateTime? updatedOn { get; set; }
+
+    }
+    public class PatientAccedentsReg
+    {
+        public long? id { get; set; }
+        public string? PatientCardNumber { get; set; }
+        public string? accAddress { get; set; }
+        public string? accDate { get; set; }
+        public string? policeName { get; set; }
+        public string? policePhone { get; set; }
+        public string? plateNumber { get; set; }
+        public string? certificate { get; set; }
+    }
     public class PatientRequestedServicesReg
     {
 
@@ -231,8 +258,6 @@ namespace MoH_Microservice.Models
             public string? PatientLastName { get; set; }
             public string? PatientMiddleName { get; set; }
             public string? PatientPhone { get; set; }
-            public DateTime? currentTime { get; set; }
-
         }
     public class PatientViewGetOne
     {

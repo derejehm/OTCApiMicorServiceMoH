@@ -17,6 +17,7 @@ namespace MoH_Microservice.Data
         public DbSet<PCollections> PaymentCollections { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<PatientAddress> PatientAddress { get; set; }
+        public DbSet<PatientAccedent> PatientAccedents { get; set; }
         public DbSet<PatientRequestedServices> PatientRequestedServices { get; set; }
         public DbSet<Providers> Providers { get; set; }
         public DbSet<ProvidersMapUsers> ProvidersMapPatient { get; set; }

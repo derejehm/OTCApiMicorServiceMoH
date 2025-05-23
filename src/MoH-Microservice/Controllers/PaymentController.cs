@@ -8,6 +8,8 @@ using MoH_Microservice.Data;
 using MoH_Microservice.Misc;
 using MoH_Microservice.Models;
 using MoH_Microservice.Query;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 
@@ -70,7 +72,7 @@ namespace MoH_Microservice.Controllers
             }
             
         }
-        [HttpPut("rpt-all-Payment")]
+        [HttpPut("rpt-all-Payment")] // report excluding accedents treatments
         public async Task<IActionResult> RptPaymentByDate([FromBody] PaymentbyDate payment, [FromHeader] string Authorization)
         {
 
@@ -93,7 +95,16 @@ namespace MoH_Microservice.Controllers
                                              g.PatientReferalNo,
                                              g.PatientCBHI_ID,
                                              g.PatientType,
-                                             //g.PaymentReason
+                                             g.PaymentReason,
+                                             g.PaymentType,
+                                             g.PatientWorkingPlace,
+                                             g.PatientWorkID,
+                                             g.PatientWoreda,
+                                             g.accedentDate,
+                                             g.policeName,
+                                             g.policePhone,
+                                             g.CarPlateNumber,
+                                            
                                          })
                                          .Select(s => new
                                          {
@@ -107,6 +118,16 @@ namespace MoH_Microservice.Controllers
                                              ReferalNo = s.FirstOrDefault().PatientReferalNo,
                                              IDNo = s.FirstOrDefault().PatientCBHI_ID,
                                              PatientType = s.FirstOrDefault().PatientType,
+                                             PaymentType = s.FirstOrDefault().PaymentType,
+
+                                             PatientWorkingPlace =s.FirstOrDefault().PatientWorkingPlace,
+                                             PatientWorkID = s.FirstOrDefault().PatientWorkID,
+                                             CBHIProvider = s.FirstOrDefault().PatientWoreda,
+
+                                             AccedentDate = s.FirstOrDefault().accedentDate,
+                                             policeName = s.FirstOrDefault().policeName,
+                                             policePhone = s.FirstOrDefault().policePhone,
+                                             CarPlateNumber = s.FirstOrDefault().CarPlateNumber,
 
                                              CardPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("card") ? s.PaymentAmount : 0),
                                              UnltrasoundPaid = s.Sum(s => s.PaymentReason.ToLower().Contains("ultrasound") ? s.PaymentAmount : 0),
@@ -129,6 +150,7 @@ namespace MoH_Microservice.Controllers
                 else
                 {
                     var data = await this.PaymentQuery()
+                                         .Where(e=>e.accedentDate == null)
                                          .GroupBy(g => new {
                                              g.PatientCardNumber,
                                              g.PatientName,
@@ -292,13 +314,16 @@ namespace MoH_Microservice.Controllers
         }
         
         [HttpPost("add-payment")]
-        //[Authorize(Policy = "UserPolicy")]
+        [Authorize(Policy = "UserPolicy")]
         public async Task<IActionResult> InsertPaymentInfo([FromBody] PaymentReg payment,[FromHeader] string Authorization)
         {
-
             try
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                string worker = null;
+                long CurrentCBHID = 0l;
+                long AccedentID = 0l;
 
                 if (user.UserType.ToLower() != "cashier")
                     throw new Exception("YOU CAN'T PERFORM PAYMENT");
@@ -306,7 +331,7 @@ namespace MoH_Microservice.Controllers
                 // check if the patient has been registed. 
                 var doesPatientExisit = await this._payment.Patients.Where(e => e.MRN == payment.CardNumber).ToArrayAsync();
                 if (doesPatientExisit.Length <= 0)
-                    throw new Exception("PATIENT IS NOT REGISTEED / ታካሚው አልተመዘገበም !");
+                    throw new Exception($"PATIENT IS NOT REGISTEED / ታካሚው አልተመዘገበም !{doesPatientExisit.ToList().Count()}");
 
                 // fetch the max card payment date
                 // this will be usefull to check the last time payment has been made for a card / MRN
@@ -316,35 +341,71 @@ namespace MoH_Microservice.Controllers
                         .Select(e => new { maxregdate = e.Max(e => e.CreatedOn) })
                         .ToArrayAsync();
                 // check if payment for card has been paid for.
-                
+
                 //if (MaxCardDate.Length <= 0 && !payment.Amount.Any(e=>e.Purpose.ToLower()=="card"))
                 //    throw new Exception("CARD PAYMENT REQUIRED / የካርድ ክፍያ አልተከናወነም!");
 
-                // check if the credit patient has been registered.
-                var worker = await this._payment.OrganiztionalUsers
-                    .Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower()
-                             && e.AssignedHospital.ToLower() == user.Hospital.ToLower()  
-                             && e.WorkPlace.ToLower()==payment.organization).ToArrayAsync();
-
+                
                 // check for the worker if credit payment issued 
-                if (payment.PaymentType.ToLower() == "credit" && worker.Length <=0)
-                    throw new Exception($" CREADIT USER  [ EmployeeID : {payment.PatientWorkID} ] IS NOT ASSIGNED TO THIS HOSPITAL");  
-
-                // get the current valid CBHI info
-                var CurrentCBHID = await this._payment.ProvidersMapPatient
-                    .Where(e => e.MRN == payment.CardNumber)
-                    .GroupBy(g => new { g.MRN })
-                    .Select(s => new { currentRecordID = s.Max(id => id.Id) })
-                    .ToArrayAsync();
-
+                if (payment.PaymentType.ToLower() == "credit")
+                {
+                    // check if the credit patient has been registered.
+                    var result = await this._payment.OrganiztionalUsers
+                                        .Where(e => e.EmployeeID.ToLower() == payment.PatientWorkID.ToLower()
+                                                 && e.AssignedHospital.ToLower() == user.Hospital.ToLower()
+                                                 && e.WorkPlace.ToLower() == payment.organization).ToArrayAsync();
+                    
+                    if (!result.Any())
+                        throw new Exception($" CREADIT USER  [ EmployeeID : {payment.PatientWorkID} ] IS NOT ASSIGNED TO THIS HOSPITAL");
+                    
+                    worker = result.FirstOrDefault().EmployeeID;
+                }
+                     
                 // if cbhi payment issued check if the user is registed for cbhi service
-                if (payment.PaymentType.ToLower() == "cbhi" && CurrentCBHID.Length <= 0)
-                   throw new Exception("PLEASE REGISTER CBHI INFORMATION!");
-            
-                // generate a refno
+                if (payment.PaymentType.ToLower() == "cbhi")
+                {
+                    // get the current valid CBHI info
+                    var result  = await this._payment.ProvidersMapPatient
+                            .Where(e => e.MRN == payment.CardNumber)
+                            .GroupBy(g => new { g.MRN })
+                            .Select(s => new { 
+                                currentRecordID = s.Max(id => id.Id), 
+                                ExpDate = s.Max(s=>s.ExpDate)
+                            })
+                            .ToArrayAsync();
+                    if (!result.Any())
+                        throw new Exception("PLEASE REGISTER CBHI INFORMATION!");
 
-                var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper()}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Millisecond}{DateTime.Now.Microsecond}{new Random().Next(DateTime.Now.Microsecond,Int32.MaxValue)}";
+                    CurrentCBHID = result.FirstOrDefault().currentRecordID;
+                }
+
+                // if traffic payment issued check  if the user is registed and the time limit has not expired.
+                if (payment.PaymentType.ToLower() == "traffic")
+                {
+                    // get the current valid Accdents info
+
+                    var result = await this._payment.PatientAccedents
+                            .Where(e => e.MRN == payment.CardNumber)
+                            .GroupBy(g => new { g.MRN })
+                            .Select(s => new {
+                                LastAccedentID = s.Max(s => s.id),
+                                LastAccedentDate = s.Max(s => s.accedentDate),
+                                TreatedSince = EF.Functions.DateDiffHour(s.Max(s => s.createdOn), DateTime.Now)
+                            }).ToArrayAsync();
+
+                    if (!result.Any())
+                        throw new Exception("PLEASE REGISTER ACCEDENT INFORMATION!");
+
+                    if (result.FirstOrDefault().TreatedSince >= 24)
+                        throw new Exception($"24hr HAS PASSED : USE OTHER PAYMENT SYSTEM <::> CurrentTimeDifferenceInHours :{result.FirstOrDefault().TreatedSince}");
+
+                    AccedentID = result.FirstOrDefault().LastAccedentID;
+                }
+                // generate a refno
+                var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper().Replace(" ", "").Trim().Substring(0, 4)}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}{DateTime.Now.Microsecond}{new Random().Next(1000,9999)}";
+                // list of paid services :  output
                 List<PatientReuestServicesViewDTO[]> groupPayment = new List<PatientReuestServicesViewDTO[]>();
+                
                 if (payment.Amount.Count() <= 0)
                     throw new Exception("THERE IS NO PAYMENT : AMOUNT IS EMPTY");
 
@@ -352,7 +413,7 @@ namespace MoH_Microservice.Controllers
                     {
 
                         if (MaxCardDate.Length > 0
-                            && (DateTime.Now - MaxCardDate[0].maxregdate).Value.Days <= 15
+                            && (DateTime.Now - MaxCardDate.FirstOrDefault().maxregdate).Value.Days <= 15
                             && items.Purpose.ToLower() == "card")
                         {
                             throw new Exception($"DAYS PASSED SINCE LAST REGISTRATION ( {(DateTime.Now - MaxCardDate[0].maxregdate).Value.Days} )\nLAST REGISTRATION DATE : {MaxCardDate[0].maxregdate}");
@@ -369,8 +430,9 @@ namespace MoH_Microservice.Controllers
                             PaymentVerifingID = payment.PaymentVerifingID, //  digital payment id
                             Channel = payment.Channel,
                             Description = payment.Description,
-                            PatientWorkID = worker.Length >0 ? worker[0]?.WorkPlace: null, // creadit users
-                            CBHIID = CurrentCBHID.Length>0? CurrentCBHID[0]?.currentRecordID:null, // cbhi users
+                            PatientWorkID = worker, // creadit users
+                            CBHIID = CurrentCBHID==0l?null:CurrentCBHID, // cbhi users
+                            AccedentID = AccedentID==0l?null: AccedentID, // accedent registration
                             groupId = items.groupID,
                             Purpose = items.Purpose.ToUpper(), //
                             Amount = items.Amount,
@@ -407,9 +469,11 @@ namespace MoH_Microservice.Controllers
                     await this._payment.AddAsync(data);
                     await this._payment.SaveChangesAsync();
                 }
-                var PaymentDetails = await this.PaymentQuery().Where(e => e.ReferenceNo == RefNo).ToArrayAsync();
+
+                var paymentDetails = await this.PaymentQuery().Where(e => e.ReferenceNo == RefNo).ToArrayAsync();
+               
                 return Created("/", new {   RefNo = RefNo, 
-                                            data = PaymentDetails, 
+                                            data = paymentDetails, 
                                             grp_exisiting_payment=groupPayment});
             }
             catch (Exception ex)
@@ -464,8 +528,12 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
 
-                var patientInfo = await this._payment.Set<ProvidersMapUsers>().ToArrayAsync();
-                
+                var patientInfo = await this._payment.ProvidersMapPatient
+                    .GroupBy(g => g.MRN)
+                    .Select(s => new { latestRecId = s.Max(s => s.Id) })
+                    .Join(this._payment.ProvidersMapPatient,maxid=>maxid.latestRecId,p=>p.Id,(maxid,p)=>p)
+                    .ToArrayAsync();
+
                 if (patientInfo.Length <= 0)
                 {
                     return NoContent();
@@ -494,7 +562,7 @@ namespace MoH_Microservice.Controllers
                                 .ToArrayAsync();
                 if (CurrentCBHID.Length > 0)
                 {
-                    var patientInfo = await this._payment.Set<ProvidersMapUsers>()
+                    var patientInfo = await this._payment.ProvidersMapPatient
                                 .Where(e => e.MRN == providers.cardnumber && e.Id == CurrentCBHID[0].currentRecordID)
                                 .ToArrayAsync();
                     return Ok(patientInfo);
@@ -519,7 +587,8 @@ namespace MoH_Microservice.Controllers
                         from cbhiusers in rpt_cbhiinfo.DefaultIfEmpty()
                         join workers in this._payment.OrganiztionalUsers on payments.PatientWorkID equals workers.EmployeeID into rpt_worker
                         from report_workers in rpt_worker.DefaultIfEmpty()
-
+                        join accendets  in this._payment.PatientAccedents on payments.AccedentID equals accendets.id into _rpt_accedents
+                        from rpt_accedents in _rpt_accedents.DefaultIfEmpty()
                         select new PaymentReportDTO
                         {
                             RowId = payments.id,
@@ -549,9 +618,13 @@ namespace MoH_Microservice.Controllers
                             PaymentAmount = payments.Amount,
                             PaymentDescription = payments.Description,
                             PaymentIsCollected = payments.IsCollected,
+                            accedentDate = rpt_accedents.accedentDate,
+                            policeName = rpt_accedents.policeName,
+                            policePhone = rpt_accedents.policePhone,
+                            CarPlateNumber = rpt_accedents.plateNumber,
+                            CarCertificate = rpt_accedents.certificate,
                             RegisteredBy = payments.Createdby,
-                            RegisteredOn = payments.CreatedOn,
-                            
+                            RegisteredOn = payments.CreatedOn, 
                         };
             return query;
         }
@@ -592,6 +665,12 @@ namespace MoH_Microservice.Controllers
             public decimal? PaymentAmount { get; set; } // Use decimal for currency
             public string? PaymentDescription { get; set; }
             public int? PaymentIsCollected { get; set; }
+            public DateTime? accedentDate { get; set; }
+            public string? policeName { get; set; }
+            public string? policePhone { get; set; }
+            public string? CarPlateNumber { get; set; }
+            public string? CarCertificate { get; set; }
+
             public string? RegisteredBy { get; set; }
             public DateTime? RegisteredOn { get; set; }
         }
