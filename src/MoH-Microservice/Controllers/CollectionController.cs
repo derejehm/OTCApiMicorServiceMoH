@@ -27,15 +27,14 @@ namespace MoH_Microservice.Controllers
             UserManager<AppUser> userManager, 
             RoleManager<IdentityRole> roleManager, 
             AppDbContext collection,
-            IEmailSender emailSender,
-            TokenValidate tokenValidate
+            IEmailSender emailSender
             )
         {
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._collection  = collection;
             this._emailSender = emailSender;
-            this._tokenValidate = tokenValidate;
+            this._tokenValidate = new TokenValidate(userManager);
         }
 
         [HttpPost("collection")]
