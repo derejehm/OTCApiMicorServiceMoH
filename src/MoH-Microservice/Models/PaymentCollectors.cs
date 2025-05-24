@@ -35,13 +35,11 @@ namespace MoH_Microservice.Models
         public string AssignedAs { get; set; } // collectors or supervisor
         public string AssignedBy { get; set; }
         public string ContactMethod { get; set; }
-        public string User { get;set; }
     }
     public class PaymentCollectorsGetReq
     {
         public string EmployeeID { get; set; }
         public string EmployeeName { get; set; }
-        public string User { get; set; }
     }
 
     public class PaymentCollectorsGet
@@ -62,6 +60,5 @@ namespace MoH_Microservice.Models
         public List<string> AssignedAs { get; set; } // collectors or supervisor
         public List<string> AssignedBy { get; set; }
         public List<string> ContactMethod { get; set; }
-        public string User { get; set; }
     }
 }

@@ -399,3 +399,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+/src/MoH-Microservice/Migrations/20250521120551_New migration.cs
+/src/MoH-Microservice/Migrations/20250523090056___init__.cs
+/src/MoH-Microservice/Migrations/20250523090056___init__.Designer.cs
+/src/MoH-Microservice/Migrations/AppDbContextModelSnapshot.cs

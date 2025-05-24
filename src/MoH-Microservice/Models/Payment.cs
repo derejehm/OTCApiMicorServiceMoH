@@ -41,12 +41,13 @@ namespace MoH_Microservice.Models
         [MaxLength(100)]
         [DataType(DataType.Text)]
         [DefaultValue("Unkown")]
-        public string? PatientWorkID { get; set; } = string.Empty; 
+        public string? PatientWorkID { get; set; } = string.Empty;
 
-        [MaxLength(100)]
-        [DataType(DataType.Text)]
-        [DefaultValue("Unkown")]
+        [MaxLength(100),DefaultValue("Unkown")]
         public long? CBHIID { get; set; }
+
+        [MaxLength(100),DefaultValue("Unkown")]
+        public long? AccedentID { get; set; }
         public string? groupId { get; set; } // patient requested services
         [MaxLength(200)]
         [Required(ErrorMessage = "Payment Purpose is required / የክፍያ ምከንያት ያስፈልጋል !")]

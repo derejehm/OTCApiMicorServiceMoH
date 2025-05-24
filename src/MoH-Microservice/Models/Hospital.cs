@@ -21,8 +21,6 @@
         public string? Phone { get; set; }
         public string? Location { get; set; }
         public string? ContactMethod { get; set; }
-        public string? RegisteredBy { get; set; }
-        public string user { get; set; }
     }
 
     public class HospitalUpdate
@@ -33,12 +31,10 @@
         public string Phone { get; set; }
         public string Location { get; set; }
         public string ContactMethod { get; set; }
-        public string user { get; set; }
     }
 
     public class HospitalDelete
     {
         public int id { get; set; }
-        public string user { get; set; }
     }
 }

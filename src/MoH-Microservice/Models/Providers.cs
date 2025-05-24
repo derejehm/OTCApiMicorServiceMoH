@@ -91,8 +91,6 @@ namespace MoH_Microservice.Models
         public string? provider { get; set; }
         [Required, MaxLength(100)]
         public string service { get; set; } // link to payment puposes
-        [Required, MaxLength(100)]
-        public string CreatedBy { get; set; }
     }
 
     public class ProvidersUpdate
@@ -104,14 +102,10 @@ namespace MoH_Microservice.Models
         public string? provider { get; set; }
         [Required, MaxLength(100)]
         public string service { get; set; } // link to payment puposes
-        [Required, MaxLength(100)]
-        public string UpdatedBy { get; set; }
     }
     public class ProvidersDelete
     {
         public long id {  get; set; }
-        [Required]
-        public string DeletedBy { get; set; }
     }
 
 
