@@ -26,12 +26,15 @@ namespace MoH_Microservice.Misc
         public TokenValidate setToken(string token)
         {
             if(token==null)
-                throw new ArgumentNullException("token");
+                throw new ArgumentNullException("token:  invalid argument");
+
             this._token = token;
             return this;
         }
         public string getToken()
         {
+            if (this._token == null)
+                throw new NullReferenceException("token: user is invalid");
             return this._token;
         }
         public string getUserName()
@@ -46,7 +49,7 @@ namespace MoH_Microservice.Misc
         {
             var user= await this._userManager.FindByNameAsync(this.getUserName());
             if(user==null)
-                throw new NullReferenceException("user");
+                throw new NullReferenceException("token: user does not exist");
             return user;
         }
     }

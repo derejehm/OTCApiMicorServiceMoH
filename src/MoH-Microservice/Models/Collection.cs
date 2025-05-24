@@ -31,7 +31,7 @@ namespace MoH_Microservice.Models
         public decimal CollectedAmount { get; set; }
         public DateTime FromDate { get; set; } = DateTime.Now.Date;
         public DateTime ToDate { get; set; } = DateTime.Now.Date;
-        public string? Casher { get; set; }
+        public string? Casher { get;set; }
 
     }
     public class CollectionByDate
