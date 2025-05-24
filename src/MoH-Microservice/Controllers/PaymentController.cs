@@ -49,7 +49,9 @@ namespace MoH_Microservice.Controllers
                 if (user.UserType != "Supervisor")
                 {
 
-                    var data = await this.PaymentQuery().Where(e => e.RegisteredBy.ToLower() == user.UserName.ToLower()).ToArrayAsync();
+                    var data = await this.PaymentQuery().Where(e => e.RegisteredBy.ToLower() == user.UserName.ToLower() 
+                                        && e.RegisteredOn.Value.Date >= payment.startDate 
+                                        && e.RegisteredOn.Value.Date <= payment.endDate).ToArrayAsync();
 
                     if (data.Length <= 0)
                         return NoContent();
@@ -57,7 +59,8 @@ namespace MoH_Microservice.Controllers
                 }
                 else
                 {
-                    var data = await this.PaymentQuery().ToArrayAsync();
+                    var data = await this.PaymentQuery().Where(e=>e.RegisteredOn.Value.Date >=payment.startDate 
+                                                            && e.RegisteredOn.Value.Date<=payment.endDate).ToArrayAsync();
 
                     if (data.Length <= 0)
                         return NoContent();
@@ -83,7 +86,9 @@ namespace MoH_Microservice.Controllers
                 {
 
                     var data = await this.PaymentQuery()
-                                         .Where(e => e.RegisteredBy.ToLower() == user.UserName.ToLower())
+                                         .Where(e => e.RegisteredBy.ToLower() == user.UserName.ToLower() &&
+                                                     e.RegisteredOn.Value.Date >= payment.startDate &&
+                                                     e.RegisteredOn.Value.Date <= payment.endDate)
                                          .GroupBy(g => new {
                                              g.PatientCardNumber,
                                              g.PatientName,
@@ -151,7 +156,8 @@ namespace MoH_Microservice.Controllers
                 else
                 {
                     var data = await this.PaymentQuery()
-
+                                           .Where(e=> e.RegisteredOn.Value.Date >= payment.startDate &&
+                                                     e.RegisteredOn.Value.Date <= payment.endDate)
                                          .GroupBy(g => new {
                                              g.PatientCardNumber,
                                              g.PatientName,
@@ -482,7 +488,7 @@ namespace MoH_Microservice.Controllers
                         if(groupPaymentExists.Length <=0)
                         {
                             await this._payment.PatientRequestedServices
-                                .Where(e => e.isPaid == 0
+                                .Where(e => (e.isPaid == 0 || e.isPaid ==null)
                                     && e.groupId == items.groupID
                                     && e.MRN == payment.CardNumber
                                     && e.purpose == items.Purpose)
