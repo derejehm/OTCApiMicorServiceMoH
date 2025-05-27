@@ -206,7 +206,8 @@ namespace MoH_Microservice.Controllers
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var collectionList = await this._collection.Set<PCollections>().Where(col => col.Casher == user.UserName).Take(100).ToArrayAsync();
 
-                if (collectionList.Count() <= 0) return NoContent(); // there is no collected cash
+                if (collectionList.Count() <= 0) 
+                    return NoContent(); // there is no collected cash
 
                 return Ok(collectionList);
             }catch (Exception ex)

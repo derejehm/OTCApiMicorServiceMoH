@@ -254,13 +254,22 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var la = await this._dbContext.ProvidersMapPatient
-                    .GroupBy(p => p.MRN)
-                    .Select(s => new { latestRecord = s.Max(s => s.Id) }).ToArrayAsync();
+                .GroupBy(p => p.MRN)
+                .Select(s => new { latestRecord = s.Max(s => s.Id) })
+                .ToArrayAsync();
 
-                var patientInfo = la.Join(this.PatientQuery().ToArray(), 
-                            maxid => maxid.latestRecord, 
-                            p => p.Recoredid, 
-                            (maxid, p) => p);
+                // Perform the left join
+                var patientInfo = (await this.PatientQuery().ToArrayAsync()) // Start with the conceptual "right" table
+                    .GroupJoin(
+                        la,                             // The conceptual "left" table (now used as the right part of GroupJoin)
+                        p => p.Recoredid,               // Key from the PatientQuery()
+                        maxid => maxid.latestRecord,    // Key from 'la'
+                        (p, maxids) => new { p, maxids } // Result selector for GroupJoin
+                    )
+                    .SelectMany(
+                        x => x.maxids.DefaultIfEmpty(), // Project each maxid, or null if no match from 'la'
+                        (x, maxid) => x.p // Combine both sides. maxid will be null if no match.
+                    );
 
                 IEnumerable<PatientViewDTO> SearchResult = patientInfo;
 
@@ -275,23 +284,23 @@ namespace MoH_Microservice.Controllers
 
                 if (!patient.PatientCardNumber.IsNullOrEmpty())
                 {
-                    SearchResult = SearchResult.Where(e =>e.PatientCardNumber == patient.PatientCardNumber);
+                    SearchResult = SearchResult.Where(e =>e.PatientCardNumber.ToLower().Contains(patient.PatientCardNumber.ToLower()));
                 }
                 if (!patient.PatientFirstName.IsNullOrEmpty())
                 {
-                    SearchResult = SearchResult.Where(e => e.PatientFirstName == patient.PatientFirstName);
+                    SearchResult = SearchResult.Where(e => e.PatientFirstName.ToLower().Contains(patient.PatientFirstName.ToLower()));
                 }
                 if (!patient.PatientMiddleName.IsNullOrEmpty())
                 {
-                    SearchResult = SearchResult.Where(e => e.PatientMiddleName == patient.PatientMiddleName);
+                    SearchResult = SearchResult.Where(e => e.PatientMiddleName.ToLower().Contains(patient.PatientMiddleName.ToLower()));
                 }
                 if (!patient.PatientLastName.IsNullOrEmpty())
                 {
-                    SearchResult = SearchResult.Where(e => e.PatientLastName == patient.PatientLastName);
+                    SearchResult = SearchResult.Where(e => e.PatientLastName.ToLower().Contains(patient.PatientLastName.ToLower()));
                 }
                 if (!patient.PatientPhone.IsNullOrEmpty())
                 {
-                    SearchResult = SearchResult.Where(e => e.PatientPhone == patient.PatientPhone);
+                    SearchResult = SearchResult.Where(e => e.PatientPhone.Contains(patient.PatientPhone) || e.PatientPhoneNumber.Contains(patient.PatientPhone));
                 }
 
                 if (patientInfo == null)
@@ -606,6 +615,86 @@ namespace MoH_Microservice.Controllers
             }
         }
 
+        [HttpPut("get-patient-accedent")]
+        public async Task<IActionResult> getPatientAccedent([FromBody] PatientView patient, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+
+                var accedents = this.PatientQuery();
+                IEnumerable<PatientViewDTO> SearchResult = accedents.Where(w=>w.AccedentRecId!=null);
+
+                if (patient.PatientLastName.IsNullOrEmpty() &
+                    patient.PatientMiddleName.IsNullOrEmpty() &
+                    patient.PatientFirstName.IsNullOrEmpty() &
+                    patient.PatientCardNumber.IsNullOrEmpty() &
+                    patient.PatientPhone.IsNullOrEmpty())
+                {
+                    SearchResult.OrderByDescending(o => o.Recoredid).Take(1000).ToList();
+                }
+
+                if (!patient.PatientCardNumber.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientCardNumber.ToLower().Contains(patient.PatientCardNumber.ToLower()));
+                }
+                if (!patient.PatientFirstName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientFirstName.ToLower().Contains(patient.PatientFirstName.ToLower()));
+                }
+                if (!patient.PatientMiddleName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientMiddleName.ToLower().Contains(patient.PatientMiddleName.ToLower()));
+                }
+                if (!patient.PatientLastName.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientLastName.ToLower().Contains(patient.PatientLastName.ToLower()));
+                }
+                if (!patient.PatientPhone.IsNullOrEmpty())
+                {
+                    SearchResult = SearchResult.Where(e => e.PatientPhone.Contains(patient.PatientPhone));
+                }
+                var Output = SearchResult.GroupBy(accedents => new
+                {
+                    accedents.AccedentRecId,
+                    accedents.AccedentDate,
+                    accedents.PatientCardNumber,
+                    accedents.PatientFirstName,
+                    accedents.PatientMiddleName,
+                    accedents.PatientLastName,
+                    accedents.PatientDOB,
+                    accedents.PatientAge,
+                    accedents.AcceedentAddress,
+                    accedents.PlateNumber,
+                    accedents.CarCertificate,
+                    accedents.PoliceName,
+                    accedents.PolicePhone,
+                }).Select(accedents =>
+                            new
+                            {
+                                accedents.FirstOrDefault().AccedentRecId,
+                                accedents.FirstOrDefault().AccedentDate,
+                                accedents.FirstOrDefault().PatientCardNumber,
+                                accedents.FirstOrDefault().PatientFirstName,
+                                accedents.FirstOrDefault().PatientMiddleName,
+                                accedents.FirstOrDefault().PatientLastName,
+                                accedents.FirstOrDefault().PatientDOB,
+                                accedents.FirstOrDefault().PatientAge,
+                                accedents.FirstOrDefault().AcceedentAddress,
+                                accedents.FirstOrDefault().PlateNumber,
+                                accedents.FirstOrDefault().CarCertificate,
+                                accedents.FirstOrDefault().PoliceName,
+                                accedents.FirstOrDefault().PolicePhone,
+                            });
+                return Ok(new { data= Output });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"FAILED TO COMLETE REQUEST : {ex.Message}" });
+            }
+        }
+
         [HttpPut("change-patient-accedent")]
         public async Task<IActionResult> UpdatePatientAccedent([FromBody] PatientAccedentsReg patient, [FromHeader] string Authorization)
         {
@@ -619,6 +708,7 @@ namespace MoH_Microservice.Controllers
                 {
                     throw new Exception("PATIENT DOES NOT EXIST.");
                 }
+
                 var accedents = await this._dbContext.PatientAccedents
                     .Where(w => w.id == patient.id)
                     .ExecuteUpdateAsync(u => u
@@ -688,7 +778,9 @@ namespace MoH_Microservice.Controllers
                         from address in _patientAddresses.DefaultIfEmpty()
                         join patientKinAddress in this._dbContext.PatientAddress on patients.MRN equals patientKinAddress.REFMRN into _patientKinAddresses
                         from kinAddress in _patientKinAddresses.DefaultIfEmpty()
-                        select new PatientViewDTO
+                        join patientAccedent in this._dbContext.PatientAccedents on patients.MRN equals patientAccedent.MRN into _patientAccedents
+                        from patientAccedents in _patientAccedents.DefaultIfEmpty()
+                         select new PatientViewDTO
                         {
                             RowID=patients.Id,
                             PatientCardNumber = patients.MRN,
@@ -744,7 +836,16 @@ namespace MoH_Microservice.Controllers
                             CreditUserEmail = creditUsers.EmployeeEmail,
                             CreditUserPhone = creditUsers.EmployeePhone,
                             CreditUserOrganization = creditUsers.WorkPlace,
-                            RegisteredOn=patients.createdOn,
+
+                            AccedentRecId= patientAccedents.id,
+                            AcceedentAddress = patientAccedents.accedentAddress,
+                            AccedentDate = patientAccedents.accedentDate,
+                            PoliceName  = patientAccedents.policeName,
+                            PolicePhone = patientAccedents.policePhone,
+                            PlateNumber = patientAccedents.plateNumber,
+                            CarCertificate = patientAccedents.certificate,
+
+                            RegisteredOn =patients.createdOn,
                             RegistereddBy=patients.createdBy
                         }).AsNoTracking();
             return query;

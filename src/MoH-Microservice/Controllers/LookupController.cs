@@ -286,7 +286,7 @@ namespace MoH_Microservice.Controllers
                     PaymentPurpose purpose = new PaymentPurpose
                     {
                         Purpose = paymentPurpose.Purpose[i],
-                        Amount = paymentPurpose.Amount[i],
+                        Amount =  paymentPurpose.Amount[i],
                         CreatedBy = user.UserName,
                         CreatedOn = DateTime.Now,
                         UpdatedOn = null,
