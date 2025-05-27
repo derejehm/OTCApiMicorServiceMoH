@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoH_Microservice.Migrations
 {
     /// <inheritdoc />
-    public partial class Newmigration6 : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -509,21 +509,21 @@ namespace MoH_Microservice.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Departement", "Email", "EmailConfirmed", "Hospital", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserType" },
-                values: new object[] { "118714a4-ec03-4c46-9089-4463360953f1", 0, "bbbbd51b-d36f-4230-a002-8a9230f1b987", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEHXxTUphz+wl8lggdB8ktSplRoZbeo1Rev961XYlDhQfbbhfPEvFUt8tMWwhbb8Myg==", "+251912657147", true, "b202a771-f627-4444-b04c-951e012235ab", false, "DerejeH", "Admin" });
+                values: new object[] { "220e5ca6-0f46-4d62-b297-b37b417108cf", 0, "dcfe7de8-fb5d-4d8f-9832-fd389222c583", "Tsedey Bank", "dereje.hmariam@tsedeybank.com.et", true, "", false, null, "DEREJE.HMARIAM@TSEDEYBANK.COM.ET", "DEREJEH", "AQAAAAIAAYagAAAAEMlTL7FctDSiX1BHEycomWaVwSkrmHsbWfh3co19QA9UgTTIOthuDbj06+Md53cpSA==", "+251912657147", true, "0f09f0ca-22f5-4a95-8345-8b2c85edfa72", false, "DerejeH", "Admin" });
 
             migrationBuilder.InsertData(
                 table: "PaymentChannels",
                 columns: new[] { "Id", "Channel", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, "TeleBirr", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(347), null, null },
-                    { 2, "CBE Mobile Banking", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(351), null, null },
-                    { 3, "Awash Bank", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(353), null, null },
-                    { 4, "Bank of Abyssinia", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(368), null, null },
-                    { 5, "Amhara Bank", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(395), null, null },
-                    { 6, "Tsedey Bank", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(397), null, null },
-                    { 7, "Other", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(399), null, null },
-                    { 8, "Chapa", "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(401), null, null }
+                    { 1, "TeleBirr", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6676), null, null },
+                    { 2, "CBE Mobile Banking", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6678), null, null },
+                    { 3, "Awash Bank", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6679), null, null },
+                    { 4, "Bank of Abyssinia", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6681), null, null },
+                    { 5, "Amhara Bank", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6682), null, null },
+                    { 6, "Tsedey Bank", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6683), null, null },
+                    { 7, "Other", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6685), null, null },
+                    { 8, "Chapa", "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6686), null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -531,11 +531,11 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "Amount", "CreatedBy", "CreatedOn", "Purpose", "UpdatedBy", "UpdatedOn" },
                 values: new object[,]
                 {
-                    { 1, null, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(282), "Card/ካርድ", null, null },
-                    { 2, null, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(287), "Medicne/መድሃኒት", null, null },
-                    { 3, null, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(289), "Laboratory/ላብራቶሪ", null, null },
-                    { 4, null, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(291), "Rag/X-RAY/ራጅ፣አልትራሳውንድ", null, null },
-                    { 5, null, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(293), "Others/ሌሎች", null, null }
+                    { 1, null, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6640), "Card/ካርድ", null, null },
+                    { 2, null, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6642), "Medicne/መድሃኒት", null, null },
+                    { 3, null, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6644), "Laboratory/ላብራቶሪ", null, null },
+                    { 4, null, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6645), "Rag/X-RAY/ራጅ፣አልትራሳውንድ", null, null },
+                    { 5, null, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6647), "Others/ሌሎች", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -543,18 +543,18 @@ namespace MoH_Microservice.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedOn", "UpdatedBy", "UpdatedOn", "type" },
                 values: new object[,]
                 {
-                    { 1, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(149), null, null, "ALL" },
-                    { 2, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(154), null, null, "CASH" },
-                    { 3, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(156), null, null, "CBHI" },
-                    { 4, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(158), null, null, "Credit" },
-                    { 5, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(160), null, null, "Free of Charge" },
-                    { 6, "SYS", new DateTime(2025, 5, 24, 10, 25, 18, 749, DateTimeKind.Local).AddTicks(162), null, null, "Digital" }
+                    { 1, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6563), null, null, "ALL" },
+                    { 2, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6565), null, null, "CASH" },
+                    { 3, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6566), null, null, "CBHI" },
+                    { 4, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6568), null, null, "Credit" },
+                    { 5, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6569), null, null, "Free of Charge" },
+                    { 6, "SYS", new DateTime(2025, 5, 24, 6, 21, 34, 328, DateTimeKind.Local).AddTicks(6571), null, null, "Digital" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "118714a4-ec03-4c46-9089-4463360953f1" });
+                values: new object[] { "1", "220e5ca6-0f46-4d62-b297-b37b417108cf" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

@@ -94,8 +94,6 @@ namespace MoH_Microservice.Models
     public class PaymentPurpose
     {
         public int Id { get; set; }
-
-        [MaxLength(100)]
         [Required]
         public string? Purpose { get; set; }
         [DataType(DataType.Currency)]
