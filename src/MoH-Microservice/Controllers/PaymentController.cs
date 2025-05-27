@@ -288,7 +288,7 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var PymentInfo = await this.PaymentQuery()
-                    .Where(x => x.RegisteredBy == user.UserName && x.RegisteredOn.Value.Date== DateTime.Now.Date)
+                    .Where(x => x.RegisteredBy == user.UserName && x.RegisteredOn.Value.Date== DateTime.Now.Date && x.HospitalName.ToLower()==user.Hospital.ToLower())
                     .ToArrayAsync();
                 if (PymentInfo.Length <= 0)
                     return NoContent();
