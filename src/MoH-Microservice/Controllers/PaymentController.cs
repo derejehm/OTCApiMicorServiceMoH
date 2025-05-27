@@ -90,6 +90,7 @@ namespace MoH_Microservice.Controllers
                                                      e.RegisteredOn.Value.Date >= payment.startDate &&
                                                      e.RegisteredOn.Value.Date <= payment.endDate)
                                          .GroupBy(g => new {
+                                             g.ReferenceNo,
                                              g.PatientCardNumber,
                                              g.PatientName,
                                              g.PatientVisiting,
@@ -109,11 +110,14 @@ namespace MoH_Microservice.Controllers
                                              g.policeName,
                                              g.policePhone,
                                              g.CarPlateNumber,
-                                             g.RegisteredBy
+                                             g.RegisteredBy,
+                                             g.RegisteredOn,
 
                                          })
                                          .Select(s => new
                                          {
+                                             ReferenceNumber = s.FirstOrDefault().ReferenceNo,
+                                             TreatmentDate = s.FirstOrDefault().RegisteredOn,
                                              CardNumber = s.FirstOrDefault().PatientCardNumber,
                                              Name = s.FirstOrDefault().PatientName,
                                              VisitingDate = s.FirstOrDefault().PatientVisiting,
@@ -126,7 +130,7 @@ namespace MoH_Microservice.Controllers
                                              PatientType = s.FirstOrDefault().PatientType,
                                              PaymentType = s.FirstOrDefault().PaymentType,
 
-                                             PatientWorkingPlace =s.FirstOrDefault().PatientWorkingPlace,
+                                             PatientWorkingPlace = s.FirstOrDefault().PatientWorkingPlace,
                                              PatientWorkID = s.FirstOrDefault().PatientWorkID,
                                              CBHIProvider = s.FirstOrDefault().PatientWoreda,
 
@@ -159,6 +163,7 @@ namespace MoH_Microservice.Controllers
                                            .Where(e=> e.RegisteredOn.Value.Date >= payment.startDate &&
                                                      e.RegisteredOn.Value.Date <= payment.endDate)
                                          .GroupBy(g => new {
+                                             g.ReferenceNo,
                                              g.PatientCardNumber,
                                              g.PatientName,
                                              g.PatientVisiting,
@@ -178,11 +183,14 @@ namespace MoH_Microservice.Controllers
                                              g.policeName,
                                              g.policePhone,
                                              g.CarPlateNumber,
-                                             g.RegisteredBy
+                                             g.RegisteredBy,
+                                             g.RegisteredOn,
 
                                          })
                                          .Select(s => new
                                          {
+                                             ReferenceNumber = s.FirstOrDefault().ReferenceNo,
+                                             TreatmentDate = s.FirstOrDefault().RegisteredOn,
                                              CardNumber = s.FirstOrDefault().PatientCardNumber,
                                              Name = s.FirstOrDefault().PatientName,
                                              VisitingDate = s.FirstOrDefault().PatientVisiting,
@@ -414,6 +422,9 @@ namespace MoH_Microservice.Controllers
                     if (!result.Any())
                         throw new Exception("PLEASE REGISTER CBHI INFORMATION!");
 
+                    if (DateTime.Now.Date >= result.FirstOrDefault().ExpDate.Date)
+                        throw new Exception($"CBHI ID HAS EXPIRED. ExpDate: [{result.FirstOrDefault().ExpDate.Date}]");
+
                     CurrentCBHID = result.FirstOrDefault().currentRecordID;
                 }
 
@@ -477,6 +488,15 @@ namespace MoH_Microservice.Controllers
                         };
                         if (!items.groupID.IsNullOrEmpty()) {
 
+                        // check if the groupId exists in the patient request table if not skip the payment
+                        var groupId = await this._payment.PatientRequestedServices
+                                 .Where(w => w.groupId == items.groupID)
+                                .ToArrayAsync()
+;                        if (groupId.Length<=0)
+                        {
+                            continue;
+                        }
+
                         // check if the payment has aleardy been completed!
                         var groupPaymentExists = await this._query.PatientServiceQuery()
                              .Where(e =>  e.RequestGroup == items.groupID
@@ -485,6 +505,7 @@ namespace MoH_Microservice.Controllers
                                  && e.Paid==true
                                  ).ToArrayAsync();
                         groupPayment.Add(groupPaymentExists);
+
                         if(groupPaymentExists.Length <=0)
                         {
                             await this._payment.PatientRequestedServices
@@ -499,6 +520,7 @@ namespace MoH_Microservice.Controllers
                             continue;
                         }
                     }
+
                     if (!items.groupID.IsNullOrEmpty() && (items.isPaid == false || items.isPaid==null))
                     {
                         await this._payment.SaveChangesAsync();
@@ -510,7 +532,7 @@ namespace MoH_Microservice.Controllers
 
                 var paymentDetails = await this.PaymentQuery().Where(e => e.ReferenceNo == RefNo).ToArrayAsync();
                
-                return Created("/", new {   RefNo = RefNo, 
+                return Created("/", new {   RefNo = paymentDetails.Length>0 ? RefNo:"", 
                                             data = paymentDetails, 
                                             grp_exisiting_payment=groupPayment});
             }
@@ -638,7 +660,7 @@ namespace MoH_Microservice.Controllers
                             PaymentType=payments.Type,
                             PatientName = report.firstName == null ? report_workers.EmployeeName ?? "" : report.firstName +" "+ report.middleName+" "+ report.lastName,
                             PatientPhone = report.phonenumber ?? report_workers.EmployeePhone ?? "",
-                            PatientAge = report.PatientDOB !=null ? EF.Functions.DateDiffYear(DateTime.Now, report.PatientDOB).ToString() : "",
+                            PatientAge = report.PatientDOB !=null ? Math.Abs(EF.Functions.DateDiffYear(report.PatientDOB,DateTime.Now)).ToString() : "",
                             PatientGender = report.gender ?? "",
                             PatientVisiting = report.visitDate,
                             PatientType = report.type ?? "",
@@ -662,7 +684,7 @@ namespace MoH_Microservice.Controllers
                             CarPlateNumber = rpt_accedents.plateNumber,
                             CarCertificate = rpt_accedents.certificate,
                             RegisteredBy = payments.Createdby,
-                            RegisteredOn = payments.CreatedOn, 
+                            RegisteredOn = payments.CreatedOn.Value.Date, 
                         };
             return query;
         }

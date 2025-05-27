@@ -293,7 +293,6 @@ namespace MoH_Microservice.Models
         public string? PatientSpouselastName { get; set; }
         public string? PatientRegisteredBy { get; set; }
         public DateTime? PatientVisitingDate { get; set; }
-
         public string? PatientRegion { get; set; }
         public string? PatientWoreda { get; set; }
         public string? PatientKebele { get; set; }
@@ -322,6 +321,15 @@ namespace MoH_Microservice.Models
         public string? CreditUserPhone { get; set; }
         public string? CreditUserEmail { get; set; }
         public string? CreditUserOrganization { get; set; }
+
+        public long? AccedentRecId { get; set; }
+        public string? AcceedentAddress { get; set; }
+        public DateTime? AccedentDate { get; set; }
+        public string? PoliceName { get; set; }
+        public string? PolicePhone { get; set; }
+        public string? PlateNumber { get; set; }
+        public string? CarCertificate { get; set; }
+
         public DateTime? RegisteredOn { get; set; }
         public string? RegistereddBy { get; set; }
     }
