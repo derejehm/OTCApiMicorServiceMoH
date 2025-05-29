@@ -52,13 +52,13 @@ namespace MoH_Microservice.Controllers
                     return NotFound("Collector not found!");
                 }
 
-                var Query = this._collection.Set<Payment>()
+                var Query = this._collection.Payments
                                 .Where(e =>
-                                       e.Createdby == user.UserType &&
+                                       e.Createdby == user.UserName &&
                                        e.IsCollected != 1 &&
                                        e.Type.ToLower() == "cash" &&
-                                       e.CreatedOn >= collectionReg.FromDate.Date &&
-                                       e.CreatedOn <= collectionReg.ToDate.Date.AddDays(1))
+                                       e.CreatedOn.Value.Date >= collectionReg.FromDate.Date &&
+                                       e.CreatedOn.Value.Date <= collectionReg.ToDate.Date)
                                 .ExecuteUpdateAsync(update => update.SetProperty(item => item.IsCollected, 1)).Result;
 
                 if (Query <= 0)
