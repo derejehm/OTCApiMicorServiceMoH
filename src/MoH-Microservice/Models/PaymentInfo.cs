@@ -60,6 +60,7 @@ namespace MoH_Microservice.Models
             public string? organization { get; set; } = string.Empty;
             public string? PaymentVerifingID { get; set; } = string.Empty;
             public string? PatientWorkID { get; set; } = string.Empty;
+            public string? PaymentRefNo { get; set; } = string.Empty;
         }
 
         public class PaymentTypeReg

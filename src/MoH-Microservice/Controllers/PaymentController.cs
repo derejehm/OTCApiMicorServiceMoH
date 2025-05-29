@@ -450,8 +450,16 @@ namespace MoH_Microservice.Controllers
 
                     AccedentID = result.FirstOrDefault().LastAccedentID;
                 }
+                var unique = $"RCPT-{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.PaymentType.ToUpper().Replace(" ", "").Trim().Substring(0, 4)}";
+                unique = $"{unique}-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid().ToString().Substring(0, 10).Replace("-","").ToUpper()}";
                 // generate a refno
-                var RefNo = $"{user.Hospital.Trim().Substring(0, 2).ToUpper()}{payment.CardNumber}{payment.PaymentType.ToUpper().Replace(" ", "").Trim().Substring(0, 4)}{DateTime.Now.Year}{DateTime.Now.Month}{DateTime.Now.Day}{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}{DateTime.Now.Millisecond}{DateTime.Now.Microsecond}{new Random().Next(1000,9999)}";
+                if (!payment.PaymentRefNo.IsNullOrEmpty())
+                {
+                    var findRef = await this._payment.Payments.Where(w => w.RefNo == payment.PaymentRefNo).ToArrayAsync();
+                    if (!findRef.Any())
+                        throw new Exception("REFERENCE ID REQUESTED DOES NOT EXIST.");
+                }
+                var RefNo = payment.PaymentRefNo.IsNullOrEmpty()? unique:payment.PaymentRefNo;
                 // list of paid services :  output
                 List<PatientReuestServicesViewDTO[]> groupPayment = new List<PatientReuestServicesViewDTO[]>();
                 
