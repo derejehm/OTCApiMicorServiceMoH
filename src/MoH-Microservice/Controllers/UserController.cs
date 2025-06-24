@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
+using MoH_Microservice.Models.Form;
 
 namespace MoH_Microservice.Controllers
 {

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoH_Microservice.Data;
 using MoH_Microservice.Misc;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
+using MoH_Microservice.Models.Form;
 using System.Globalization;
 using System.Net;
 
@@ -45,8 +46,8 @@ namespace MoH_Microservice.Controllers
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var result = await this._collection.Set<PaymentCollectors>()
                     .Where(e => e.EmployeeID.ToLower() == collectionReg.CollecterID.ToLower() 
-                    && e.EmployeeName.ToLower() == collectionReg.CollectedBy.ToLower() 
-                    && e.AssignedLocation.ToLower() == user.Hospital.ToLower()).ToArrayAsync();
+                        && e.EmployeeName.ToLower() == collectionReg.CollectedBy.ToLower() 
+                        && e.AssignedLocation.ToLower() == user.Hospital.ToLower()).ToArrayAsync();
                 if (result.Length <= 0)
                 {
                     return NotFound("Collector not found!");
@@ -54,11 +55,12 @@ namespace MoH_Microservice.Controllers
 
                 var Query = this._collection.Payments
                                 .Where(e =>
-                                       e.Createdby == user.UserName &&
-                                       e.IsCollected != 1 &&
+                                       e.CreatedBy == user.UserName &&
+                                       e.IsCollected != 1 && 
+                                       e.IsReversed==0 &&
                                        e.Type.ToLower() == "cash" &&
-                                       e.CreatedOn.Value.Date >= collectionReg.FromDate.Date &&
-                                       e.CreatedOn.Value.Date <= collectionReg.ToDate.Date)
+                                       e.CreatedOn.Date >= collectionReg.FromDate.Date &&
+                                       e.CreatedOn.Date <= collectionReg.ToDate.Date)
                                 .ExecuteUpdateAsync(update => update.SetProperty(item => item.IsCollected, 1)).Result;
 
                 if (Query <= 0)
@@ -127,6 +129,7 @@ namespace MoH_Microservice.Controllers
                         ContactMethod = collector.ContactMethod[i],
                         AssignedOn = DateTime.Now,
                         AssignedBy = collector.AssignedBy[i],
+                        CreatedBy=user.UserName
                     };
                     var text = $"\r\nDear {collector.EmployeeName[i]} " +
                         $"\nYou have been assigned to collect cash from {user.Hospital} Hospital " +
@@ -225,12 +228,12 @@ namespace MoH_Microservice.Controllers
             {
                 var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
                 var collectionList = await this._collection.Set<Payment>()
-                                     .Where(col => col.Createdby == user.UserName && 
+                                     .Where(col => col.CreatedBy == user.UserName && 
                                                    col.IsCollected!=1 && 
                                                    col.Type.ToLower()=="cash")
-                                     .GroupBy(e=>new { e.Createdby, e.IsCollected})
+                                     .GroupBy(e=>new { e.CreatedBy, e.IsCollected})
                                      .Select(e => new {
-                                         Cashier=e.FirstOrDefault().Createdby,
+                                         Cashier=e.FirstOrDefault().CreatedBy,
                                          IsCollected=e.FirstOrDefault().IsCollected,
                                          UncollectedCashAmount =e.Sum(e=>e.Amount),
                                          FromDate= e.Min(e=>e.CreatedOn),
@@ -258,12 +261,12 @@ namespace MoH_Microservice.Controllers
                 if (user.UserType.ToLower() == "cashier")
                 {
                      var collectionList = await this._collection.Set<Payment>()
-                                     .Where(col => col.Createdby == user.UserName &&
+                                     .Where(col => col.CreatedBy == user.UserName &&
                                                    col.IsCollected != 1 &&
                                                    col.Type.ToLower() == "cash")
-                                     .GroupBy(e => new { e.Createdby, e.IsCollected })
+                                     .GroupBy(e => new { e.CreatedBy, e.IsCollected })
                                      .Select(e => new {
-                                         Cashier = e.Key.Createdby,
+                                         Cashier = e.Key.CreatedBy,
                                          CashAmount = e.Sum(e => e.Amount),
                                      })
                                      .ToArrayAsync();
@@ -274,8 +277,8 @@ namespace MoH_Microservice.Controllers
                 {
                     var collectionList = await this._collection.Set<Payment>()
                                      .Where(col => col.IsCollected != 1 && col.Type.ToLower() == "cash")
-                                     .GroupBy(e => new { e.Createdby, e.IsCollected })
-                                     .Select(e => new {Cashier = e.Key.Createdby,CashAmount = e.Sum(e => e.Amount)})
+                                     .GroupBy(e => new { e.CreatedBy, e.IsCollected })
+                                     .Select(e => new {Cashier = e.Key.CreatedBy,CashAmount = e.Sum(e => e.Amount)})
                                      .ToArrayAsync();
                     if (collectionList.Count() <= 0) return NoContent();
 
