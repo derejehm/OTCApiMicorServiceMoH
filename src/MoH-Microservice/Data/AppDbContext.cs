@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
 
 namespace MoH_Microservice.Data
 {
@@ -9,6 +9,7 @@ namespace MoH_Microservice.Data
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
+            
         }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
@@ -25,8 +26,17 @@ namespace MoH_Microservice.Data
         public DbSet<Hospital> Hospitals { get; set; }
         public DbSet<PaymentCollectors> PaymentCollectors { get; set; }
         public DbSet<OrganiztionalUsers> OrganiztionalUsers { get; set; }
-        
-
+        public DbSet<GroupSetting> groupSettings { get; set; }
+        public DbSet<UserSetting> userSettings { get; set; }
+        public DbSet<PaymentTypeDiscription> PaymentTypeDiscriptions { get; set; }
+        public DbSet<PaymentTypeLimit> PaymentPurposeLimits { get; set; }
+        public DbSet<NurseRequest> NurseRequests { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<ReportFilters> ReportFilters { get; set; }
+        public DbSet<ReportStore> ReportStore { get; set; }
+        public DbSet<ReportAccess> ReportAccess { get; set; }
+        public DbSet<ReportSource> ReportSource { get; set; }
+        public DbSet<DoctorRequest> DoctorRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -68,9 +78,9 @@ namespace MoH_Microservice.Data
                 }
                 );
 
-            builder.Entity<Payment>().HasIndex("RefNo", "Createdby").IsUnique(false);
+            builder.Entity<Payment>().HasIndex("RefNo", "CreatedBy").IsUnique(false);
             builder.Entity<Payment>().HasIndex("RefNo").IsUnique(false);
-            builder.Entity<Payment>().HasIndex("Createdby").IsUnique(false);
+            builder.Entity<Payment>().HasIndex("CreatedBy").IsUnique(false);
 
             builder.Entity<Patient>().HasIndex("MRN").IsUnique(true);
             builder.Entity<Patient>().HasIndex("phonenumber").IsUnique(false);
@@ -119,6 +129,20 @@ namespace MoH_Microservice.Data
                     , new PaymentChannel { Id = 7, Channel = "Other", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                     , new PaymentChannel { Id = 8, Channel = "Chapa", CreatedBy = "SYS", CreatedOn = DateTime.Now }
                 );
+
+            builder.HasSequence<long>("patient_card_number")
+                .HasMin(1)
+                .StartsAt(1)
+                .IncrementsBy(1)
+                .HasMax(long.MaxValue)
+                .IsCyclic(true);
+
+            builder.HasSequence<long>("rapyment_recipt_number")
+                .HasMin(1)
+                .StartsAt(1)
+                .IncrementsBy(1)
+                .HasMax(9999999)
+                .IsCyclic(true);
         }
     }
 }

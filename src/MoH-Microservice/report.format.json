@@ -1,0 +1,14 @@
+{
+  "title": "Report Template",
+  "Description": "Report Template creator",
+  "_summary;": "private",
+  "_category": "_category;",
+  "_publisher;": "",
+  "_command": {
+    "source": "",
+    "columns": [],
+    "filters": [],
+    "groupByColumns": true,
+    "IncludeCount": true
+  }
+}

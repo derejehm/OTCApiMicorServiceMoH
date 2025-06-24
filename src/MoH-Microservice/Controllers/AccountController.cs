@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
+using MoH_Microservice.Models.Form;
 using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Login = MoH_Microservice.Models.Login;
+using Login = MoH_Microservice.Models.Form.Login;
 
 namespace MoH_Microservice.Controllers
 {
