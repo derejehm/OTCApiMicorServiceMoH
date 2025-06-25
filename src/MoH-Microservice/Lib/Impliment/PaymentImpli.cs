@@ -320,12 +320,12 @@ namespace MoH_Microservice.Lib.Implimentation
                     .GroupBy(g => new { g.MRN })
                     .Select(s => new { TotalAmount = s.Sum(s => s.Amount) }).ToArrayAsync();
 
-                var Totalpayment = paymentThreshold?.FirstOrDefault()?.TotalAmount;
-                Totalpayment = Totalpayment + payment.Amount.Sum(s => s.Amount);
-                Console.WriteLine($"Total Payment {Totalpayment} {payment.Amount.Sum(s => s.Amount)} {amountThreshold}");
-                if (Totalpayment >= amountThreshold)
-
-                    throw new Exception($"Total payment Reached {Totalpayment} Birr which is above the treshold set {amountThreshold} Birr.");
+                var paymentTreshold = paymentThreshold.FirstOrDefault().TotalAmount ?? 0;
+                var payTotal = payment.Amount.Sum(s => s.Amount) ?? 0;
+                paymentTreshold = paymentTreshold + payTotal;
+                Console.WriteLine($"Total Payment {paymentTreshold} {payment.Amount.Sum(s => s.Amount)} {amountThreshold}");
+                if (paymentTreshold >= amountThreshold)
+                    throw new Exception($"Total payment Reached {paymentTreshold} Birr which is above the treshold set {amountThreshold} Birr.");
 
                 return AccedentID ?? 0l;
             }

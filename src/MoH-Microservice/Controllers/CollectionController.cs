@@ -62,7 +62,8 @@ namespace MoH_Microservice.Controllers
                                        e.CreatedOn.Date >= collectionReg.FromDate.Date &&
                                        e.CreatedOn.Date <= collectionReg.ToDate.Date)
                                 .ExecuteUpdateAsync(update => update.SetProperty(item => item.IsCollected, 1)).Result;
-
+                var date1 = collectionReg.FromDate.Date;
+                var date2 = collectionReg.ToDate.Date;
                 if (Query <= 0)
                 {
                     return NotFound("Could't find any uncollected cash!");
