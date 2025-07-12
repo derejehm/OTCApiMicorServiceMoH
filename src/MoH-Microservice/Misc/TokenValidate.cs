@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoH_Microservice.Data;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
 using NuGet.Protocol;
 using System.IdentityModel.Tokens.Jwt;
 

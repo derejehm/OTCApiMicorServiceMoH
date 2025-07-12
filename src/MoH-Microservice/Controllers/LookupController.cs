@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using MoH_Microservice.Data;
 using MoH_Microservice.Misc;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
+using MoH_Microservice.Models.Form;
+using MoH_Microservice.Query;
 using NuGet.Protocol;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -24,6 +26,7 @@ namespace MoH_Microservice.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private AppDbContext _payment;
         private TokenValidate _tokenValidate;
+        private AppQuery _appQuery;
         
 
         public LookupController(
@@ -37,6 +40,7 @@ namespace MoH_Microservice.Controllers
             this._roleManager = roleManager;
             this._payment = payment;
             this._tokenValidate = new TokenValidate(userManager);
+            this._appQuery = new AppQuery(this._payment);
 
 
         }
@@ -125,7 +129,7 @@ namespace MoH_Microservice.Controllers
                 if (user.Departement.ToLower() != "tsedey bank") return NoContent();
 
                 var PymentInfo = await this._payment.Set<Payment>()
-                                .GroupBy((col) => new { Hospital = col.HospitalName, Casher = col.Createdby, Type = col.Type, Purpose = col.Purpose })
+                                .GroupBy((col) => new { Hospital = col.HospitalName, Casher = col.CreatedBy, Type = col.Type, Purpose = col.Purpose })
                                 .Select((select) =>
                                     new {
                                         Hospital = select.Key.Hospital,
@@ -281,11 +285,34 @@ namespace MoH_Microservice.Controllers
 
                 for (var i = 0; i < paymentPurpose.Purpose.Count(); i++)
                 {
-                    var PymentInfo = await this._payment.PaymentPurposes.Where((e) => e.Purpose == paymentPurpose.Purpose[i]).ToArrayAsync();
+                    var PymentInfo = await this._payment.PaymentPurposes
+                                    .Where((e) => e.Purpose == paymentPurpose.Purpose[i])
+                                    .ToArrayAsync();
 
+                    if (PymentInfo.Count() > 0)
+                    {
+                        
+                        await this._payment
+                            .PaymentPurposes
+                            .Where((e) => e.Purpose == paymentPurpose.Purpose[i])
+                            .ExecuteUpdateAsync(u => u
+                            .SetProperty(p => p.Amount, paymentPurpose.Amount[i])
+                            .SetProperty(p => p.shortCodes, paymentPurpose.shortCode[i])
+                            .SetProperty(p => p.group, paymentPurpose.group[i])
+                            .SetProperty(p => p.subgroup, paymentPurpose.subgroup[i])
+                            .SetProperty(p=>p.UpdatedBy,user.UserName)
+                            .SetProperty(p=>p.UpdatedOn,DateTime.Now)
+                            );
+                            
+                        continue;
+                    }
+                        
                     PaymentPurpose purpose = new PaymentPurpose
                     {
                         Purpose = paymentPurpose.Purpose[i],
+                        shortCodes = paymentPurpose.shortCode[i],
+                        group = paymentPurpose.group[i],
+                        subgroup = paymentPurpose.subgroup[i],
                         Amount =  paymentPurpose.Amount[i],
                         CreatedBy = user.UserName,
                         CreatedOn = DateTime.Now,
@@ -303,7 +330,7 @@ namespace MoH_Microservice.Controllers
 
             }catch(Exception ex)
             {
-                return BadRequest(new { msg=$"PAYMENT PURPOSE UPLOAD FAILED! :: {ex.Message}"});
+                return BadRequest(new AppError { msg=$"PAYMENT PURPOSE UPLOAD FAILED! :: {ex.Message}", ErrorDescription=ex.Message});
             }
         }
         //Update
@@ -373,7 +400,6 @@ namespace MoH_Microservice.Controllers
 
 
         }
-
         // delete
 
         [HttpDelete("payment-type")]
@@ -439,6 +465,8 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { msg = $"Error: Delete payment-purpose failed! Reason: {ex.Message}" });
             }
         }
+
+
         [HttpGet("redirecttoboa")]
         public IActionResult RedirectToSlip(string transactionId)
         {
@@ -515,8 +543,8 @@ namespace MoH_Microservice.Controllers
                     Phone = hospital.Phone,
                     Location = hospital.Location,
                     ContactMethod = hospital.ContactMethod,
-                    RegisteredOn = DateTime.UtcNow,
-                    RegisteredBy = user.UserName
+                    CreatedOn = DateTime.UtcNow,
+                    CreatedBy = user.UserName
                 };
                 await this._payment.AddAsync(hospital_reg);
                 await this._payment.SaveChangesAsync();
@@ -563,7 +591,130 @@ namespace MoH_Microservice.Controllers
                 return BadRequest(new { msg = $"Error: update hospital failed! Reason: {ex.Message}" });
             }
         }
+        //----
+        [HttpGet("payment-type-description")]
+        public async Task<IActionResult> GetAllPaymentPurposeDiscription([FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._appQuery.PaymentTypeQuery()
+                    .GroupBy(g=> new { g.Type, g.TypeId })
+                    .Select(s=> new PaymentTypeDTO2
+                    {
+                        Id=s.FirstOrDefault().TypeId,
+                        Type=s.FirstOrDefault().Type,
+                        Description=s.Select(s=> new PaymentTypeDiscriptionDTO { Id=s.DescriptionId, Description=s.Description}).ToArray()
+                    })
+                    .ToArrayAsync();
 
+                if (PymentInfo.Length <= 0)
+                    return NoContent();
+
+                return Ok(new { data=new JsonResult(PymentInfo).Value });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: fetch payment-purpose-discription failed! Reason: {ex.Message}" });
+            }
+
+        }
+        [HttpDelete("payment-type-description")]
+        // admin / supervisors
+        public async Task<IActionResult> deletePaymentPurposeDiscription([FromBody] PaymentPurposeDelete paymentPurposedis, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.PaymentTypeDiscriptions
+                    .Where((e) => e.Id == paymentPurposedis.id)
+                    .ExecuteDeleteAsync();
+
+                await this._payment.SaveChangesAsync();
+
+                return Ok(new { msg = $"Deleted - payment Purpose" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: Delete payment-purpose-discription failed! Reason: {ex.Message}" });
+            }
+        }
+        [HttpPut("payment-type-description")]
+        // admin / supervisors
+        public async Task<IActionResult> updatePaymentPurposeDiscription([FromBody] PaymentPurposeUpdateDiscription paymentPurpose, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+                var PymentInfo = await this._payment.PaymentTypeDiscriptions
+                    .Where((e) => e.Id == paymentPurpose.id)
+                    .ExecuteUpdateAsync(e => e
+                    .SetProperty(e => e.Discription, paymentPurpose.Discription)
+                    .SetProperty(e=>e.UpdatedOn,DateTime.Now)
+                    .SetProperty(e=>e.UpdatedBy,user.UserName)
+                    );
+
+                await this._payment.SaveChangesAsync();
+
+                return Ok(new { msg=$"Updated - payment purpose to {paymentPurpose.Discription}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { msg = $"Error: update payment-purpose--discription failed! Reason: {ex.Message}" });
+            }
+        }
+        [HttpPost("payment-type-description")]
+        // admin / supervisors
+        public async Task<IActionResult> SetPaymentPurposeDiscription([FromBody] PaymentPurposDiscription paymentType, [FromHeader] string Authorization)
+        {
+            try
+            {
+                var user = await this._tokenValidate.setToken(Authorization.Split(" ")[1]).db_recorded();
+
+                if (paymentType?.Discription?.Count() <= 0)
+                    throw new Exception("EMPTY FEILD.");
+                var PymentInfo = await this._payment.PaymentTypes.Where((e) => e.type == paymentType.Type).ToArrayAsync();
+                if (PymentInfo.Length <= 0)
+                {
+                    throw new Exception("Payment Purpose Does not exist");
+                }
+                for (var i = 0; i < paymentType.Discription.Count(); i++)
+                {
+                    
+
+                    PaymentTypeDiscription purpose = new PaymentTypeDiscription
+                    {
+                        PaymentTypeID = PymentInfo?.FirstOrDefault()?.Id,
+                        Discription = paymentType.Discription[i],
+                        CreatedBy = user.UserName,
+                        CreatedOn = DateTime.Now,
+                        UpdatedOn = null,
+                        UpdatedBy = null,
+                    };
+
+                    if (PymentInfo?.Length > 0)
+                        await this._payment.AddAsync(purpose);
+
+                    await this._payment.SaveChangesAsync();
+                }
+                var result =  await this._appQuery.PaymentTypeQuery()
+                    .Where(w=>w.TypeId == PymentInfo.FirstOrDefault().Id)
+                    .GroupBy(g => new { g.Type, g.TypeId })
+                    .Select(s => new PaymentTypeDTO2
+                    {
+                        Id = s.FirstOrDefault().TypeId,
+                        Type = s.FirstOrDefault().Type,
+                        Description = s.Select(s => new PaymentTypeDiscriptionDTO { Id = s.DescriptionId, Description = s.Description }).ToArray()
+                    })
+                    .ToArrayAsync();
+                return Created("/", new AppSuccess { data = new JsonResult(result) });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new AppError{ ErrorDescription = ex.Message});
+            }
+        }
         private class BankLinkList
         {
 

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MoH_Microservice.Data;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
 using MoH_Microservice.Services;
 using System.Text;
 

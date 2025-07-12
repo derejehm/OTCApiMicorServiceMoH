@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using MoH_Microservice.Data;
 using MoH_Microservice.Misc;
-using MoH_Microservice.Models;
+using MoH_Microservice.Models.Database;
+using MoH_Microservice.Models.Form;
 
 namespace MoH_Microservice.Controllers
 {
@@ -42,10 +43,10 @@ namespace MoH_Microservice.Controllers
                 {
                     provider = providers.provider,
                     service = providers.service,
-                    Createdby = user.UserName,
+                    CreatedBy = user.UserName,
                     CreatedOn = DateTime.Now,
-                    Updatedby = null,
-                    UpdateOn = null,
+                    UpdatedBy = null,
+                    UpdatedOn = null,
                 };
                 await this._provider.AddAsync<Providers>(provider);
                 await this._provider.SaveChangesAsync();
